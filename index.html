@@ -109,6 +109,9 @@ body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:no
 #lists button{background:none;border:0;border-bottom:3px solid transparent;color:var(--mut);font-weight:700;font-size:15px;padding:9px 14px;cursor:pointer}
 #lists button:hover{color:var(--text)}
 #lists button[aria-selected=true]{color:var(--text);border-bottom-color:#6ab0ff}
+#newVer{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:70;background:#e8e8e8;color:#222;padding:10px 16px;border-radius:8px;font-weight:600;box-shadow:0 4px 18px #0008}
+#newVer[hidden]{display:none}
+#newVer button{margin-left:8px;background:#222;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:600}
 #netWarn{margin:10px 24px;padding:10px 14px;background:#f0a800;color:#1a1200;border-radius:6px;font-weight:600}
 #storeWarn{margin:10px 24px;padding:10px 14px;background:#f0a800;color:#1a1200;border-radius:6px;font-weight:600}
 #loginBox{position:absolute;right:0;top:calc(100% + 6px);width:270px;background:#2c2c2c;border:1px solid #484848;border-radius:8px;padding:12px;box-shadow:0 8px 24px #0009;z-index:30}
@@ -217,6 +220,7 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 <div id="subs" role="tablist"></div>
 </div>
 <div id="storeWarn" role="alert" hidden>This browser is blocking storage, so you may be logged out when you refresh the page. Open the site in a normal browser window (not a preview or private window).</div>
+<div id="newVer" role="status" hidden><span>A new version of the site is available.</span> <button type="button" id="newVerGo">Refresh now</button></div>
 <div id="netWarn" role="alert" hidden></div>
 <section id="stats" class="panel" hidden></section>
 <section id="settings" class="panel" hidden>
@@ -1918,6 +1922,26 @@ try{
   }
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
+/* Each published version carries its own stamp. The page compares it with the copy on the server. */
+const SITE_BUILD="20261028-215157";
+async function serverBuild(){
+  try{
+    const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
+    if(!r.ok)return null;
+    const m=(await r.text()).match(/const SITE_BUILD="([^"]+)"/);
+    return m?m[1]:null;
+  }catch(e){return null}
+}
+async function checkVersion(first){
+  const b=await serverBuild();
+  if(!b||b===SITE_BUILD)return;
+  let tried=0;try{tried=+sessionStorage.getItem("lvl-reload")||0}catch(e){}
+  if(first&&Date.now()-tried>60000){
+    try{sessionStorage.setItem("lvl-reload",String(Date.now()))}catch(e){}
+    location.reload();return;
+  }
+  $("newVer").hidden=false;
+}
 const LS2="lvl-tracker-v2"; /* old local accounts: only read, for the one-time import in Settings */
 const SB_URL="https://rprczsfeafymltriawuk.supabase.co",SB_KEY="sb_publishable_-odlXG_gaExe2ffo4bws3Q_eXFw-SG8";
 let sb=null;
@@ -2545,6 +2569,10 @@ $("lbprofile").onclick=e=>{
   else return;
   renderLB();
 };
+checkVersion(true);
+setInterval(()=>checkVersion(false),600000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkVersion(false)});
+$("newVerGo").onclick=()=>location.reload();
 showDevTab();
 render();
 setView(/[?&]code=/.test(location.search)?"tracker":"home");
