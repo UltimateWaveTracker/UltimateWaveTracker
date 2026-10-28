@@ -151,8 +151,11 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 .lbrow i{color:var(--mut);font-size:14px}
 .panel .lbrow .lbn{background:none;color:inherit;border:0;padding:0;margin:0;font-size:19px;font-weight:400;cursor:pointer;text-align:left}
 .lbn:hover{text-decoration:underline}
-.pv{text-align:center;margin-top:20px;border-top:2px dotted #666;padding-top:14px}
-.pv:empty{display:none}
+#leaderboard.wide{max-width:1280px}
+#leaderboard:not([hidden]){display:grid;grid-template-columns:minmax(280px,5fr) minmax(320px,6fr);gap:0 28px;align-items:start}
+.pv{text-align:center;margin:0;border-left:2px dotted #666;padding:0 0 0 28px}
+.pv .nopick{margin-top:40px;color:var(--mut)}
+@media (max-width:860px){#leaderboard:not([hidden]){display:block}.pv{margin-top:20px;border-left:0;border-top:2px dotted #666;padding:14px 0 0}}
 .pv h3{margin:18px 0 4px;font-size:21px}
 .pv p{margin:0;color:#ccc;line-height:1.8}
 .pv b{color:var(--text)}
@@ -186,6 +189,7 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
   <h1 id="cat"><button type="button" id="homeBtn" title="Back to the main page">Ultimate Wave Tracker</button></h1>
   <div class="right">
     <nav>
+      <button id="navTracker" data-go="tracker" aria-pressed="false">Tracker</button>
       <button data-p="leaderboard" aria-pressed="false">Stats Viewer</button>
       <button data-p="stats" aria-pressed="false">Stats</button>
       <button data-p="settings" aria-pressed="false">Settings</button>
@@ -199,6 +203,7 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 </header>
 <div id="lists" role="tablist" aria-label="Lists"></div>
 <section id="leaderboard" class="panel wide" hidden>
+ <div class="lbleft">
   <h2 class="lbt">Stats Viewer - <select id="lbf" aria-label="Filter leaderboard by list"></select></h2>
   <div class="lbsearch">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6" stroke-linecap="round"/></svg>
@@ -206,7 +211,8 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
     <button id="lbx" aria-label="Clear search"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.7 12.3-1.4 1.4-3.3-3.3-3.3 3.3-1.4-1.4 3.3-3.3-3.3-3.3 1.4-1.4 3.3 3.3 3.3-3.3 1.4 1.4-3.3 3.3z"/></svg></button>
   </div>
   <div id="lblist" class="lblist"></div>
-  <div id="lbprofile" class="pv"></div>
+ </div>
+ <div id="lbprofile" class="pv"></div>
 </section>
 <div id="subs" role="tablist"></div>
 </div>
@@ -2054,7 +2060,7 @@ $("grid").onclick=e=>{
 };
 let view="home";
 function showPanel(id){
-  document.querySelectorAll("nav button").forEach(x=>{const on=x.dataset.p===id;x.setAttribute("aria-pressed",String(on));$(x.dataset.p).hidden=!on});
+  document.querySelectorAll("nav button[data-p]").forEach(x=>{const on=x.dataset.p===id;x.setAttribute("aria-pressed",String(on));$(x.dataset.p).hidden=!on});
 }
 /* Stats Viewer, Stats, Settings and Dev each open as their own page, replacing the tier lists. */
 const VIEWPANEL={stats:"leaderboard",lstats:"stats",settings:"settings",devview:"devpage"};
@@ -2063,10 +2069,12 @@ function setView(v){
   view=v;document.body.dataset.view=v;
   ["home","resources","contact","account"].forEach(k=>$(k).hidden=k!==v);
   showPanel(VIEWPANEL[v]||"");
+  $("navTracker").setAttribute("aria-pressed",String(v==="tracker"));
   if(v==="stats"&&sb&&Date.now()-lastLoad>5000)refresh();
   window.scrollTo(0,0);
 }
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+$("navTracker").onclick=()=>setView("tracker");
+document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
   const p=b.dataset.p,on=b.getAttribute("aria-pressed")!=="true";
   setView(on?PANELVIEW[p]:"tracker");
 });
@@ -2511,7 +2519,7 @@ function renderLB(){
 }
 function renderPV(all){
   const i=all.findIndex(p=>p.id===viewId),el=$("lbprofile");
-  if(i<0){el.innerHTML="";return}
+  if(i<0){el.innerHTML=all.length?'<p class="nopick">Select a player to see their profile.</p>':"";return}
   const pl=all[i],S=stats(profiles.find(p=>p.id===pl.id),lbOnly());
   const lists=DATA.map((c,ci)=>({name:c.name,T:S.T.filter(x=>x.ci===ci)})).filter((L,ci)=>lbOnly()==null||ci===lbOnly());
   const sect=L=>{
@@ -2529,7 +2537,7 @@ function renderPV(all){
 $("lbq").oninput=renderLB;
 $("lbf").onchange=()=>{lbList=$("lbf").value;renderLB()};
 $("lbx").onclick=()=>{$("lbq").value="";renderLB();$("lbq").focus()};
-$("lblist").onclick=e=>{const b=e.target.closest("[data-id]");if(b){viewId=b.dataset.id;renderLB();$("lbprofile").scrollIntoView({block:"nearest"})}};
+$("lblist").onclick=e=>{const b=e.target.closest("[data-id]");if(b){viewId=b.dataset.id;renderLB();if(window.innerWidth<=860)$("lbprofile").scrollIntoView({block:"nearest"})}};
 $("lbprofile").onclick=e=>{
   const all=ranked(),i=all.findIndex(p=>p.id===viewId);
   if(e.target.id==="pvprev"&&i>0)viewId=all[i-1].id;
