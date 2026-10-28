@@ -109,6 +109,7 @@ body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:no
 #lists button{background:none;border:0;border-bottom:3px solid transparent;color:var(--mut);font-weight:700;font-size:15px;padding:9px 14px;cursor:pointer}
 #lists button:hover{color:var(--text)}
 #lists button[aria-selected=true]{color:var(--text);border-bottom-color:#6ab0ff}
+#netWarn{margin:10px 24px;padding:10px 14px;background:#f0a800;color:#1a1200;border-radius:6px;font-weight:600}
 #storeWarn{margin:10px 24px;padding:10px 14px;background:#f0a800;color:#1a1200;border-radius:6px;font-weight:600}
 #loginBox{position:absolute;right:0;top:calc(100% + 6px);width:270px;background:#2c2c2c;border:1px solid #484848;border-radius:8px;padding:12px;box-shadow:0 8px 24px #0009;z-index:30}
 .lt{display:flex;gap:6px;margin-bottom:10px}
@@ -2087,7 +2088,7 @@ const ICON_CHEV='<svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/><
 const av=(p,cls)=>`<span class="av${cls?" "+cls:""}">${p.pfp?`<img src="${esc(p.pfp)}" alt="">`:ICON_USER}</span>`;
 function renderProfile(){
   const a=active();
-  $("profBtn").innerHTML=a?av(a)+`<span class="pn">${esc(a.name)}</span>`+ICON_CHEV:me?`<span class="av">${ICON_USER}</span><span class="pn">Loading…</span>`:`<span class="av">${ICON_USER}</span><span class="pn">Log in with Discord</span>`;
+  $("profBtn").innerHTML=a?av(a)+`<span class="pn">${esc(a.name)}</span>`+ICON_CHEV:me?`<span class="av">${ICON_USER}</span><span class="pn">${profileFailed?"Profile unavailable":"Loading…"}</span>${ICON_CHEV}`:`<span class="av">${ICON_USER}</span><span class="pn">Log in with Discord</span>`;
   $("profMenu").innerHTML=me?'<button role="menuitem" data-act="edit">Edit profile</button><button role="menuitem" data-act="out">Log out</button>':"";
   document.querySelector("nav [data-p=devpage]").hidden=!isAdmin;
   showImport();
@@ -2133,7 +2134,7 @@ async function fetchAll(q){
   return out;
 }
 const refresh=()=>loadAll().then(()=>{render();pulseKeys=new Set()});
-let loadSeq=0;
+let loadSeq=0,profileFailed=false;
 async function loadAll(){
   if(!sb)return;
   const seq=++loadSeq;
@@ -2155,13 +2156,19 @@ async function loadAll(){
     /* a level that has just been approved gets the glow when effects are on */
     if(before&&active()){Object.keys(P).forEach(k=>{if(P[k]>=100&&!(before[k]>=100))pulseKeys.add(k)})}
     lastLoad=Date.now();netMsg("");
-  }catch(x){netMsg("Couldn’t load data from the server: "+(x.message||x))}
+  }catch(x){netMsg("Couldn’t reach the database right now ("+(x.message||x)+"). Try refreshing in a moment.")}
 }
 async function applySession(session){
   me=session?session.user:null;activeId=me?me.id:"";isAdmin=false;
   if(me&&sb){try{const {data}=await sb.rpc("is_admin");isAdmin=data===true}catch(x){}}
   await loadAll();
-  if(me&&!active()){for(let i=0;i<4&&!active();i++){await new Promise(r=>setTimeout(r,700));await loadAll()}}
+  profileFailed=false;
+  if(me&&sb&&!active()&&lastLoad){
+    /* logged in but no profile row yet: ask the database to create it, then look again */
+    try{await sb.rpc("ensure_profile")}catch(x){}
+    for(let i=0;i<3&&!active();i++){await loadAll();if(!active())await new Promise(r=>setTimeout(r,800))}
+    if(!active())profileFailed=true;
+  }
   if(!me&&view==="account")setView("home");
   if(!isAdmin&&view==="devview")setView("tracker");
   render();showDevTab();
