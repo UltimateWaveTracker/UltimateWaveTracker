@@ -1925,7 +1925,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261028-224702";
+const SITE_BUILD="20261029-222719";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2243,9 +2243,13 @@ async function tickLevel(k){
       delete PEND[k];render();return;
     }
     if(DRAFT[k]){
+      /* third click completes the cycle: green goes back to not started (the amber tick is cleared too) */
       const {error}=await sb.from("submission_drafts").delete().eq("user_id",a.id).eq("level_key",k);
       if(error)throw error;
-      delete DRAFT[k];render();return;
+      delete DRAFT[k];delete P[k];render();
+      const w=await sb.from("progress_wip").delete().eq("user_id",a.id).eq("level_key",k);
+      if(w.error){P[k]=50;render();throw w.error}
+      return;
     }
     if(P[k]===50){
       /* a green tick adds the level to the Submissions tab (it is sent for approval from there) */
