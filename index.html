@@ -170,15 +170,20 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 .tp{position:relative;cursor:default}
 .tip{display:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);z-index:5;background:#111;border:1px solid #555;border-radius:6px;padding:8px 12px;text-align:left;font-size:14px;font-weight:400;min-width:150px;max-height:240px;overflow:auto;color:var(--text);line-height:1.5}
 .tp:hover .tip,.tp:focus .tip{display:block}
+.lv.draft{background:#23883a;color:#fff;box-shadow:inset 0 0 0 2px #ffffff77}
+#subCount{margin-left:5px;font-size:.85em;opacity:.85}
+.drow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #0004}
+.drow b{flex:1 1 200px;min-width:0}.drow small{color:var(--mut);font-weight:400;margin-left:6px}
+.panel .drow input.dl{flex:2 1 260px;min-width:0}
+.panel .drow input.bad,.panel input.bad{border-color:#c0392b}
+.panel textarea{width:100%;min-height:90px;background:#2a2a2a;border:1px solid #555;border-radius:4px;padding:8px 10px;color:var(--text);font:inherit;box-sizing:border-box;resize:vertical}
+.subhd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.subhd input{flex:1 1 240px;min-width:0}
+.panel button.x{background:none;color:var(--mut);padding:2px 8px;font-size:20px;line-height:1;margin:0}
+.panel button.x:hover{color:#fff}
+.qnote{flex-basis:100%;color:var(--mut);font-size:.92em;white-space:pre-wrap;margin:-2px 0 2px}
 .lv.pend{background:#2d6a8f;color:#fff}
 .lv.rej{background:#8a2c2c;color:#fff}
-#subDlg{position:fixed;inset:0;z-index:60;background:#000a;display:flex;align-items:center;justify-content:center;padding:16px}
-#subDlg[hidden]{display:none}
-#subDlg .box{background:#2c2c2c;border:1px solid #484848;border-radius:8px;padding:18px;width:min(420px,100%)}
-#subDlg h3{margin:0 0 6px}
-#subDlg input{width:100%;margin:10px 0 6px;background:#2a2a2a;border:1px solid #555;border-radius:4px;padding:8px 10px;color:var(--text)}
-#subDlg button{margin:8px 8px 0 0;background:#e8e8e8;color:#222;border:0;padding:7px 14px;border-radius:4px;cursor:pointer;font-weight:600}
-#subDlg button.danger{background:#c0392b;color:#fff}
 .qbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
 .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0004}
 .qrow b{min-width:110px}.qrow span{flex:1;min-width:160px}.qrow small{color:var(--mut)}.qrow .qn{flex:1;min-width:140px}
@@ -194,6 +199,7 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
     <nav>
       <button id="navTracker" data-go="tracker" aria-pressed="false">Tracker</button>
       <button data-p="leaderboard" aria-pressed="false">Stats Viewer</button>
+      <button data-p="subpage" aria-pressed="false">Submissions<span id="subCount"></span></button>
       <button data-p="stats" aria-pressed="false">Stats</button>
       <button data-p="settings" aria-pressed="false">Settings</button>
       <button data-p="devpage" aria-pressed="false" hidden>Dev</button>
@@ -223,8 +229,9 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 <div id="newVer" role="status" hidden><span>A new version of the site is available.</span> <button type="button" id="newVerGo">Refresh now</button></div>
 <div id="netWarn" role="alert" hidden></div>
 <section id="stats" class="panel" hidden></section>
+<section id="subpage" class="panel wide" hidden></section>
 <section id="settings" class="panel" hidden>
-  <p>Your progress is saved to your Discord account, so it follows you to any device. Amber (in progress) ticks save straight away. Green (complete) ticks are sent to be approved first, and only appear on your profile and the Stats Viewer once approved.</p>
+  <p>Your progress is saved to your Discord account, so it follows you to any device. Amber (in progress) ticks save straight away. Green (complete) ticks are collected in your Submissions tab, where you can add footage links and notes and send them all for approval together. They only appear on your profile and the Stats Viewer once approved.</p>
   <button id="exp">Export progress</button>
   <div id="impOld" hidden><h3>Import from this browser</h3>
     <p>This browser still holds progress from the old local profiles. Pick one to bring it into your account. Complete levels are submitted for approval and in-progress ones are saved as amber.</p>
@@ -236,11 +243,6 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
   <button id="fx" role="switch" aria-checked="false">Experimental effects: Off</button>
   <p class="muted">Adds special effects to the tracker: tier banners glow when a level is approved, keep a soft glow once you reach a rank, and glow brighter when the whole tier is complete.</p>
 </section>
-<div id="subDlg" role="dialog" aria-modal="true" aria-label="Submit completion" hidden><div class="box">
-  <h3>Submit for approval</h3><p id="subName" class="muted"></p>
-  <input id="subEv" placeholder="Evidence link (optional), e.g. a video URL" maxlength="500" aria-label="Evidence link (optional)">
-  <p id="subErr" class="msg" role="alert"></p>
-  <button id="subGo">Submit</button><button id="subClear" class="danger">Remove progress</button><button id="subCancel">Cancel</button></div></div>
 <section id="home" class="page">
   <h2>Ultimate Wave Tracker</h2>
   <p>Welcome to the ultimate wave tracker, an online tracker + leaderboard designed to track your geometry dash skill progression with the wave gamemode</p>
@@ -1923,7 +1925,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261028-215157";
+const SITE_BUILD="20261028-224702";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -1946,7 +1948,7 @@ const LS2="lvl-tracker-v2"; /* old local accounts: only read, for the one-time i
 const SB_URL="https://rprczsfeafymltriawuk.supabase.co",SB_KEY="sb_publishable_-odlXG_gaExe2ffo4bws3Q_eXFw-SG8";
 let sb=null;
 try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}})}catch(e){}
-let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},me=null,isAdmin=false,oldProfiles=[],lastLoad=0;
+let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},DRAFT={},draftsOk=true,me=null,isAdmin=false,oldProfiles=[],lastLoad=0;
 try{const c=JSON.parse(localStorage.getItem("lvl-cur")||"null");if(c&&typeof c.c==="number")cur=c}catch(e){}
 function active(){return profiles.find(p=>p.id===activeId)||null}
 function loadOld(){
@@ -2009,13 +2011,13 @@ function render(){
   const tierHtml=t=>{
     const {b,n}=counts(c,s,t),r=rank(t,b,n);
     const rows=t.levels.map((l,li)=>{
-      const o=lv(l),k=key(c,s,t,l),v=pct(k),pe=PEND[k],pen=pe&&pe.status==="pending";
+      const o=lv(l),k=key(c,s,t,l),v=pct(k),pe=PEND[k],pen=pe&&pe.status==="pending",dr=!pe&&v<100&&DRAFT[k];
       const yt=o.yt||"https://www.youtube.com/results?search_query="+encodeURIComponent("Geometry Dash "+o.n+" wave");
-      return `<div class="lv${v>=100?" done":pe?(pen?" pend":" rej"):v>0?" prog":""}">
+      return `<div class="lv${v>=100?" done":pe?(pen?" pend":" rej"):dr?" draft":v>0?" prog":""}">
         <button data-copy="${esc(o.id||o.n)}" title="${o.id?"Copy ID "+esc(o.id):"Copy name"}" aria-label="${o.id?"Copy level ID":"Copy name"}">${ICON_COPY}</button>
         <button data-yt="${esc(yt)}" aria-label="Open video">${ICON_YT}</button>
         <span>${esc(o.n)}</span>
-        <button class="st" role="checkbox" aria-checked="${v>=100?"true":pe||v>0?"mixed":"false"}" title="${v>=100?"Complete (approved)":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
+        <button class="st" role="checkbox" aria-checked="${v>=100||dr?"true":pe||v>0?"mixed":"false"}" title="${v>=100?"Complete (approved)":dr?"Added to your Submissions tab. Click to remove":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100||dr?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
     const gl=r&&n>0&&b>=n?" g2":r?" g1":"";
     const pl=pulseKeys.size&&t.levels.some(l=>pulseKeys.has(key(c,s,t,l)))?" pulse":"";
     return `<div class="tier${gl}${pl}" style="--tc:${t.color}"><h2 style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${b}/${goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
@@ -2033,6 +2035,8 @@ function render(){
   if(view==="account")renderAccount();
   renderLB();
   renderStats(c);
+  const dn=Object.keys(DRAFT).length;$("subCount").textContent=dn?"("+dn+")":"";
+  if(view==="subs"&&!(document.activeElement&&$("subpage").contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))renderSubs();
   save();
 }
 
@@ -2062,8 +2066,8 @@ function toast(m){
   const el=$("toast");el.textContent=m;el.classList.add("show");
   clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1400);
 }
-$("lists").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cur.c=+b.dataset.c;cur.s=0;render()}};
-$("subs").onclick=e=>{const b=e.target.closest("[data-s]");if(b){cur.s=+b.dataset.s;render()}};
+$("lists").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cur.c=+b.dataset.c;cur.s=0;render();pushNav()}};
+$("subs").onclick=e=>{const b=e.target.closest("[data-s]");if(b){cur.s=+b.dataset.s;render();pushNav()}};
 $("grid").onclick=e=>{
   const st=e.target.closest(".st");
   if(st){
@@ -2087,16 +2091,31 @@ function showPanel(id){
   document.querySelectorAll("nav button[data-p]").forEach(x=>{const on=x.dataset.p===id;x.setAttribute("aria-pressed",String(on));$(x.dataset.p).hidden=!on});
 }
 /* Stats Viewer, Stats, Settings and Dev each open as their own page, replacing the tier lists. */
-const VIEWPANEL={stats:"leaderboard",lstats:"stats",settings:"settings",devview:"devpage"};
-const PANELVIEW={leaderboard:"stats",stats:"lstats",settings:"settings",devpage:"devview"};
+const VIEWPANEL={subs:"subpage",stats:"leaderboard",lstats:"stats",settings:"settings",devview:"devpage"};
+const PANELVIEW={subpage:"subs",leaderboard:"stats",stats:"lstats",settings:"settings",devpage:"devview"};
 function setView(v){
   view=v;document.body.dataset.view=v;
   ["home","resources","contact","account"].forEach(k=>$(k).hidden=k!==v);
   showPanel(VIEWPANEL[v]||"");
   $("navTracker").setAttribute("aria-pressed",String(v==="tracker"));
   if(v==="stats"&&sb&&Date.now()-lastLoad>5000)refresh();
+  if(v==="subs"){renderSubs();if(sb&&me&&Date.now()-lastLoad>5000)refresh()}
   window.scrollTo(0,0);
+  pushNav();
 }
+/* Browser back/forward: every page, list and difficulty the visitor opens becomes a history step. */
+let restoring=true;
+function pushNav(){
+  if(restoring)return;
+  const st={v:view,c:cur.c,s:cur.s},o=history.state;
+  if(o&&o.v===st.v&&o.c===st.c&&o.s===st.s)return;
+  try{history.pushState(st,"")}catch(e){}
+}
+window.addEventListener("popstate",e=>{
+  const st=e.state;if(!st||typeof st.v!=="string")return;
+  restoring=true;
+  try{cur.c=st.c;cur.s=st.s;render();setView(st.v)}finally{restoring=false}
+});
 $("navTracker").onclick=()=>setView("tracker");
 document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
   const p=b.dataset.p,on=b.getAttribute("aria-pressed")!=="true";
@@ -2171,10 +2190,11 @@ async function loadAll(){
   if(!sb)return;
   const seq=++loadSeq;
   try{
-    const [pr,ap,wp,mine]=await Promise.all([
+    const [pr,ap,wp,drs,mine]=await Promise.all([
       fetchAll((a,b)=>sb.from("profiles").select("id,name,avatar_url,title").order("id").range(a,b)),
       fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key").eq("status","approved").order("id").range(a,b)),
       fetchAll((a,b)=>sb.from("progress_wip").select("user_id,level_key").order("user_id").order("level_key").range(a,b)),
+      me?fetchAll((a,b)=>sb.from("submission_drafts").select("level_key,evidence").eq("user_id",me.id).order("level_key").range(a,b)).catch(()=>{draftsOk=false;return null}):Promise.resolve([]),
       me?fetchAll((a,b)=>sb.from("submissions").select("id,level_key,status,note,evidence").eq("user_id",me.id).in("status",["pending","rejected"]).order("id").range(a,b)):Promise.resolve([])
     ]);
     if(seq!==loadSeq)return;
@@ -2182,6 +2202,7 @@ async function loadAll(){
     wp.forEach(r=>{const p=byId.get(r.user_id);if(p)p.P[r.level_key]=50});
     ap.forEach(r=>{const p=byId.get(r.user_id);if(p)p.P[r.level_key]=100});
     const before=active()?{...active().P}:null;
+    DRAFT={};if(drs){draftsOk=true;drs.forEach(r=>{DRAFT[r.level_key]={evidence:r.evidence||""}})}
     PEND={};mine.forEach(r=>{PEND[r.level_key]={status:r.status,note:r.note,evidence:r.evidence}});
     profiles=[...byId.values()];
     P=active()?active().P:{};
@@ -2206,7 +2227,7 @@ async function applySession(session){
   render();showDevTab();
   pulseKeys=new Set();
   /* only tidy the ?code= from the address once the log-in library has used it */
-  if(/[?&]code=/.test(location.search)){try{history.replaceState({},"",location.pathname)}catch(e){}}
+  if(/[?&]code=/.test(location.search)){try{history.replaceState(history.state,"",location.pathname)}catch(e){}}
 }
 
 /* ---------- Ticking levels ---------- */
@@ -2221,39 +2242,111 @@ async function tickLevel(k){
       if(error)throw error;
       delete PEND[k];render();return;
     }
-    if(P[k]===50){openSubmit(k);return}
+    if(DRAFT[k]){
+      const {error}=await sb.from("submission_drafts").delete().eq("user_id",a.id).eq("level_key",k);
+      if(error)throw error;
+      delete DRAFT[k];render();return;
+    }
+    if(P[k]===50){
+      /* a green tick adds the level to the Submissions tab (it is sent for approval from there) */
+      const {error}=await sb.from("submission_drafts").insert({user_id:a.id,level_key:k});
+      if(error&&error.code!=="23505")throw error;
+      DRAFT[k]={evidence:""};render();
+      toast("Added to your Submissions tab");return;
+    }
     P[k]=50;render();
     const {error}=await sb.from("progress_wip").insert({user_id:a.id,level_key:k});
     if(error&&error.code!=="23505"){delete P[k];render();throw error}
   }catch(x){toast("Couldn’t save: "+(x.message||x))}
 }
-let subKey="";
-function openSubmit(k){
-  subKey=k;$("subName").textContent=levelNames()[k]||k;$("subEv").value="";$("subErr").textContent="";
-  $("subDlg").hidden=false;$("subEv").focus();
+/* ---------- Submissions tab ---------- */
+let subNoteTimer=0,subBusy=false;
+const noteKey=()=>"lvl-subnote-"+(me?me.id:"");
+const getNote=()=>{try{return localStorage.getItem(noteKey())||""}catch(e){return""}};
+const setNote=v=>{try{if(v)localStorage.setItem(noteKey(),v);else localStorage.removeItem(noteKey())}catch(e){}};
+const okLink=v=>!v||/^https?:\/\//i.test(v);
+function levelLists(){
+  const m={};
+  DATA.forEach(c=>c.subs.forEach(sb=>sb.tiers.forEach(t=>t.levels.forEach(l=>{const k=lk(lv(l));if(!(k in m))m[k]=c.name}))));
+  return m;
 }
-function closeSubmit(){$("subDlg").hidden=true;subKey=""}
-async function doSubmit(){
-  const a=active(),k=subKey,ev=$("subEv").value.trim(),err=m=>{$("subErr").textContent=m};
-  if(!a||!k)return;
-  if(ev&&!/^https?:\/\//i.test(ev))return err("The evidence must be a link starting with http:// or https://");
-  $("subGo").disabled=true;
-  const {error}=await sb.from("submissions").insert({user_id:a.id,level_key:k,evidence:ev});
-  $("subGo").disabled=false;
-  if(error&&error.code!=="23505")return err("Couldn’t submit: "+error.message);
-  await sb.from("progress_wip").delete().eq("user_id",a.id).eq("level_key",k);
-  delete P[k];PEND[k]={status:"pending",note:"",evidence:ev};
-  closeSubmit();render();toast("Submitted for approval");
+function renderSubs(){
+  const el=$("subpage");if(!el)return;
+  if(!me){el.innerHTML='<h2>Submissions</h2><p class="muted">Log in with Discord (top right) to track your progress and submit completions.</p>';return}
+  if(!active()){el.innerHTML='<h2>Submissions</h2><p class="muted">Your profile is still loading…</p>';return}
+  const names=levelNames(),lists=levelLists();
+  const keys=Object.keys(names).filter(k=>DRAFT[k]);
+  const pend=Object.keys(PEND).filter(k=>PEND[k].status==="pending"),rej=Object.keys(PEND).filter(k=>PEND[k].status==="rejected");
+  const row=k=>`<div class="drow" data-k="${esc(k)}"><b>${esc(names[k]||k)}<small>${esc(lists[k]||"")}</small></b><input class="dl" type="url" maxlength="500" placeholder="Footage link (optional)" aria-label="Footage link for ${esc(names[k]||k)}" value="${esc(DRAFT[k].evidence)}"><button class="x" data-rm="${esc(k)}" aria-label="Remove ${esc(names[k]||k)} from submissions" title="Remove from submissions">×</button></div>`;
+  const old=(k,rejd)=>`<div class="drow" data-k="${esc(k)}"><b>${esc(names[k]||k)}<small>${esc(lists[k]||"")}</small></b>${rejd&&PEND[k].note?`<span class="muted">${esc(PEND[k].note)}</span>`:""}<button data-wd="${esc(k)}">${rejd?"Remove":"Withdraw"}</button></div>`;
+  el.innerHTML=`<h2>Submissions</h2>
+    ${draftsOk?"":'<p class="msg">Submissions aren’t set up on the server yet (the admin needs to run the latest database script).</p>'}
+    <p class="muted">Tick a level green on the tracker and it is added here. Add footage links and any notes, then send everything for approval together.</p>
+    <h3>Ready to submit (${keys.length})</h3>
+    ${keys.length?`<div class="subhd"><input id="subAll" type="url" maxlength="500" placeholder="One link for several levels (e.g. a playlist)" aria-label="One link for all levels without a link"><button id="subFill">Apply to levels without a link</button></div>
+      ${keys.map(row).join("")}
+      <h3>Notes</h3><textarea id="subNote" maxlength="1000" placeholder="Anything the admin should know (optional)" aria-label="Notes for the admin">${esc(getNote())}</textarea>
+      <p><button id="subGo">Submit ${keys.length} level${keys.length===1?"":"s"} for approval</button></p>`
+    :'<p class="muted">Nothing here yet.</p>'}
+    <p id="subErr" class="msg" role="status"></p>
+    ${pend.length?`<h3>Waiting for approval (${pend.length})</h3>${pend.map(k=>old(k,false)).join("")}`:""}
+    ${rej.length?`<h3>Rejected (${rej.length})</h3>${rej.map(k=>old(k,true)).join("")}`:""}`;
 }
-async function clearProgress(){
-  const a=active(),k=subKey;if(!a||!k)return;
-  delete P[k];closeSubmit();render();
-  const {error}=await sb.from("progress_wip").delete().eq("user_id",a.id).eq("level_key",k);
-  if(error)toast("Couldn’t remove: "+error.message);
+let linkTimer={};
+function saveLink(k){
+  clearTimeout(linkTimer[k]);
+  linkTimer[k]=setTimeout(async()=>{
+    const a=active(),d=DRAFT[k];if(!a||!d||!okLink(d.evidence))return;
+    const {error}=await sb.from("submission_drafts").update({evidence:d.evidence}).eq("user_id",a.id).eq("level_key",k);
+    if(error)$("subErr")&&($("subErr").textContent="Couldn’t save a link: "+error.message);
+  },700);
 }
-$("subGo").onclick=doSubmit;$("subClear").onclick=clearProgress;$("subCancel").onclick=closeSubmit;
-$("subEv").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();doSubmit()}};
-$("subDlg").onclick=e=>{if(e.target.id==="subDlg")closeSubmit()};
+$("subpage").oninput=e=>{
+  const t=e.target;
+  if(t.classList.contains("dl")){
+    const k=t.closest(".drow").dataset.k,v=t.value.trim();
+    if(!DRAFT[k])return;
+    DRAFT[k].evidence=v;t.classList.toggle("bad",!okLink(v));saveLink(k);
+  }else if(t.id==="subNote")setNote(t.value);
+};
+$("subpage").onclick=async e=>{
+  const t=e.target.closest("button");if(!t)return;
+  const a=active(),err=m=>{$("subErr").textContent=m};
+  if(t.dataset.rm||t.dataset.wd){
+    const k=t.dataset.rm||t.dataset.wd;
+    await tickLevel(k);renderSubs();return;
+  }
+  if(t.id==="subFill"){
+    const v=$("subAll").value.trim();
+    if(!v)return err("Paste a link first.");
+    if(!okLink(v)||!v)return err("Links must start with http:// or https://");
+    const ks=Object.keys(DRAFT).filter(k=>!DRAFT[k].evidence);
+    ks.forEach(k=>{DRAFT[k].evidence=v;saveLink(k)});
+    renderSubs();$("subErr").textContent=ks.length?"Applied to "+ks.length+" level"+(ks.length===1?"":"s")+".":"Every level already has a link.";return;
+  }
+  if(t.id==="subGo"&&a&&!subBusy){
+    const ks=Object.keys(DRAFT);
+    if(!ks.length)return;
+    const bad=ks.filter(k=>!okLink(DRAFT[k].evidence));
+    if(bad.length)return err("Fix the highlighted links first. Links must start with http:// or https://");
+    subBusy=true;t.disabled=true;err("Submitting…");
+    try{
+      Object.values(linkTimer).forEach(clearTimeout);
+      const rows=ks.map(k=>({user_id:a.id,level_key:k,evidence:DRAFT[k].evidence}));
+      for(let i=0;i<rows.length;i+=500){
+        const {error}=await sb.from("submission_drafts").upsert(rows.slice(i,i+500),{onConflict:"user_id,level_key"});
+        if(error)throw error;
+      }
+      const note=($("subNote")?$("subNote").value:getNote()).trim();
+      const {data,error}=await sb.rpc("submit_drafts",{p_note:note});
+      if(error)throw error;
+      ks.forEach(k=>{PEND[k]={status:"pending",note:"",evidence:DRAFT[k].evidence};delete P[k]});
+      DRAFT={};setNote("");render();renderSubs();
+      $("subErr").textContent="";toast("Submitted "+(data??ks.length)+" level"+((data??ks.length)===1?"":"s")+" for approval");
+    }catch(x){subBusy=false;const b=$("subGo");if(b)b.disabled=false;err("Couldn’t submit: "+(x.message||x));return}
+    subBusy=false;
+  }
+};
 
 /* ---------- Import progress from the old local profiles ---------- */
 function showImport(){
@@ -2287,7 +2380,7 @@ async function renderDev(){
   if(!isAdmin){el.innerHTML='<p class="muted">Admins only.</p>';return}
   el.innerHTML='<p class="muted">Loading…</p>';
   try{
-    qRows=await fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key,evidence,status,note,created_at").eq("status",qStatus).order("id").range(a,b));
+    qRows=await fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key,evidence,status,note,player_note,created_at").eq("status",qStatus).order("id").range(a,b)).catch(()=>fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key,evidence,status,note,created_at").eq("status",qStatus).order("id").range(a,b)));
   }catch(x){el.innerHTML='<p class="msg">Couldn’t load submissions: '+esc(x.message||x)+'</p>';return}
   drawQueue();
 }
@@ -2302,7 +2395,7 @@ function drawQueue(){
     <label>Player <select id="qUser"><option value="all">All</option>${users.map(u=>`<option value="${esc(u)}"${u===qUser?" selected":""}>${esc(pn.get(u)||"Unknown")}</option>`).join("")}</select></label>
     <button id="qRefresh">Refresh</button>${qStatus==="pending"&&shown.length?`<button id="qAll">Approve all shown (${shown.length})</button>`:""}</div>
     <p class="muted">${shown.length} ${qStatus}</p>
-    ${shown.map(r=>`<div class="qrow" data-id="${r.id}"><b>${esc(pn.get(r.user_id)||"Unknown")}</b><span>${esc(names[r.level_key]||r.level_key)}</span>${r.evidence?`<a href="${esc(r.evidence)}" target="_blank" rel="noopener noreferrer">evidence</a>`:'<em class="muted">no evidence</em>'}<small>${esc(new Date(r.created_at).toLocaleDateString())}</small>${btns}</div>`).join("")}
+    ${shown.map((r,i)=>(r.player_note&&(i===0||shown[i-1].user_id!==r.user_id||shown[i-1].player_note!==r.player_note)?`<div class="qrow"><div class="qnote"><strong>${esc(pn.get(r.user_id)||"Unknown")}’s note:</strong> ${esc(r.player_note)}</div></div>`:"")+`<div class="qrow" data-id="${r.id}"><b>${esc(pn.get(r.user_id)||"Unknown")}</b><span>${esc(names[r.level_key]||r.level_key)}</span>${r.evidence?`<a href="${esc(r.evidence)}" target="_blank" rel="noopener noreferrer">evidence</a>`:'<em class="muted">no evidence</em>'}<small>${esc(new Date(r.created_at).toLocaleDateString())}</small>${btns}</div>`).join("")}
     <p id="devmsg" class="msg" role="status"></p>`;
 }
 async function qAct(ids,status,note){
@@ -2576,6 +2669,8 @@ $("newVerGo").onclick=()=>location.reload();
 showDevTab();
 render();
 setView(/[?&]code=/.test(location.search)?"tracker":"home");
+try{history.replaceState({v:view,c:cur.c,s:cur.s},"")}catch(e){}
+restoring=false;
 if(sb){
   sb.auth.onAuthStateChange((ev,session)=>{
     if(ev==="INITIAL_SESSION"||ev==="SIGNED_IN"||ev==="SIGNED_OUT"||ev==="USER_UPDATED")setTimeout(()=>applySession(session),0);
