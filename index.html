@@ -233,6 +233,7 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 <section id="settings" class="panel" hidden>
   <p>Your progress is saved to your Discord account, so it follows you to any device. Amber (in progress) ticks save straight away. Green (complete) ticks are collected in your Submissions tab, where you can add footage links and notes and send them all for approval together. They only appear on your profile and the Stats Viewer once approved.</p>
   <button id="exp">Export progress</button>
+  <p class="muted">Site version: <span id="verTxt"></span></p>
   <div id="impOld" hidden><h3>Import from this browser</h3>
     <p>This browser still holds progress from the old local profiles. Pick one to bring it into your account. Complete levels are submitted for approval and in-progress ones are saved as amber.</p>
     <select id="impSel" aria-label="Old profile"></select> <button id="impGo">Import</button><p id="impMsg" class="msg" role="status"></p></div>
@@ -1925,7 +1926,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261030-093850";
+const SITE_BUILD="20261030-225633";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -1934,16 +1935,24 @@ async function serverBuild(){
     return m?m[1]:null;
   }catch(e){return null}
 }
-async function checkVersion(first){
+/* Load the newest copy by opening the page under a brand-new address, so no browser or CDN cache can hand back the old file. */
+function loadNewest(b){
+  try{sessionStorage.setItem("lvl-reload",String(Date.now()))}catch(e){}
+  location.replace(location.pathname+"?v="+encodeURIComponent(b));
+}
+async function checkVersion(mode){
+  /* never interrupt the Discord log-in hand-back */
+  if(/[?&]code=/.test(location.search))return;
   const b=await serverBuild();
   if(!b||b===SITE_BUILD)return;
   let tried=0;try{tried=+sessionStorage.getItem("lvl-reload")||0}catch(e){}
-  if(first&&Date.now()-tried>60000){
-    try{sessionStorage.setItem("lvl-reload",String(Date.now()))}catch(e){}
-    location.reload();return;
-  }
-  $("newVer").hidden=false;
+  const typing=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  /* on opening, or coming back to the tab: update straight away (but not repeatedly, and not while typing) */
+  if(mode!=="timer"&&!typing&&Date.now()-tried>60000){loadNewest(b);return}
+  $("newVer").hidden=false;$("newVerGo").dataset.b=b;
 }
+/* drop the ?v= address once it has done its job */
+if(/[?&]v=/.test(location.search)){try{const u=new URLSearchParams(location.search);u.delete("v");const q=u.toString();history.replaceState(history.state,"",location.pathname+(q?"?"+q:"")+location.hash)}catch(e){}}
 const LS2="lvl-tracker-v2"; /* old local accounts: only read, for the one-time import in Settings */
 const SB_URL="https://rprczsfeafymltriawuk.supabase.co",SB_KEY="sb_publishable_-odlXG_gaExe2ffo4bws3Q_eXFw-SG8";
 let sb=null;
@@ -2668,10 +2677,12 @@ $("lbprofile").onclick=e=>{
   else return;
   renderLB();
 };
-checkVersion(true);
-setInterval(()=>checkVersion(false),600000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkVersion(false)});
-$("newVerGo").onclick=()=>location.reload();
+checkVersion("open");
+setInterval(()=>checkVersion("timer"),600000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkVersion("resume")});
+window.addEventListener("pageshow",e=>{if(e.persisted)checkVersion("resume")});
+{const v=$("verTxt");if(v)v.textContent=SITE_BUILD}
+$("newVerGo").onclick=e=>{const b=e.currentTarget.dataset.b;if(b)loadNewest(b);else location.reload()};
 showDevTab();
 render();
 setView(/[?&]code=/.test(location.search)?"tracker":"home");
