@@ -1925,7 +1925,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261029-222719";
+const SITE_BUILD="20261030-093850";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -1989,7 +1989,9 @@ const ICON_X='<svg viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.600 5 19 6.400
 const ICON_DASH='<svg viewBox="0 0 24 24"><path d="M5 11h14v2H5z"/></svg>';
 const ICON_YT='<svg viewBox="0 0 24 24"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800C22 15.200 22 12 22 12s0-3.200-.4-4.800zM10 15V9l5.200 3-5.200 3z"/></svg>';
 
-function counts(c,s,t){const b=t.levels.filter(l=>pct(key(c,s,t,l))>=100).length;return{b,n:t.levels.length}}
+/* Your own tracker counts every green tick, including ones waiting in Submissions or for approval.
+   The Stats Viewer and profiles use approved levels only (see stats()). */
+function counts(c,s,t){const b=t.levels.filter(l=>{const k=key(c,s,t,l);return pct(k)>=100||DRAFT[k]||(PEND[k]&&PEND[k].status==="pending")}).length;return{b,n:t.levels.length}}
 /* What the counter shows as its total: the Achieved number first, then the Plus number once Achieved is earned. */
 function goal(t,b,n){return t.achieved&&t.plus?(b>=t.achieved?t.plus:t.achieved):n}
 function rank(t,b,n){
