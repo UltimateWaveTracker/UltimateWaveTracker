@@ -205,7 +205,7 @@ body.gfx #subs button[aria-selected=true]{border-color:#e8e8e8;box-shadow:0 2px 
 body.gfx .divider{letter-spacing:.04em}
 body.gfx .divider::before,body.gfx .divider::after{height:1px;background:#4a4a4a}
 body.gfx .tier{border-radius:10px;border:1px solid #444;box-shadow:0 6px 18px #0006}
-body.gfx .tier h2{border-radius:9px 9px 0 0;background-image:linear-gradient(#ffffff26,#ffffff00 75%)!important;border-bottom:1px solid #0003}
+body.gfx .tier h2{border-radius:9px 9px 0 0;border-bottom:1px solid #0003}
 body.gfx .tier .list{padding:6px}
 body.gfx .lv{border-radius:6px;margin-bottom:4px}
 body.gfx .lv:last-child{margin-bottom:0}
@@ -292,7 +292,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
   <button id="fx" role="switch" aria-checked="false">Experimental effects: Off</button>
   <p class="muted">Adds special effects to the tracker: tier banners glow when a level is approved, keep a soft glow once you reach a rank, and glow brighter when the whole tier is complete.</p>
   <button id="gfx" role="switch" aria-checked="false">Experimental graphics: Off</button>
-  <p class="muted">A visual polish pass: rounded tier cards with soft shadows and a subtle sheen on tier banners, smoother hover effects, tidier menus, search box and panels, and neater dividers.</p>
+  <p class="muted">A visual polish pass: rounded tier cards with soft shadows, smoother hover effects, tidier menus, search box and panels, and neater dividers.</p>
 </section>
 <section id="home" class="page">
   <h2>Ultimate Wave Tracker</h2>
@@ -1976,7 +1976,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261030-234220";
+const SITE_BUILD="20261031-001128";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2065,12 +2065,15 @@ function rank(t,b,n){
 
 function render(){
   const c=DATA[cur.c]||DATA[0];if(!DATA[cur.c])cur.c=0;
-  if(!c.subs[cur.s])cur.s=0;
+  /* difficulty pages with no tiers yet stay hidden until a tier is added (unless every page is empty) */
+  const shown=c.subs.map((x,i)=>i).filter(i=>c.subs[i].tiers.length);
+  const vis=shown.length?shown:c.subs.map((x,i)=>i);
+  if(!c.subs[cur.s]||!vis.includes(cur.s))cur.s=vis[0]||0;
   let s=c.subs[cur.s];
   /* Condensed mode: every difficulty's tiers are shown together on one page. */
   if(condOn)s={name:"All",condensed:true,tiers:c.subs.flatMap(x=>x.tiers),sections:[...new Set(c.subs.flatMap(x=>x.sections||["Sub tier","Bonus"]))]};
   $("lists").innerHTML=DATA.map((d,i)=>`<button role="tab" data-c="${i}" aria-selected="${i===cur.c}">${esc(d.name)}</button>`).join("");
-  $("subs").innerHTML=!condOn&&c.subs.length>1?c.subs.map((x,i)=>`<button role="tab" data-s="${i}" aria-selected="${!condOn&&i===cur.s}">${esc(x.name)}</button>`).join(""):"";
+  $("subs").innerHTML=!condOn&&vis.length>1?vis.map(i=>`<button role="tab" data-s="${i}" aria-selected="${i===cur.s}">${esc(c.subs[i].name)}</button>`).join(""):"";
   const tierHtml=t=>{
     const {b,n}=counts(c,s,t),r=rank(t,b,n);
     const rows=t.levels.map((l,li)=>{
