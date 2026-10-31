@@ -216,6 +216,7 @@ body.gfx .lv .st{border-radius:6px}
 body.gfx .lv .st:hover{background:#ffffff18}
 body.gfx .panel{border-radius:10px;border:1px solid #444;box-shadow:0 6px 18px #0005}
 body.gfx #account .panel{box-shadow:none}
+body.gfx section.panel{margin-top:22px}
 body.gfx .panel button,body.gfx .panel label.b{border-radius:6px}
 body.gfx .panel button:hover,body.gfx .panel label.b:hover{filter:brightness(1.1)}
 body.gfx .panel input:not([type=file]),body.gfx .panel select,body.gfx .panel textarea{border-radius:6px}
@@ -1976,7 +1977,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261031-001128";
+const SITE_BUILD="20261031-011422";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
