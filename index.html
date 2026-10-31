@@ -1977,7 +1977,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261031-011422";
+const SITE_BUILD="20261031-012604";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2095,9 +2095,14 @@ function render(){
   if(!names.includes("Bonus"))names.push("Bonus");
   s.tiers.forEach(t=>{if(!names.includes(sec(t)))names.push(sec(t))});
   const groups=names.map(n=>[n,s.tiers.filter(t=>sec(t)===n)]).filter(g=>g[1].length||keep.includes(g[0]));
+  /* remember how far each scrollable tier was scrolled, so ticking a level doesn't throw it back to the top */
+  const gridKey=cur.c+":"+(condOn?"c":cur.s);
+  const keepScroll=gridKey===render.lastKey?[...document.querySelectorAll("#grid .tier .list")].map(x=>x.scrollTop):[];
+  render.lastKey=gridKey;
   $("grid").innerHTML=s.tiers.length?
     groups.map(([n,ts],i)=>`<div class="divider${i?"":" first"}"><span>${esc(n)}</span></div><div class="tiers">${ts.map(tierHtml).join("")}</div>`).join("")
     :'<p class="empty">No tiers here yet. Add some from the Dev page’s Tier manager.</p>';
+  if(keepScroll.length)document.querySelectorAll("#grid .tier .list").forEach((x,i)=>{if(keepScroll[i])x.scrollTop=keepScroll[i]});
   renderProfile();
   if(view==="account")renderAccount();
   renderLB();
