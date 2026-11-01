@@ -1977,7 +1977,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261101-210542";
+const SITE_BUILD="20261101-215732";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2221,7 +2221,7 @@ function closeMenu(){$("profMenu").hidden=true;$("profBtn").setAttribute("aria-e
 const netMsg=t=>{const w=$("netWarn");w.textContent=t||"";w.hidden=!t};
 /* Log in with Discord WITHOUT the email permission: Discord is asked for "identify" only, and a small Supabase Edge Function
    (discord-login) swaps the one-time code for a session. If that function isn't deployed, the old built-in Supabase login is used. */
-const FN_URL=SB_URL+"/functions/v1/discord-login";
+const FN_URL=SB_URL+"/functions/v1/super-action"; /* the name Supabase gave the function when it was created */
 async function loginDiscord(){
   if(!sb)return netMsg("The log-in service couldn’t be loaded. Check your connection and refresh the page.");
   let cfg=null;
