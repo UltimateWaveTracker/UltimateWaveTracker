@@ -1977,7 +1977,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261031-012604";
+const SITE_BUILD="20261101-210542";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2219,10 +2219,48 @@ function renderProfile(){
 }
 function closeMenu(){$("profMenu").hidden=true;$("profBtn").setAttribute("aria-expanded","false")}
 const netMsg=t=>{const w=$("netWarn");w.textContent=t||"";w.hidden=!t};
+/* Log in with Discord WITHOUT the email permission: Discord is asked for "identify" only, and a small Supabase Edge Function
+   (discord-login) swaps the one-time code for a session. If that function isn't deployed, the old built-in Supabase login is used. */
+const FN_URL=SB_URL+"/functions/v1/discord-login";
 async function loginDiscord(){
   if(!sb)return netMsg("The log-in service couldn’t be loaded. Check your connection and refresh the page.");
+  let cfg=null;
+  try{
+    const ac=new AbortController(),t=setTimeout(()=>ac.abort(),3500);
+    const r=await fetch(FN_URL,{signal:ac.signal});clearTimeout(t);
+    if(r.ok)cfg=await r.json();
+  }catch(e){}
+  if(cfg&&cfg.ok&&cfg.client_id&&cfg.redirect_uri){
+    try{
+      const a=new Uint8Array(16);crypto.getRandomValues(a);
+      const st="dc."+[...a].map(x=>x.toString(16).padStart(2,"0")).join("");
+      sessionStorage.setItem("lvl-oauth-state",st);
+      location.assign("https://discord.com/oauth2/authorize?"+new URLSearchParams({client_id:cfg.client_id,response_type:"code",scope:"identify",redirect_uri:cfg.redirect_uri,state:st}));
+      return;
+    }catch(e){/* storage blocked: fall back to the built-in login below */}
+  }
   const {error}=await sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
   if(error)netMsg("Couldn’t start the Discord log-in: "+error.message);
+}
+/* Discord sends the player back here with ?code=…&state=dc.… : check it is our own request, then trade the code for a session. */
+async function finishDiscordLogin(){
+  const q=new URLSearchParams(location.search),st=q.get("state"),code=q.get("code");
+  if(!st||!st.startsWith("dc.")||!(code||q.get("error")))return;
+  let want="";try{want=sessionStorage.getItem("lvl-oauth-state")||"";sessionStorage.removeItem("lvl-oauth-state")}catch(e){}
+  const denied=q.get("error");
+  ["code","state","error","error_description"].forEach(k=>q.delete(k));
+  try{history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash)}catch(e){}
+  if(denied)return toast("Log-in cancelled.");
+  if(!want||want!==st)return toast("That log-in didn’t start in this browser window. Please try again.");
+  netMsg("Logging you in…");
+  try{
+    const r=await fetch(FN_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.access_token||!d.refresh_token)throw new Error(d.error||"Log-in failed");
+    const {error}=await sb.auth.setSession({access_token:d.access_token,refresh_token:d.refresh_token});
+    if(error)throw error;
+    netMsg("");
+  }catch(x){netMsg("Couldn’t log in: "+(x.message||x))}
 }
 function openLogin(){toast("Log in with Discord (top right) to track your progress")}
 $("profBtn").onclick=e=>{
@@ -2753,6 +2791,7 @@ if(sb){
     if(ev==="INITIAL_SESSION"||ev==="SIGNED_IN"||ev==="SIGNED_OUT"||ev==="USER_UPDATED")setTimeout(()=>applySession(session),0);
   });
   window.addEventListener("focus",()=>{if(me&&Date.now()-lastLoad>30000)refresh()});
+  finishDiscordLogin();
 }else netMsg("The log-in service couldn’t be loaded. Check your connection and refresh the page.");
 </script>
 </body>
