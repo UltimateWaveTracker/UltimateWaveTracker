@@ -171,6 +171,10 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 .tp{position:relative;cursor:default}
 .tip{display:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);z-index:5;background:#111;border:1px solid #555;border-radius:6px;padding:8px 12px;text-align:left;font-size:14px;font-weight:400;min-width:150px;max-height:240px;overflow:auto;color:var(--text);line-height:1.5}
 .tp:hover .tip,.tp:focus .tip{display:block}
+.tier h2{position:relative;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.tier h2::after{content:"";position:absolute;inset:0;background:currentColor;opacity:.2;transform:scaleX(0);transform-origin:left;pointer-events:none}
+.tier h2.holding::after{transform:scaleX(1);transition:transform 1.8s linear}
+@media (prefers-reduced-motion:reduce){.tier h2.holding::after{transition:none;transform:scaleX(1);opacity:.12}}
 .lv.draft{background:#23883a;color:#fff;box-shadow:inset 0 0 0 2px #ffffff77}
 #subCount{margin-left:5px;font-size:.85em;opacity:.85}
 .drow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #0004}
@@ -182,13 +186,8 @@ details.tm summary{cursor:pointer;font-weight:600;display:flex;align-items:cente
 .subhd input{flex:1 1 240px;min-width:0}
 .panel button.x{background:none;color:var(--mut);padding:2px 8px;font-size:20px;line-height:1;margin:0}
 .panel button.x:hover{color:#fff}
-.qnote{flex-basis:100%;color:var(--mut);font-size:.92em;white-space:pre-wrap;margin:-2px 0 2px}
 .lv.pend{background:#2d6a8f;color:#fff}
 .lv.rej{background:#8a2c2c;color:#fff}
-.qbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.qrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0004}
-.qrow b{min-width:110px}.qrow span{flex:1;min-width:160px}.qrow small{color:var(--mut)}.qrow .qn{flex:1;min-width:140px}
-.qrow a{color:#6ab0ff}
 /* --- experimental graphics (off by default; Settings > Experimental) --- */
 body.gfx *{scrollbar-width:thin;scrollbar-color:#555 transparent}
 body.gfx header{border-bottom:1px solid #333;box-shadow:0 2px 10px #0004}
@@ -237,6 +236,49 @@ body.gfx .tile:hover{transform:translateY(-3px);box-shadow:0 8px 22px #0007,0 0 
 body.gfx #profMenu,body.gfx #loginBox{border-radius:10px}
 body.gfx #netWarn,body.gfx #storeWarn{border-radius:8px}
 body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
+/* admin approval queue */
+#dev .qbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+#dev .qseg{display:inline-flex;background:#2a2a2a;border:1px solid #555;border-radius:8px;padding:3px;gap:3px}
+#dev .qseg button{background:none;color:var(--mut);border:0;margin:0;padding:6px 14px;border-radius:6px;font-weight:600;cursor:pointer}
+#dev .qseg button[aria-selected=true]{background:#e8e8e8;color:#222}
+#dev button.qb{margin:0;padding:6px 12px;border-radius:6px;font-weight:600;border:0;cursor:pointer;background:#4a4a4a;color:#eee;white-space:nowrap}
+#dev button.qb:hover{filter:brightness(1.15)}
+#dev button.qok{background:#2c9f3a;color:#fff}
+#dev button.qno{background:#b23a2e;color:#fff}
+#dev button.qb.armed{background:#f0a800;color:#1a1200}
+#dev button.qb:disabled{opacity:.5;cursor:default}
+#dev .qp{background:#2c2c2c;border:1px solid #474747;border-radius:10px;margin:12px 0;overflow:hidden}
+#dev .qph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;cursor:pointer;list-style:none;background:#333;font-size:17px}
+#dev .qph::-webkit-details-marker{display:none}
+#dev .qph::before{content:"▸";color:var(--mut);transition:transform .15s}
+#dev .qp[open] .qph::before{transform:rotate(90deg)}
+#dev .qph .av{width:30px;height:30px}
+#dev .qbadge{background:#6ab0ff;color:#0d1b2a;font-weight:700;font-size:13px;padding:2px 9px;border-radius:999px}
+#dev .qmeta{color:var(--mut);font-size:13px;margin-left:auto}
+#dev .qpb{padding:10px 14px 14px}
+#dev .qnotes{background:#26313d;border-left:3px solid #6ab0ff;border-radius:6px;padding:8px 12px;margin-bottom:10px;white-space:pre-wrap}
+#dev .qnotes span{display:block;font-size:12px;font-weight:700;color:#6ab0ff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+#dev .qpact{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+#dev .qpact .qreason{flex:1 1 220px;min-width:0}
+#dev .qt{border:1px solid #444;border-left:4px solid var(--tc);border-radius:8px;margin-top:10px;overflow:hidden}
+#dev .qth{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px;text-shadow:0 1px 2px #0005}
+#dev .qth b{font-size:16px}
+#dev .qtag{font-size:12px;font-weight:600;opacity:.85}
+#dev .qcount{background:#0003;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
+#dev .qthb{margin-left:auto;display:flex;gap:6px;text-shadow:none}
+#dev .qthb .qb{padding:3px 9px;font-size:13px}
+#dev .qr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 10px;border-top:1px solid #0003}
+#dev .qr:nth-child(odd){background:#ffffff05}
+#dev .qr:hover{background:#ffffff0c}
+#dev .qn{flex:1 1 160px;font-weight:600;min-width:0}
+#dev .qev{color:#6ab0ff;text-decoration:none;background:#6ab0ff1a;border-radius:6px;padding:2px 8px;font-size:13px;white-space:nowrap}
+#dev .qev:hover{background:#6ab0ff33}
+#dev .qev.none{color:var(--mut);background:none}
+#dev .qr small{color:var(--mut);min-width:48px}
+#dev .qrb{display:flex;gap:6px}
+#dev .qrb .qb{padding:3px 10px;font-size:13px}
+#dev .qrn{flex-basis:100%;color:#e8a29b;font-size:13px}
+@media (max-width:600px){#dev .qmeta{margin-left:0;flex-basis:100%}#dev .qthb{margin-left:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
@@ -281,19 +323,19 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 <section id="subpage" class="panel wide" hidden></section>
 <section id="settings" class="panel" hidden>
   <p>Your progress is saved to your Discord account, so it follows you to any device. Amber (in progress) ticks save straight away. Green (complete) ticks are collected in your Submissions tab, where you can add footage links and notes and send them all for approval together. They only appear on your profile and the Stats Viewer once approved.</p>
-  <button id="exp">Export progress</button>
-  <p class="muted">Site version: <span id="verTxt"></span></p>
+  <p class="muted">Tip: press and hold a tier’s coloured title bar for two seconds to tick every level in it. Do it again to untick them.</p>
   <div id="impOld" hidden><h3>Import from this browser</h3>
     <p>This browser still holds progress from the old local profiles. Pick one to bring it into your account. Complete levels are submitted for approval and in-progress ones are saved as amber.</p>
     <select id="impSel" aria-label="Old profile"></select> <button id="impGo">Import</button><p id="impMsg" class="msg" role="status"></p></div>
   <h3>Display</h3>
-  <button id="cond" role="switch" aria-checked="false">Condensed mode: Off</button>
+  <button id="cond" role="switch" aria-checked="true">Condensed mode: On</button>
   <p class="muted">Shows all of a list’s tiers together on one page instead of splitting them across Novice, Intermediate, Advanced and so on.</p>
+  <button id="classic" role="switch" aria-checked="false">Classic mode: Off</button>
+  <p class="muted">Switches back to the site’s original look: square tier boxes and plainer buttons, menus and panels.</p>
   <h3>Experimental</h3>
   <button id="fx" role="switch" aria-checked="false">Experimental effects: Off</button>
-  <p class="muted">Adds special effects to the tracker: tier banners glow when a level is approved, keep a soft glow once you reach a rank, and glow brighter when the whole tier is complete.</p>
-  <button id="gfx" role="switch" aria-checked="false">Experimental graphics: Off</button>
-  <p class="muted">A visual polish pass: rounded tier cards with soft shadows, smoother hover effects, tidier menus, search box and panels, and neater dividers.</p>
+  <p class="muted">Adds special effects to the tracker: a tier’s banner glows when you tick a level in it complete, keeps a soft glow once you reach a rank, and glows brighter when the whole tier is complete.</p>
+  <p class="muted">Site version: <span id="verTxt"></span></p>
 </section>
 <section id="home" class="page">
   <h2>Ultimate Wave Tracker</h2>
@@ -986,7 +1028,7 @@ let DATA=[
  ]},
  {name:"New CCPL",subs:[
   {name:"Tutorial",tiers:[
-   {name:"Effortless",color:"#43a1fb",dark:true,levels:[
+   {name:"Effortless",achieved:22,plus:30,color:"#43a1fb",dark:true,levels:[
     {n:"Harry Challenge",id:"66097532"},
     {n:"Bandit",id:"79478766"},
     {n:"Normal Challenge",id:"63302902"},
@@ -1018,7 +1060,7 @@ let DATA=[
     {n:"ascension",id:"84368620"},
     {n:"Not a challenge",id:"62962709"}
    ]},
-   {name:"Easy",color:"#5aea26",dark:true,levels:[
+   {name:"Easy",achieved:56,plus:84,color:"#5aea26",dark:true,levels:[
     {n:"Pearl Wave",id:"84861114"},
     {n:"Go Oh Oh",id:"85429077"},
     {n:"Perkele",id:"83744643"},
@@ -1104,7 +1146,7 @@ let DATA=[
     {n:"Forgiveness",id:"128585848"},
     {n:"Pollutants",id:"130322758"}
    ]},
-   {name:"Medium",color:"#fefe00",dark:true,levels:[
+   {name:"Medium",achieved:44,plus:79,color:"#fefe00",dark:true,levels:[
     {n:"Najimi",id:"78348343"},
     {n:"Slicker Challenge",id:"78090178"},
     {n:"Renn Challenge",id:"77288023"},
@@ -1185,7 +1227,7 @@ let DATA=[
     {n:"wave challenge",id:"63578770"},
     {n:"jaY challenge final",id:"148404202"}
    ]},
-   {name:"Hard",color:"#fd7b01",dark:true,levels:[
+   {name:"Hard",achieved:47,plus:86,color:"#fd7b01",dark:true,levels:[
     {n:"chaotic",id:"87108096"},
     {n:"SAmuel Koch Chal",id:"48812442"},
     {n:"Necromantic Forest",id:"69462216"},
@@ -1270,9 +1312,10 @@ let DATA=[
     {n:"society challenge",id:"138635007"},
     {n:"Golf With Friends",id:"144389159"},
     {n:"Beepduck Challenge",id:"121932319"},
-    {n:"1 hour roast",id:"145777713"}
+    {n:"1 hour roast",id:"145777713"},
+    {n:"ColorMetric",id:"89214045"}
    ]},
-   {name:"Difficult",color:"#fe3231",dark:true,levels:[
+   {name:"Difficult",achieved:29,plus:48,color:"#fe3231",dark:true,levels:[
     {n:"Carnelian",id:"88210466"},
     {n:"Malachite",id:"74839856"},
     {n:"Galaxy Collapse Wave",id:"83044736"},
@@ -1322,7 +1365,7 @@ let DATA=[
     {n:"Gandhi Chamber",id:"64061220"},
     {n:"Roddy",id:"122337621"}
    ]},
-   {name:"Challenging",color:"#c10100",levels:[
+   {name:"Challenging",achieved:22,plus:36,color:"#c10100",levels:[
     {n:"nightly gaze",id:"73928826"},
     {n:"Green Trust",id:"70557348"},
     {n:"Optimism",id:"79898823"},
@@ -1360,7 +1403,7 @@ let DATA=[
     {n:"Wave challenge He",id:"108981949"},
     {n:"RainState",id:"143384246"}
    ]},
-   {name:"Intense",color:"#4c28a6",levels:[
+   {name:"Intense",achieved:25,plus:43,color:"#4c28a6",levels:[
     {n:"Dissipate",id:"69032837"},
     {n:"Illusion",id:"68870869"},
     {n:"Rat Trap",id:"70754996"},
@@ -1405,7 +1448,7 @@ let DATA=[
     {n:"onyx",id:"122036563"},
     {n:"bored wev 2",id:"150339703"}
    ]},
-   {name:"Remorseless",color:"#ff00fe",dark:true,levels:[
+   {name:"Remorseless",achieved:17,plus:35,color:"#ff00fe",dark:true,levels:[
     {n:"NB12",id:"84011110"},
     {n:"Zephyr",id:"93515083"},
     {n:"Viper",id:"92796557"},
@@ -1442,7 +1485,7 @@ let DATA=[
     {n:"Snowman Street",id:"131204002"},
     {n:"no plan",id:"104054448"}
    ]},
-   {name:"Insane",color:"#d3af37",dark:true,levels:[
+   {name:"Insane",achieved:9,plus:20,color:"#d3af37",dark:true,levels:[
     {n:"U",id:"104132949"},
     {n:"grapumpkin",id:"95932464"},
     {n:"DIKEMBE",id:"86892186"},
@@ -1464,7 +1507,7 @@ let DATA=[
     {n:"Ripple",id:"121968331"},
     {n:"Above Gear",id:"122122663"}
    ]},
-   {name:"Extreme",color:"#660000",levels:[
+   {name:"Extreme",achieved:8,plus:17,color:"#660000",levels:[
     {n:"Desiderium Doloris",id:"110499550"},
     {n:"chesnok",id:"119864269"},
     {n:"Envenomed",id:"80104355"},
@@ -1483,7 +1526,7 @@ let DATA=[
     {n:"Philly",id:"90059503"},
     {n:"Sadism",id:"64919670"}
    ]},
-   {name:"Terrifying",color:"#5ff2fa",dark:true,levels:[
+   {name:"Terrifying",achieved:6,plus:13,color:"#5ff2fa",dark:true,levels:[
     {n:"burnnn",id:"144878865"},
     {n:"Midwinter",id:"138906057"},
     {n:"mestupid challenger",id:"83951746"},
@@ -1498,7 +1541,7 @@ let DATA=[
     {n:"Flicker",id:"143809826"},
     {n:"enjoy everything",id:"132195523"}
    ]},
-   {name:"Catastrophic",color:"#b7b7b7",dark:true,levels:[
+   {name:"Catastrophic",achieved:6,plus:13,color:"#b7b7b7",dark:true,levels:[
     {n:"adrogantiam",id:"127681916"},
     {n:"Murder Mitten",id:"81973761"},
     {n:"racketeering v2",id:"114046961"},
@@ -1513,7 +1556,7 @@ let DATA=[
     {n:"SADOMASOCHISM",id:"76213334"},
     {n:"mystic haze",id:"73332806"}
    ]},
-   {name:"Horrific",color:"#9993ff",dark:true,levels:[
+   {name:"Horrific",achieved:3,plus:8,color:"#9993ff",dark:true,levels:[
     {n:"Oblivers",id:"85042202"},
     {n:"Puff",id:"143164600"},
     {n:"CorroZ B",id:"67044214"},
@@ -1523,7 +1566,7 @@ let DATA=[
     {n:"Forgotten Maiden",id:"130217575"},
     {n:"VSC",id:"60805571"}
    ]},
-   {name:"Unreal",color:"#69a84f",dark:true,levels:[
+   {name:"Unreal",achieved:2,plus:6,color:"#69a84f",dark:true,levels:[
     {n:"Illusion of Hell",id:"38230726"},
     {n:"Re",id:"126279500"},
     {n:"Tremor",id:"79823052"},
@@ -1531,11 +1574,11 @@ let DATA=[
     {n:"racketeering v3",id:"114046969"},
     {n:"Zero Factorial",id:"71132224"}
    ]},
-   {name:"nil",color:"#000000",levels:[
+   {name:"nil",achieved:1,plus:2,color:"#000000",levels:[
     {n:"Thunder",id:"114115238"},
     {n:"Hypnosis",id:"72829529"}
    ]},
-   {name:"Cosmic",color:"#4c1131",levels:[
+   {name:"Cosmic",achieved:1,plus:1,color:"#4c1131",levels:[
     {n:"CorroZ",id:"86191664"}
    ]}
   ]},
@@ -1545,272 +1588,7 @@ let DATA=[
   {name:"Pro",tiers:[]},
   {name:"God",tiers:[]}
  ]},
- {name:"Tiny DLC",subs:[
-  {name:"Tutorial",tiers:[]},
-  {name:"Novice",tiers:[
-   {name:"Bronze",achieved:4,plus:6,color:"#e07f6c",levels:[
-    {n:"lvl 1 wave easy",id:"90739828"},
-    {n:"Haku Smelly",id:"62773972"},
-    {n:"Blacj Woorld",id:"87800592"},
-    {n:"hhyq Challenge II",id:"88582165"},
-    {n:"gl on lw ch sory",id:"77723924"},
-    {n:"Wave Timings",id:"81382922"}
-   ]},
-   {name:"Silver",achieved:11,plus:16,color:"#b4b4b4",levels:[
-    {n:"Ki11Er6JR Chall 1",id:"80683681"},
-    {n:"Klad",id:"86500111"},
-    {n:"im sorry soory",id:"68022490"},
-    {n:"puerte",id:"77077895"},
-    {n:"Denouement Wave",id:"62340832"},
-    {n:"Alphabob",id:"90476558"},
-    {n:"bjort",id:"93964320"},
-    {n:"Casmon 3",id:"93575130"},
-    {n:"a moment in hell",id:"61937340"},
-    {n:"TITAN HOLO",id:"90697716"},
-    {n:"Polar Shift",id:"81491556"},
-    {n:"mini",id:"103246509"},
-    {n:"SATANOSTIC WAVE",id:"148226275"},
-    {n:"Bored Wave Bonus",id:"82107447"},
-    {n:"8 seconds V453C70M14",id:"77642860"},
-    {n:"3 Seconds Hell",id:"20855830"}
-   ]}
-  ]},
-  {name:"Intermediate",tiers:[
-   {name:"Gold",achieved:6,plus:10,color:"#f2c230",levels:[
-    {n:"wave challenge 3",id:"77825570"},
-    {n:"winnards",id:"81633327"},
-    {n:"fast wave",id:"84900072"},
-    {n:"hork",id:"95138629"},
-    {n:"hork ii",id:"95141404"},
-    {n:"Silent Circles 95 p",id:"62896524"},
-    {n:"Skillset Challenge",id:"75062893"},
-    {n:"nightschool",id:"90962794"},
-    {n:"KatnBlack Chal 1",id:"81313987"},
-    {n:"La",id:"79715241"}
-   ]},
-   {name:"Emerald",achieved:9,plus:14,color:"#6aa84f",levels:[
-    {n:"Ncat chall 2",id:"63008925"},
-    {n:"random chall 1",id:"76558943"},
-    {n:"Alotau",id:"91888843"},
-    {n:"8063",id:"32714994"},
-    {n:"Trash Lol",id:"65235620"},
-    {n:"heavenistic wave",id:"148375483"},
-    {n:"Tunnel",id:"114382516"},
-    {n:"Penny Pink",id:"148557106"},
-    {n:"Wave Challenge Z",id:"73115449"},
-    {n:"Albondiga",id:"62177486"},
-    {n:"spaces never clear",id:"94368626"},
-    {n:"stitches",id:"79125128"},
-    {n:"RAGE NO I",id:"89699290"},
-    {n:"Chromebook mp4",id:"77431704"}
-   ]},
-   {name:"Ruby",achieved:6,plus:10,color:"#cc0000",levels:[
-    {n:"Native Pony",id:"88761283"},
-    {n:"mys 2",id:"87719343"},
-    {n:"Personal Challenge X",id:"66702548"},
-    {n:"dark tides",id:"80720133"},
-    {n:"Corroz by Casmon",id:"81596243"},
-    {n:"coakmuffer chal",id:"87390740"},
-    {n:"JCAKPOT",id:"107396427"},
-    {n:"Clouded Park",id:"70827854"},
-    {n:"Hendeca Corner",id:"81687624"},
-    {n:"seoiyyy",id:"87958242"}
-   ]}
-  ]},
-  {name:"Advanced",tiers:[
-   {name:"Diamond",achieved:4,plus:7,color:"#3d85c6",levels:[
-    {n:"wave challenge yossa",id:"80719387"},
-    {n:"hork iii",id:"101219123"},
-    {n:"Foreign Pony",id:"101219371"},
-    {n:"Berenjena",id:"73488677"},
-    {n:"Bocadillo De Albondi",id:"73235646"},
-    {n:"Macarron",id:"87879271"},
-    {n:"everest",id:"139124105"}
-   ]},
-   {name:"Amethyst",achieved:3,plus:7,color:"#e600e6",levels:[
-    {n:"Tomate",id:"88125803"},
-    {n:"Distraught",id:"89699296"},
-    {n:"lebron james",id:"112934309"},
-    {n:"BeAT ReaPeR",id:"140201838"},
-    {n:"Beside You",id:"109520269"},
-    {n:"ee",id:"91995939"},
-    {n:"Waver",id:"57463253"}
-   ]}
-  ]},
-  {name:"Pro",tiers:[
-   {name:"Legend",achieved:3,color:"#000",levels:[
-    {n:"521",id:"85701165"},
-    {n:"Soulwind",id:"86471614"},
-    {n:"Fluctuation",id:"138437339"}
-   ]}
-  ]},
-  {name:"God",tiers:[]}
- ]},
- {name:"Consistency DLC",subs:[
-  {name:"Tutorial",tiers:[
-   {name:"Aerialite",achieved:3,plus:4,color:"#8fd0ea",dark:true,levels:[
-    {n:"WaterClickFlame",id:"83102882"},
-    {n:"Beginner Consistency",id:"38818392"},
-    {n:"Redstone Dance",id:"74034733"},
-    {n:"Click Consistancy II",id:"62504499"}
-   ]},
-   {name:"Charred",achieved:5,plus:8,color:"#3b3b3b",levels:[
-    {n:"Motor",id:"71814593"},
-    {n:"Defthlow",id:"31921720"},
-    {n:"Dc Z Challenge",id:"47848944"},
-    {n:"Easy for Venom",id:"64402566"},
-    {n:"4UPN8DOWN Mechanism",id:"76239365"},
-    {n:"ryujin practice IIII",id:"76742110"},
-    {n:"nxise challenge",id:"67670649"},
-    {n:"ozpectro challenge",id:"20994695"}
-   ]},
-   {name:"Cryonic",achieved:4,plus:7,color:"#7fd6e6",dark:true,levels:[
-    {n:"da share z0ne",id:"67589390"},
-    {n:"Challenge EX",id:"34191084"},
-    {n:"Lamp Level 1",id:"62000980"},
-    {n:"click consistency v3",id:"40673153"},
-    {n:"tuco salamanca",id:"66055324"},
-    {n:"Easiest for Venom",id:"65601060"},
-    {n:"RAMPANT",id:"74057326"}
-   ]},
-   {name:"Perennial",achieved:3,plus:5,color:"#5f9e4a",levels:[
-    {n:"one55",id:"87462906"},
-    {n:"haku challenge",id:"67640831"},
-    {n:"dur",id:"91824403"},
-    {n:"ncat chamber",id:"71289378"},
-    {n:"Challenge JX",id:"65617395"}
-   ]},
-   {name:"Scoria",achieved:2,plus:5,color:"#8a3b2a",levels:[
-    {n:"DC Miniwave",id:"79402746"},
-    {n:"Auditory Breaker",id:"67771969"},
-    {n:"fuclk CHALLENGE",id:"69358252"},
-    {n:"wave challenge 2",id:"72313611"},
-    {n:"wasureta",id:"78712104"}
-   ]},
-   {name:"Astral",achieved:2,plus:5,color:"#6a4fc8",levels:[
-    {n:"anix bussy xxx",id:"94293362"},
-    {n:"DIOOZ",id:"72156571"},
-    {n:"kanackenverprugelnle",id:"76513198"},
-    {n:"Nxise Challenge II",id:"67676088"},
-    {n:"SOHH",id:"68376627"}
-   ]},
-   {name:"Satan",achieved:1,color:"#8b0000",levels:[
-    {n:"Blissful",id:"110934881"}
-   ]}
-  ]},
-  {name:"Novice",tiers:[]},
-  {name:"Intermediate",tiers:[]},
-  {name:"Advanced",tiers:[]},
-  {name:"Pro",tiers:[]},
-  {name:"God",tiers:[]}
- ]},
- {name:"Secret DLC",subs:[
-  {name:"Tutorial",tiers:[
-   {name:"Talc",achieved:6,plus:10,color:"#cfd8c8",dark:true,levels:[
-    {n:"Crowd Control 19-25%",id:"69491632"},
-    {n:"Edge of the Blade 3-6%",id:"61366470"},
-    {n:"Cataclysm 6-15%",id:"3979721"},
-    {n:"Titan Complex 17-24%",id:"44022701"},
-    {n:"Stellaluna 63-80%",id:"77312559"},
-    {n:"Ithacropolis 31-36%",id:"83325583"},
-    {n:"Calculator Core 67-73%",id:"58355141"},
-    {n:"Eternal Moment 62-69%",id:"59539361"},
-    {n:"Promethean 12-22%",id:"69333212"},
-    {n:"Sonic Wave 88-100%",id:"26681070"}
-   ]},
-   {name:"Pearl",achieved:6,plus:11,color:"#ece6dc",dark:true,levels:[
-    {n:"WcropoliX 76-95",id:"22183448"},
-    {n:"Verdant Landscape 21-25%",id:"76543324"},
-    {n:"Golden Shade 55-61%",id:"58673928"},
-    {n:"Graceful 53-63",id:"71885708"},
-    {n:"Sakupen Hell 15-29%",id:"23262780"},
-    {n:"SUPERHATEMEWORLD 40-49%",id:"57571983"},
-    {n:"Zodiac 96-100%",id:"83302676"},
-    {n:"Abyss of Darkness 75-80%",id:"49896559"},
-    {n:"Paroxysm 29-42%",id:"42631377"},
-    {n:"Fexty 50-59%",id:"25449475"},
-    {n:"OPSM1 16-29%",id:"68193306"}
-   ]},
-   {name:"Marble",achieved:5,plus:12,color:"#c4cad2",dark:true,levels:[
-    {n:"Kenos 68-74%",id:"58673581"},
-    {n:"Forsaken Hell 26-32%",id:"67073198"},
-    {n:"Unnerfed Innards 39-42%",id:"54496752"},
-    {n:"Old Cosmic Cyclone 84-100%",id:"76159410"},
-    {n:"Sweeping Demon 2 83-88%",id:"83327699"},
-    {n:"Gluttony 60-70%",id:"56115752"},
-    {n:"Theory of Silent 34-41%",id:"13551870"},
-    {n:"The Devil 92-100%",id:"72745373"},
-    {n:"Icotact 93-100%",id:"66203074"},
-    {n:"Crimson Planet 15-21",id:"45866767"},
-    {n:"Thinking Space 68-74%",id:"54953085"},
-    {n:"Calamity 8-17%",id:"64766514"}
-   ]},
-   {name:"Opal",achieved:4,plus:8,color:"#b7aec4",dark:true,levels:[
-    {n:"Omega Interface 8-15%",id:"68654380"},
-    {n:"Diabolic Clubstep 24-31%",id:"73214186"},
-    {n:"Enjoy 77-92%",id:"78004719"},
-    {n:"Spectrum Cyclone 27-40%",id:"59209010"},
-    {n:"Old Ultra Sonic Wave 86-100%",id:"83302611"},
-    {n:"TheCinnyBun 15-33%",id:"77134293"},
-    {n:"Forsaken Wave 62-77%",id:"83327147"},
-    {n:"Pandemonium 70-91%",id:"72082021"}
-   ]},
-   {name:"Quartz",achieved:4,plus:10,color:"#e7b9c6",dark:true,levels:[
-    {n:"Old Blade of Justice 30-38%",id:"61625993"},
-    {n:"Slaughterhouse 25-33%",id:"27690100",k:"27690100:Slaughterhouse 25-33%"},
-    {n:"Sweeping Demon 85-100%",id:"54419063"},
-    {n:"Crimson World 37-47%",id:"8038902"},
-    {n:"Cold Sweat 61-87",id:"63996127"},
-    {n:"Aquamarine 38-45%",id:"83180812"},
-    {n:"Unknown 35-44%",id:"70003258"},
-    {n:"Unnerfed The Nautical 69-81%",id:"77049802"},
-    {n:"Crystal Edge 89-95%",id:"64530439"},
-    {n:"Unnerfed The Golden 27-50%",id:"60978746"}
-   ]},
-   {name:"Zircon",achieved:3,plus:10,color:"#d9a441",levels:[
-    {n:"Slaughterhouse 49-58% (River)",id:"27690100",k:"27690100:Slaughterhouse 49-58% (River)"},
-    {n:"Cimmerian Shade 31-56%",id:"46152209"},
-    {n:"Slaughterhouse 74-90% (Cuber)",id:"27690100",k:"27690100:Slaughterhouse 74-90% (Cuber)"},
-    {n:"hayden 66-81%",id:"71059283"},
-    {n:"Magnolia 29-50%",id:"76045050"},
-    {n:"Exasperation 65-68%",id:"31325851"},
-    {n:"Silent Acropolis 78-100%",id:"83140803"},
-    {n:"arcturus 32-43%",id:"72315402"},
-    {n:"Avernus 37-48%",id:"89496627"},
-    {n:"Old Bloody Knuckles 65-100%",id:"63369237"}
-   ]},
-   {name:"Onyx",achieved:2,plus:6,color:"#3a3a3a",levels:[
-    {n:"qoUEO 28%",id:"81721025"},
-    {n:"Chromatic Core 72-91%",id:"86235203"},
-    {n:"Subsuming Vortex 66-100%",id:"66422816"},
-    {n:"Azure Flare 61-79% (Aeden)",id:"80518698",k:"80518698:Azure Flare 61-79% (Aeden)"},
-    {n:"Plasma Doom Machine 20-83%",id:"71129776"},
-    {n:"Unnerfed Eudemonic 20-35%",id:"32568089"}
-   ]},
-   {name:"Obsidian",achieved:2,plus:6,color:"#2a1245",levels:[
-    {n:"Sonic Wave Infinity 29-55% (Slithium)",id:"69693819"},
-    {n:"Dystopia 90-95%",id:"66424234"},
-    {n:"LoveFool 63-94%",id:"75206205"},
-    {n:"Old Slaughterhouse 20-42",id:"27690219"},
-    {n:"Unnerfed Silent Circles 27-45%",id:"12169905"},
-    {n:"Tidal Wave 22-39%",id:"86407629"}
-   ]},
-   {name:"Bedrock",achieved:6,color:"#55504a",levels:[
-    {n:"Sakupen Circles 37-80",id:"76962930"},
-    {n:"Africa Circles 50-94%",id:"67153243"},
-    {n:"LiGHtmArE 19-25%",id:"77233362"},
-    {n:"Azure Flare 12-61%",id:"80518698",k:"80518698:Azure Flare 12-61%"},
-    {n:"Crimson Clutter Infinity 24-75%",id:"67880493"},
-    {n:"Disturb 41-66%",id:"78956703"}
-   ]}
-  ]},
-  {name:"Novice",tiers:[]},
-  {name:"Intermediate",tiers:[]},
-  {name:"Advanced",tiers:[]},
-  {name:"Pro",tiers:[]},
-  {name:"God",tiers:[]}
- ]}
- ,{name:"WPPL",subs:[
+ {name:"WPPL",subs:[
   {name:"Tutorial",tiers:[]},
   {name:"Novice",tiers:[
    {name:"★Common☆",achieved:8,plus:10,color:"#b8b8b8",levels:[
@@ -1948,6 +1726,348 @@ let DATA=[
    ]}
   ]},
   {name:"God",tiers:[]}
+ ]},
+ {name:"Tiny DLC",subs:[
+  {name:"Tutorial",tiers:[]},
+  {name:"Novice",tiers:[
+   {name:"Bronze",achieved:4,plus:6,color:"#e07f6c",levels:[
+    {n:"lvl 1 wave easy",id:"90739828"},
+    {n:"Haku Smelly",id:"62773972"},
+    {n:"Blacj Woorld",id:"87800592"},
+    {n:"hhyq Challenge II",id:"88582165"},
+    {n:"gl on lw ch sory",id:"77723924"},
+    {n:"Wave Timings",id:"81382922"}
+   ]},
+   {name:"Silver",achieved:11,plus:16,color:"#b4b4b4",levels:[
+    {n:"Ki11Er6JR Chall 1",id:"80683681"},
+    {n:"Klad",id:"86500111"},
+    {n:"im sorry soory",id:"68022490"},
+    {n:"puerte",id:"77077895"},
+    {n:"Denouement Wave",id:"62340832"},
+    {n:"Alphabob",id:"90476558"},
+    {n:"bjort",id:"93964320"},
+    {n:"Casmon 3",id:"93575130"},
+    {n:"a moment in hell",id:"61937340"},
+    {n:"TITAN HOLO",id:"90697716"},
+    {n:"Polar Shift",id:"81491556"},
+    {n:"mini",id:"103246509"},
+    {n:"SATANOSTIC WAVE",id:"148226275"},
+    {n:"Bored Wave Bonus",id:"82107447"},
+    {n:"8 seconds V453C70M14",id:"77642860"},
+    {n:"3 Seconds Hell",id:"20855830"}
+   ]}
+  ]},
+  {name:"Intermediate",tiers:[
+   {name:"Gold",achieved:6,plus:10,color:"#f2c230",levels:[
+    {n:"wave challenge 3",id:"77825570"},
+    {n:"winnards",id:"81633327"},
+    {n:"fast wave",id:"84900072"},
+    {n:"hork",id:"95138629"},
+    {n:"hork ii",id:"95141404"},
+    {n:"Silent Circles 95 p",id:"62896524"},
+    {n:"Skillset Challenge",id:"75062893"},
+    {n:"nightschool",id:"90962794"},
+    {n:"KatnBlack Chal 1",id:"81313987"},
+    {n:"La",id:"79715241"}
+   ]},
+   {name:"Emerald",achieved:9,plus:14,color:"#6aa84f",levels:[
+    {n:"Ncat chall 2",id:"63008925"},
+    {n:"random chall 1",id:"76558943"},
+    {n:"Alotau",id:"91888843"},
+    {n:"8063",id:"32714994"},
+    {n:"Trash Lol",id:"65235620"},
+    {n:"heavenistic wave",id:"148375483"},
+    {n:"Tunnel",id:"114382516"},
+    {n:"Penny Pink",id:"148557106"},
+    {n:"Wave Challenge Z",id:"73115449"},
+    {n:"Albondiga",id:"62177486"},
+    {n:"spaces never clear",id:"94368626"},
+    {n:"stitches",id:"79125128"},
+    {n:"RAGE NO I",id:"89699290"},
+    {n:"Chromebook mp4",id:"77431704"}
+   ]},
+   {name:"Ruby",achieved:6,plus:10,color:"#cc0000",levels:[
+    {n:"Native Pony",id:"88761283"},
+    {n:"mys 2",id:"87719343"},
+    {n:"Personal Challenge X",id:"66702548"},
+    {n:"dark tides",id:"80720133"},
+    {n:"Corroz by Casmon",id:"81596243"},
+    {n:"coakmuffer chal",id:"87390740"},
+    {n:"JCAKPOT",id:"107396427"},
+    {n:"Clouded Park",id:"70827854"},
+    {n:"Hendeca Corner",id:"81687624"},
+    {n:"seoiyyy",id:"87958242"}
+   ]}
+  ]},
+  {name:"Advanced",tiers:[
+   {name:"Diamond",achieved:4,plus:7,color:"#3d85c6",levels:[
+    {n:"wave challenge yossa",id:"80719387"},
+    {n:"hork iii",id:"101219123"},
+    {n:"Foreign Pony",id:"101219371"},
+    {n:"Berenjena",id:"73488677"},
+    {n:"Bocadillo De Albondi",id:"73235646"},
+    {n:"Macarron",id:"87879271"},
+    {n:"everest",id:"139124105"}
+   ]},
+   {name:"Amethyst",achieved:3,plus:7,color:"#e600e6",levels:[
+    {n:"Tomate",id:"88125803"},
+    {n:"Distraught",id:"89699296"},
+    {n:"lebron james",id:"112934309"},
+    {n:"BeAT ReaPeR",id:"140201838"},
+    {n:"Beside You",id:"109520269"},
+    {n:"ee",id:"91995939"},
+    {n:"Waver",id:"57463253"}
+   ]}
+  ]},
+  {name:"Pro",tiers:[
+   {name:"Legend",achieved:1,plus:3,color:"#000",levels:[
+    {n:"521",id:"85701165"},
+    {n:"Soulwind",id:"86471614"},
+    {n:"Fluctuation",id:"138437339"}
+   ]}
+  ]},
+  {name:"God",tiers:[]}
+ ]},
+ {name:"Consistency DLC",subs:[
+  {name:"Tutorial",tiers:[
+   {name:"Aerialite",achieved:3,plus:4,color:"#8fd0ea",dark:true,levels:[
+    {n:"WaterClickFlame",id:"83102882"},
+    {n:"Beginner Consistency",id:"38818392"},
+    {n:"Redstone Dance",id:"74034733"},
+    {n:"Click Consistancy II",id:"62504499"}
+   ]},
+   {name:"Charred",achieved:5,plus:8,color:"#3b3b3b",levels:[
+    {n:"Motor",id:"71814593"},
+    {n:"Defthlow",id:"31921720"},
+    {n:"Dc Z Challenge",id:"47848944"},
+    {n:"Easy for Venom",id:"64402566"},
+    {n:"4UPN8DOWN Mechanism",id:"76239365"},
+    {n:"ryujin practice IIII",id:"76742110"},
+    {n:"nxise challenge",id:"67670649"},
+    {n:"ozpectro challenge",id:"20994695"}
+   ]},
+   {name:"Cryonic",achieved:4,plus:7,color:"#7fd6e6",dark:true,levels:[
+    {n:"da share z0ne",id:"67589390"},
+    {n:"Challenge EX",id:"34191084"},
+    {n:"Lamp Level 1",id:"62000980"},
+    {n:"click consistency v3",id:"40673153"},
+    {n:"tuco salamanca",id:"66055324"},
+    {n:"Easiest for Venom",id:"65601060"},
+    {n:"RAMPANT",id:"74057326"}
+   ]},
+   {name:"Perennial",achieved:3,plus:5,color:"#5f9e4a",levels:[
+    {n:"one55",id:"87462906"},
+    {n:"haku challenge",id:"67640831"},
+    {n:"dur",id:"91824403"},
+    {n:"ncat chamber",id:"71289378"},
+    {n:"Challenge JX",id:"65617395"}
+   ]},
+   {name:"Scoria",achieved:2,plus:5,color:"#8a3b2a",levels:[
+    {n:"DC Miniwave",id:"79402746"},
+    {n:"Auditory Breaker",id:"67771969"},
+    {n:"fuclk CHALLENGE",id:"69358252"},
+    {n:"wave challenge 2",id:"72313611"},
+    {n:"wasureta",id:"78712104"}
+   ]},
+   {name:"Astral",achieved:2,plus:5,color:"#6a4fc8",levels:[
+    {n:"anix bussy xxx",id:"94293362"},
+    {n:"DIOOZ",id:"72156571"},
+    {n:"kanackenverprugelnle",id:"76513198"},
+    {n:"Nxise Challenge II",id:"67676088"},
+    {n:"SOHH",id:"68376627"}
+   ]},
+   {name:"Satan",achieved:1,plus:1,color:"#8b0000",levels:[
+    {n:"Blissful",id:"110934881"}
+   ]}
+  ]},
+  {name:"Novice",tiers:[]},
+  {name:"Intermediate",tiers:[]},
+  {name:"Advanced",tiers:[]},
+  {name:"Pro",tiers:[]},
+  {name:"God",tiers:[]}
+ ]},
+ {name:"Secret DLC",subs:[
+  {name:"Tutorial",tiers:[
+   {name:"Talc",achieved:6,plus:10,color:"#cfd8c8",dark:true,levels:[
+    {n:"Crowd Control 19-25%",id:"69491632"},
+    {n:"Edge of the Blade 3-6%",id:"61366470"},
+    {n:"Cataclysm 6-15%",id:"3979721"},
+    {n:"Titan Complex 17-24%",id:"44022701"},
+    {n:"Stellaluna 63-80%",id:"77312559"},
+    {n:"Ithacropolis 31-36%",id:"83325583"},
+    {n:"Calculator Core 67-73%",id:"58355141"},
+    {n:"Eternal Moment 62-69%",id:"59539361"},
+    {n:"Promethean 12-22%",id:"69333212"},
+    {n:"Sonic Wave 88-100%",id:"26681070"}
+   ]},
+   {name:"Pearl",achieved:6,plus:11,color:"#ece6dc",dark:true,levels:[
+    {n:"WcropoliX 76-95",id:"22183448"},
+    {n:"Verdant Landscape 21-25%",id:"76543324"},
+    {n:"Golden Shade 55-61%",id:"58673928"},
+    {n:"Graceful 53-63",id:"71885708"},
+    {n:"Sakupen Hell 15-29%",id:"23262780"},
+    {n:"SUPERHATEMEWORLD 40-49%",id:"57571983"},
+    {n:"Zodiac 96-100%",id:"83302676"},
+    {n:"Abyss of Darkness 75-80%",id:"49896559"},
+    {n:"Paroxysm 29-42%",id:"42631377"},
+    {n:"Fexty 50-59%",id:"25449475"},
+    {n:"OPSM1 16-29%",id:"68193306"}
+   ]},
+   {name:"Marble",achieved:5,plus:12,color:"#c4cad2",dark:true,levels:[
+    {n:"Kenos 68-74%",id:"58673581"},
+    {n:"Forsaken Hell 26-32%",id:"67073198"},
+    {n:"Unnerfed Innards 39-42%",id:"54496752"},
+    {n:"Old Cosmic Cyclone 84-100%",id:"76159410"},
+    {n:"Sweeping Demon 2 83-88%",id:"83327699"},
+    {n:"Gluttony 60-70%",id:"56115752"},
+    {n:"Theory of Silent 34-41%",id:"13551870"},
+    {n:"The Devil 92-100%",id:"72745373"},
+    {n:"Icotact 93-100%",id:"66203074"},
+    {n:"Crimson Planet 15-21",id:"45866767"},
+    {n:"Thinking Space 68-74%",id:"54953085"},
+    {n:"Calamity 8-17%",id:"64766514"}
+   ]},
+   {name:"Opal",achieved:4,plus:8,color:"#b7aec4",dark:true,levels:[
+    {n:"Omega Interface 8-15%",id:"68654380"},
+    {n:"Diabolic Clubstep 24-31%",id:"73214186"},
+    {n:"Enjoy 77-92%",id:"78004719"},
+    {n:"Spectrum Cyclone 27-40%",id:"59209010"},
+    {n:"Old Ultra Sonic Wave 86-100%",id:"83302611"},
+    {n:"TheCinnyBun 15-33%",id:"77134293"},
+    {n:"Forsaken Wave 62-77%",id:"83327147"},
+    {n:"Pandemonium 70-91%",id:"72082021"}
+   ]},
+   {name:"Quartz",achieved:4,plus:10,color:"#e7b9c6",dark:true,levels:[
+    {n:"Old Blade of Justice 30-38%",id:"61625993"},
+    {n:"Slaughterhouse 25-33%",id:"27690100",k:"27690100:Slaughterhouse 25-33%"},
+    {n:"Sweeping Demon 85-100%",id:"54419063"},
+    {n:"Crimson World 37-47%",id:"8038902"},
+    {n:"Cold Sweat 61-87",id:"63996127"},
+    {n:"Aquamarine 38-45%",id:"83180812"},
+    {n:"Unknown 35-44%",id:"70003258"},
+    {n:"Unnerfed The Nautical 69-81%",id:"77049802"},
+    {n:"Crystal Edge 89-95%",id:"64530439"},
+    {n:"Unnerfed The Golden 27-50%",id:"60978746"}
+   ]},
+   {name:"Zircon",achieved:3,plus:10,color:"#d9a441",levels:[
+    {n:"Slaughterhouse 49-58% (River)",id:"27690100",k:"27690100:Slaughterhouse 49-58% (River)"},
+    {n:"Cimmerian Shade 31-56%",id:"46152209"},
+    {n:"Slaughterhouse 74-90% (Cuber)",id:"27690100",k:"27690100:Slaughterhouse 74-90% (Cuber)"},
+    {n:"hayden 66-81%",id:"71059283"},
+    {n:"Magnolia 29-50%",id:"76045050"},
+    {n:"Exasperation 65-68%",id:"31325851"},
+    {n:"Silent Acropolis 78-100%",id:"83140803"},
+    {n:"arcturus 32-43%",id:"72315402"},
+    {n:"Avernus 37-48%",id:"89496627"},
+    {n:"Old Bloody Knuckles 65-100%",id:"63369237"}
+   ]},
+   {name:"Onyx",achieved:2,plus:6,color:"#3a3a3a",levels:[
+    {n:"qoUEO 28%",id:"81721025"},
+    {n:"Chromatic Core 72-91%",id:"86235203"},
+    {n:"Subsuming Vortex 66-100%",id:"66422816"},
+    {n:"Azure Flare 61-79% (Aeden)",id:"80518698",k:"80518698:Azure Flare 61-79% (Aeden)"},
+    {n:"Plasma Doom Machine 20-83%",id:"71129776"},
+    {n:"Unnerfed Eudemonic 20-35%",id:"32568089"}
+   ]},
+   {name:"Obsidian",achieved:2,plus:6,color:"#2a1245",levels:[
+    {n:"Sonic Wave Infinity 29-55% (Slithium)",id:"69693819"},
+    {n:"Dystopia 90-95%",id:"66424234"},
+    {n:"LoveFool 63-94%",id:"75206205"},
+    {n:"Old Slaughterhouse 20-42",id:"27690219"},
+    {n:"Unnerfed Silent Circles 27-45%",id:"12169905"},
+    {n:"Tidal Wave 22-39%",id:"86407629"}
+   ]},
+   {name:"Bedrock",achieved:1,plus:6,color:"#55504a",levels:[
+    {n:"Sakupen Circles 37-80",id:"76962930"},
+    {n:"Africa Circles 50-94%",id:"67153243"},
+    {n:"LiGHtmArE 19-25%",id:"77233362"},
+    {n:"Azure Flare 12-61%",id:"80518698",k:"80518698:Azure Flare 12-61%"},
+    {n:"Crimson Clutter Infinity 24-75%",id:"67880493"},
+    {n:"Disturb 41-66%",id:"78956703"}
+   ]}
+  ]},
+  {name:"Novice",tiers:[]},
+  {name:"Intermediate",tiers:[]},
+  {name:"Advanced",tiers:[]},
+  {name:"Pro",tiers:[]},
+  {name:"God",tiers:[]}
+ ]},
+ {name:"GDSR Consistency",subs:[
+  {name:"Tutorial",tiers:[
+   {name:"Rock",achieved:5,plus:7,color:"#7a6a58",levels:[
+    {n:"Interesting",id:"72988610"},
+    {n:"Beginner Consistency",id:"38818392"},
+    {n:"Death Corridor Wave",id:"26654614"},
+    {n:"Nacho Librex",id:"74024056"},
+    {n:"man pay ur rent alre",id:"71894254"},
+    {n:"Redstone Dance",id:"74034733"},
+    {n:"DefThlow II",id:"34191493"}
+   ]}
+  ]},
+  {name:"Novice",tiers:[
+   {name:"Bronze",achieved:5,plus:8,color:"#e07f6c",levels:[
+    {n:"Milez Challenge",id:"73787791"},
+    {n:"Very Consistency",id:"72791715"},
+    {n:"Veri Beginer Consist",id:"74034280"},
+    {n:"RD Is Dead",id:"74036358"},
+    {n:"c"},
+    {n:"Motor",id:"71814593"},
+    {n:"Swi Consistency I",id:"70020771"},
+    {n:"4UPN8DOWN Mechanism",id:"76239365"}
+   ]},
+   {name:"Silver",achieved:6,plus:9,color:"#b4b4b4",levels:[
+    {n:"da share z0ne",id:"64277033"},
+    {n:"click consistency v3",id:"40673153"},
+    {n:"Cold sweat uwu",id:"73701108"},
+    {n:"Douglas",id:"57413460"},
+    {n:"DefThlow",id:"31921720"},
+    {n:"Fun Wave Consistency",id:"73261310"},
+    {n:"Ozpectro Challenge",id:"20994695"},
+    {n:"KaiGuy Challenge 2",id:"76881363"},
+    {n:"Narrow Caverns",id:"77791320"}
+   ]}
+  ]},
+  {name:"Intermediate",tiers:[
+   {name:"Gold",achieved:6,plus:8,color:"#f2c230",levels:[
+    {n:"WOW Another Open Ver",id:"73847800"},
+    {n:"zen chall ULTIMATE",id:"79213648"},
+    {n:"Toll",id:"69877152"},
+    {n:"The Harasser",id:"50599079"},
+    {n:"Lamp Level 1",id:"62000980"},
+    {n:"Alec Finale",id:"70153169"},
+    {n:"Sohn GP Simulator",id:"74035649"},
+    {n:"RAMPANT",id:"74057326"}
+   ]},
+   {name:"Emerald",achieved:3,plus:6,color:"#6aa84f",levels:[
+    {n:"Easiest For Venom",id:"65601060"},
+    {n:"Ncat Chamber",id:"71289378"},
+    {n:"da shart z0ne",id:"71256794"},
+    {n:"DC Consistency",id:"74035120"},
+    {n:"Sword Dance Infinity",id:"80511014"},
+    {n:"Defthlow Is Dead",id:"79219165"}
+   ]},
+   {name:"Ruby",achieved:3,plus:5,color:"#cc0000",levels:[
+    {n:"Gamerdude Smelly",id:"72264494"},
+    {n:"Lamp Level 2",id:"68132874"},
+    {n:"DC Miniwave",id:"79402746"},
+    {n:"Jcak Challeng Easier",id:"75700373"},
+    {n:"JR Challenge",id:"74036333"}
+   ]}
+  ]},
+  {name:"Advanced",tiers:[
+   {name:"Diamond",achieved:1,plus:3,color:"#3d85c6",levels:[
+    {n:"fuclk CHALLENGE",id:"69358252"},
+    {n:"DIOOZ",id:"72156571"},
+    {n:"Nxise Challenge II",id:"67676088"}
+   ]}
+  ]},
+  {name:"Pro",tiers:[
+   {name:"Legend",achieved:1,plus:3,color:"#000",levels:[
+    {n:"Nsayn Stinky",id:"74035280"},
+    {n:"SOHH",id:"68376627"},
+    {n:"CONCLUSION",id:"74035741"}
+   ]}
+  ]}
  ]}
 ];
 /* ================================================ */
@@ -1977,7 +2097,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261101-215732";
+const SITE_BUILD="20261102-175036";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2030,11 +2150,12 @@ const save=()=>{
 };
 const $=id=>document.getElementById(id);
 let fxOn=false,gfxOn=false,condOn=false,pulseKeys=new Set();
-try{fxOn=localStorage.getItem("lvl-fx")==="1";gfxOn=localStorage.getItem("lvl-gfx")==="1";condOn=localStorage.getItem("lvl-condensed")==="1"}catch(e){}
+condOn=true;gfxOn=true;
+try{fxOn=localStorage.getItem("lvl-fx")==="1";gfxOn=localStorage.getItem("lvl-classic")!=="1";const cd=localStorage.getItem("lvl-condensed");if(cd!==null)condOn=cd==="1"}catch(e){}
 function applyFx(){
   document.body.classList.toggle("fx",fxOn);
   document.body.classList.toggle("gfx",gfxOn);
-  {const g=$("gfx");if(g){g.setAttribute("aria-checked",gfxOn);g.textContent="Experimental graphics: "+(gfxOn?"On":"Off")}}
+  {const g=$("classic");if(g){g.setAttribute("aria-checked",!gfxOn);g.textContent="Classic mode: "+(gfxOn?"Off":"On")}}
   document.body.classList.toggle("cond",condOn);
   const cb=$("cond");if(cb){cb.setAttribute("aria-checked",condOn);cb.textContent="Condensed mode: "+(condOn?"On":"Off")}
   const b=$("fx");if(b){b.setAttribute("aria-checked",fxOn);b.textContent="Experimental effects: "+(fxOn?"On":"Off")}
@@ -2075,6 +2196,7 @@ function render(){
   if(condOn)s={name:"All",condensed:true,tiers:c.subs.flatMap(x=>x.tiers),sections:[...new Set(c.subs.flatMap(x=>x.sections||["Sub tier","Bonus"]))]};
   $("lists").innerHTML=DATA.map((d,i)=>`<button role="tab" data-c="${i}" aria-selected="${i===cur.c}">${esc(d.name)}</button>`).join("");
   $("subs").innerHTML=!condOn&&vis.length>1?vis.map(i=>`<button role="tab" data-s="${i}" aria-selected="${i===cur.s}">${esc(c.subs[i].name)}</button>`).join(""):"";
+  const TI=[];
   const tierHtml=t=>{
     const {b,n}=counts(c,s,t),r=rank(t,b,n);
     const rows=t.levels.map((l,li)=>{
@@ -2087,14 +2209,18 @@ function render(){
         <button class="st" role="checkbox" aria-checked="${v>=100||dr?"true":pe||v>0?"mixed":"false"}" title="${v>=100?"Complete (approved)":dr?"Added to your Submissions tab. Click to remove":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100||dr?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
     const gl=r&&n>0&&b>=n?" g2":r?" g1":"";
     const pl=pulseKeys.size&&t.levels.some(l=>pulseKeys.has(key(c,s,t,l)))?" pulse":"";
-    return `<div class="tier${gl}${pl}" style="--tc:${t.color}"><h2 style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${b}/${goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
+    return `<div class="tier${gl}${pl}" data-ti="${TI.push(t)-1}" style="--tc:${t.color}"><h2 title="Press and hold to tick every level in this tier" style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${b}/${goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
   };
   const sec=t=>t.section||(t.bonus?"Bonus":"Main");
   const keep=s.condensed?[]:s.sections||[];
   const names=["Main",...(s.sections||["Sub tier","Bonus"])];
   if(!names.includes("Bonus"))names.push("Bonus");
-  s.tiers.forEach(t=>{if(!names.includes(sec(t)))names.push(sec(t))});
+  const extra=[];s.tiers.forEach(t=>{if(!names.includes(sec(t))&&!extra.includes(sec(t)))extra.push(sec(t))});
+  /* condensed mode mixes every difficulty: keep extra sections (DLCs, Consistency…) in the order the fullest difficulty page uses */
+  if(s.condensed){const ref=c.subs.map(x=>[...new Set(x.tiers.map(sec))]).sort((a,b)=>b.length-a.length)[0]||[];extra.sort((a,b)=>(ref.indexOf(a)+1||999)-(ref.indexOf(b)+1||999))}
+  names.push(...extra);
   const groups=names.map(n=>[n,s.tiers.filter(t=>sec(t)===n)]).filter(g=>g[1].length||keep.includes(g[0]));
+  render.tiers=TI;
   /* remember how far each scrollable tier was scrolled, so ticking a level doesn't throw it back to the top */
   const gridKey=cur.c+":"+(condOn?"c":cur.s);
   const keepScroll=gridKey===render.lastKey?[...document.querySelectorAll("#grid .tier .list")].map(x=>x.scrollTop):[];
@@ -2196,15 +2322,9 @@ document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
 $("homeBtn").onclick=()=>setView("home");
 $("home").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
 $("cond").onclick=()=>{condOn=!condOn;try{localStorage.setItem("lvl-condensed",condOn?"1":"0")}catch(e){}applyFx();render()};
-$("gfx").onclick=()=>{gfxOn=!gfxOn;try{localStorage.setItem("lvl-gfx",gfxOn?"1":"0")}catch(e){}applyFx()};
+$("classic").onclick=()=>{gfxOn=!gfxOn;try{localStorage.setItem("lvl-classic",gfxOn?"0":"1")}catch(e){}applyFx()};
 $("fx").onclick=()=>{fxOn=!fxOn;try{localStorage.setItem("lvl-fx",fxOn?"1":"0")}catch(e){}applyFx()};
 applyFx();
-$("exp").onclick=()=>{
-  if(!active())return openLogin();
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(P,null,1)],{type:"application/json"}));
-  a.download="progress-"+active().name+".json";a.click();
-};
 
 /* ---------- Profile selector ---------- */
 const ICON_USER='<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
@@ -2248,7 +2368,7 @@ async function finishDiscordLogin(){
   if(!st||!st.startsWith("dc.")||!(code||q.get("error")))return;
   let want="";try{want=sessionStorage.getItem("lvl-oauth-state")||"";sessionStorage.removeItem("lvl-oauth-state")}catch(e){}
   const denied=q.get("error");
-  ["code","state","error","error_description"].forEach(k=>q.delete(k));
+  ["code","state","error","error_description","iss"].forEach(k=>q.delete(k));
   try{history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash)}catch(e){}
   if(denied)return toast("Log-in cancelled.");
   if(!want||want!==st)return toast("That log-in didn’t start in this browser window. Please try again.");
@@ -2372,6 +2492,48 @@ async function tickLevel(k){
     if(error&&error.code!=="23505"){delete P[k];render();throw error}
   }catch(x){toast("Couldn’t save: "+(x.message||x))}
 }
+/* ---------- Press and hold a tier's title bar: tick every level in it ---------- */
+const HOLD_MS=1800;let hold=null;
+const cancelHold=()=>{if(hold){clearTimeout(hold.timer);hold.h.classList.remove("holding");hold=null}};
+$("grid").addEventListener("pointerdown",e=>{
+  const h=e.target.closest(".tier h2");if(!h||e.button>0)return;
+  const t=(render.tiers||[])[+h.closest(".tier").dataset.ti];if(!t)return;
+  cancelHold();h.classList.add("holding");
+  hold={h,x:e.clientX,y:e.clientY,timer:setTimeout(()=>{cancelHold();tickTier(t)},HOLD_MS)};
+});
+$("grid").addEventListener("pointermove",e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>12)cancelHold()});
+["pointerup","pointercancel","blur"].forEach(ev=>window.addEventListener(ev,cancelHold));
+document.addEventListener("scroll",cancelHold,true);
+$("grid").addEventListener("contextmenu",e=>{if(e.target.closest(".tier h2"))e.preventDefault()});
+async function tickTier(t){
+  const a=active();
+  if(!me||!sb)return openLogin();
+  if(!a)return toast("Your profile is still loading, try again in a moment");
+  const ks=[...new Set(t.levels.map(l=>lk(lv(l))))];
+  /* approved, waiting-for-approval and rejected levels are left as they are */
+  const open=ks.filter(k=>!(P[k]>=100)&&!PEND[k]);
+  if(!open.length)return toast("Nothing left to tick in "+t.name);
+  const todo=open.filter(k=>!DRAFT[k]),chunks=x=>{const o=[];for(let i=0;i<x.length;i+=100)o.push(x.slice(i,i+100));return o};
+  try{
+    if(todo.length){
+      for(const c of chunks(todo)){
+        const {error}=await sb.from("submission_drafts").upsert(c.map(k=>({user_id:a.id,level_key:k})),{onConflict:"user_id,level_key",ignoreDuplicates:true});
+        if(error)throw error;
+      }
+      todo.forEach(k=>{DRAFT[k]={evidence:""};pulseKeys.add(k)});render();pulseKeys=new Set();
+      toast(`Ticked ${todo.length} level${todo.length===1?"":"s"} in ${t.name}. They’re in your Submissions tab.`);
+    }else{
+      /* everything was already green: holding again clears the tier back to not started */
+      for(const c of chunks(open)){
+        let r=await sb.from("submission_drafts").delete().eq("user_id",a.id).in("level_key",c);if(r.error)throw r.error;
+        r=await sb.from("progress_wip").delete().eq("user_id",a.id).in("level_key",c);if(r.error)throw r.error;
+      }
+      open.forEach(k=>{delete DRAFT[k];delete P[k]});render();
+      toast(`Cleared ${open.length} level${open.length===1?"":"s"} in ${t.name}`);
+    }
+  }catch(x){toast("Couldn’t save: "+(x.message||x));refresh()}
+}
+
 /* ---------- Submissions tab ---------- */
 let subNoteTimer=0,subBusy=false;
 const noteKey=()=>"lvl-subnote-"+(me?me.id:"");
@@ -2486,7 +2648,7 @@ $("impGo").onclick=async()=>{
 };
 
 /* ---------- Dev page: approval queue (admin only) ---------- */
-let qStatus="pending",qUser="all",qRows=[];
+let qStatus="pending",qRows=[];const qClosed=new Set();
 const devMsg=t=>{const m=$("devmsg");if(m)m.textContent=t};
 async function renderDev(){
   const el=$("dev");
@@ -2497,48 +2659,90 @@ async function renderDev(){
   }catch(x){el.innerHTML='<p class="msg">Couldn’t load submissions: '+esc(x.message||x)+'</p>';return}
   drawQueue();
 }
+/* where each level lives: list, difficulty, tier and the tier's colour (first place it appears) */
+function levelInfo(){
+  const m={};let o=0;
+  DATA.forEach(c=>c.subs.forEach(s=>s.tiers.forEach(t=>{o++;t.levels.forEach(l=>{const x=lv(l),k=lk(x);if(!(k in m))m[k]={n:x.n,list:c.name,sub:c.subs.length>1?s.name:"",tier:t.name,color:t.color,dark:!!t.dark,o}})})));
+  return m;
+}
 function drawQueue(){
-  const el=$("dev"),names=levelNames(),pn=new Map(profiles.map(p=>[p.id,p.name]));
-  const users=[...new Set(qRows.map(r=>r.user_id))];
-  if(qUser!=="all"&&!users.includes(qUser))qUser="all";
-  const shown=qRows.filter(r=>qUser==="all"||r.user_id===qUser);
-  const btns=qStatus==="pending"?'<input class="qn" placeholder="Note (optional)" maxlength="500" aria-label="Note"><button class="ok">Approve</button><button class="no danger">Reject</button>'
-    :qStatus==="approved"?'<button class="rv danger">Revoke</button>':'<button class="ok">Approve</button><button class="rv danger">Delete</button>';
-  el.innerHTML=`<div class="qbar"><label>Show <select id="qStatus">${["pending","approved","rejected"].map(x=>`<option${x===qStatus?" selected":""}>${x}</option>`).join("")}</select></label>
-    <label>Player <select id="qUser"><option value="all">All</option>${users.map(u=>`<option value="${esc(u)}"${u===qUser?" selected":""}>${esc(pn.get(u)||"Unknown")}</option>`).join("")}</select></label>
-    <button id="qRefresh">Refresh</button>${qStatus==="pending"&&shown.length?`<button id="qAll">Approve all shown (${shown.length})</button>`:""}</div>
-    <p class="muted">${shown.length} ${qStatus}</p>
-    ${shown.map((r,i)=>(r.player_note&&(i===0||shown[i-1].user_id!==r.user_id||shown[i-1].player_note!==r.player_note)?`<div class="qrow"><div class="qnote"><strong>${esc(pn.get(r.user_id)||"Unknown")}’s note:</strong> ${esc(r.player_note)}</div></div>`:"")+`<div class="qrow" data-id="${r.id}"><b>${esc(pn.get(r.user_id)||"Unknown")}</b><span>${esc(names[r.level_key]||r.level_key)}</span>${r.evidence?`<a href="${esc(r.evidence)}" target="_blank" rel="noopener noreferrer">evidence</a>`:'<em class="muted">no evidence</em>'}<small>${esc(new Date(r.created_at).toLocaleDateString())}</small>${btns}</div>`).join("")}
-    <p id="devmsg" class="msg" role="status"></p>`;
+  const el=$("dev"),info=levelInfo(),pend=qStatus==="pending";
+  const byUser=new Map();
+  qRows.forEach(r=>{if(!byUser.has(r.user_id))byUser.set(r.user_id,[]);byUser.get(r.user_id).push(r)});
+  const players=[...byUser.entries()].sort((a,b)=>a[1][0].id-b[1][0].id);
+  const day=d=>new Date(d).toLocaleDateString(undefined,{day:"numeric",month:"short"});
+  const host=u=>{try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){return"link"}};
+  const btn=(act,ids,label,cls)=>`<button type="button" class="qb ${cls}" data-act="${act}" data-ids="${ids.join(",")}">${label}</button>`;
+  const rowBtns=r=>pend?btn("ok",[r.id],"✓ Approve","qok")+btn("no",[r.id],"✕ Reject","qno")
+    :qStatus==="approved"?btn("rv",[r.id],"Revoke","qno"):btn("ok",[r.id],"✓ Approve","qok")+btn("del",[r.id],"Delete","qno");
+  const card=([uid,rows])=>{
+    const p=profiles.find(x=>x.id===uid)||{name:"Unknown player",pfp:""};
+    const ids=rows.map(r=>r.id);
+    const notes=[...new Set(rows.map(r=>r.player_note).filter(Boolean))];
+    const groups=new Map();
+    rows.forEach(r=>{const i=info[r.level_key],g=i?i.list+"|"+i.sub+"|"+i.tier:"~other";if(!groups.has(g))groups.set(g,{i,rows:[]});groups.get(g).rows.push(r)});
+    const gs=[...groups.values()].sort((a,b)=>(a.i?a.i.o:1e9)-(b.i?b.i.o:1e9));
+    return `<details class="qp" data-u="${esc(uid)}"${qClosed.has(uid)?"":" open"}>
+      <summary class="qph">${av(p)}<b>${esc(p.name)}</b><span class="qbadge">${rows.length} level${rows.length===1?"":"s"}</span><span class="qmeta">${gs.length} tier${gs.length===1?"":"s"} · since ${day(rows[0].created_at)}</span></summary>
+      <div class="qpb">
+        ${notes.map(n=>`<div class="qnotes"><span>Player’s note</span>${esc(n)}</div>`).join("")}
+        ${pend?`<div class="qpact">${btn("ok",ids,`✓ Approve all ${rows.length}`,"qok")}${btn("no",ids,`✕ Reject all ${rows.length}`,"qno")}<input class="qreason" maxlength="500" placeholder="Reason if rejecting (optional, shown to the player)" aria-label="Reason for rejecting"></div>`:""}
+        ${gs.map(g=>{const i=g.i,gi=g.rows.map(r=>r.id);
+          return `<div class="qt" style="--tc:${i?i.color:"#666"}">
+            <div class="qth" style="background:${i?i.color:"#555"};color:${i&&i.dark?"#1f1f1f":"#fff"}"><b>${esc(i?i.tier:"Levels no longer on the site")}</b>${i?`<span class="qtag">${esc(i.list)}${i.sub?" · "+esc(i.sub):""}</span>`:""}<span class="qcount">${g.rows.length}</span>
+              ${pend&&g.rows.length>1?`<span class="qthb">${btn("ok",gi,"✓ Tier","qok")}${btn("no",gi,"✕ Tier","qno")}</span>`:""}</div>
+            ${g.rows.map(r=>`<div class="qr">
+              <span class="qn">${esc(i?(info[r.level_key]||{}).n:r.level_key)}</span>
+              ${r.evidence?`<a class="qev" href="${esc(r.evidence)}" target="_blank" rel="noopener noreferrer">▶ ${esc(host(r.evidence))}</a>`:'<span class="qev none">no link</span>'}
+              <small>${day(r.created_at)}</small>
+              <span class="qrb">${rowBtns(r)}</span>
+              ${qStatus==="rejected"&&r.note?`<div class="qrn">Reason: ${esc(r.note)}</div>`:""}
+            </div>`).join("")}
+          </div>`}).join("")}
+      </div></details>`;
+  };
+  el.innerHTML=`<div class="qbar">
+      <div class="qseg" role="tablist">${[["pending","Pending"],["approved","Approved"],["rejected","Rejected"]].map(([k,n])=>`<button type="button" role="tab" data-qs="${k}" aria-selected="${k===qStatus}">${n}</button>`).join("")}</div>
+      <button type="button" id="qRefresh" class="qb">Refresh</button>
+      ${players.length>1?'<button type="button" id="qFold" class="qb">Collapse all</button><button type="button" id="qUnfold" class="qb">Expand all</button>':""}
+    </div>
+    <p class="muted">${qRows.length?`${qRows.length} ${qStatus} level${qRows.length===1?"":"s"} from ${players.length} player${players.length===1?"":"s"}`:`Nothing ${qStatus} right now.`}</p>
+    <p id="devmsg" class="msg" role="status"></p>
+    ${players.map(card).join("")}`;
 }
 async function qAct(ids,status,note){
-  const {error}=await sb.from("submissions").update({status,note:note||"",reviewed_at:new Date().toISOString()}).in("id",ids);
-  if(error){devMsg("Couldn’t update: "+error.message);return false}
+  for(let i=0;i<ids.length;i+=200){
+    const {error}=await sb.from("submissions").update({status,note:note||"",reviewed_at:new Date().toISOString()}).in("id",ids.slice(i,i+200));
+    if(error){devMsg("Couldn’t update: "+error.message);return false}
+  }
   const set=new Set(ids);qRows=qRows.filter(r=>!set.has(r.id));drawQueue();refresh();return true;
 }
-$("dev").onchange=e=>{
-  if(e.target.id==="qStatus"){qStatus=e.target.value;qUser="all";renderDev()}
-  else if(e.target.id==="qUser"){qUser=e.target.value;drawQueue()}
-};
+async function qDel(ids){
+  for(let i=0;i<ids.length;i+=200){
+    const {error}=await sb.from("submissions").delete().in("id",ids.slice(i,i+200));
+    if(error){devMsg("Couldn’t delete: "+error.message);return false}
+  }
+  const set=new Set(ids);qRows=qRows.filter(r=>!set.has(r.id));drawQueue();refresh();return true;
+}
+$("dev").addEventListener("toggle",e=>{const d=e.target;if(d.classList&&d.classList.contains("qp")){if(d.open)qClosed.delete(d.dataset.u);else qClosed.add(d.dataset.u)}},true);
 $("dev").onclick=async e=>{
-  const t=e.target;
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.qs){if(t.dataset.qs!==qStatus){qStatus=t.dataset.qs;renderDev()}return}
   if(t.id==="qRefresh")return renderDev();
-  if(t.id==="qAll"){
-    if(t.dataset.armed!=="1"){t.dataset.armed="1";const old=t.textContent;t.textContent="Click again to approve all";setTimeout(()=>{if(t.isConnected){t.dataset.armed="";t.textContent=old}},4000);return}
-    const ids=qRows.filter(r=>qUser==="all"||r.user_id===qUser).map(r=>r.id);
-    for(let i=0;i<ids.length;i+=200)if(!await qAct(ids.slice(i,i+200),"approved",""))return;
-    devMsg("Approved "+ids.length+".");return;
+  if(t.id==="qFold"||t.id==="qUnfold"){document.querySelectorAll("#dev .qp").forEach(d=>{d.open=t.id==="qUnfold"});return}
+  const act=t.dataset.act;if(!act)return;
+  const ids=t.dataset.ids.split(",").map(Number).filter(Boolean);if(!ids.length)return;
+  /* anything that touches more than one level, or can't be undone easily, needs a second click */
+  if((ids.length>1||act==="rv"||act==="del")&&t.dataset.armed!=="1"){
+    t.dataset.armed="1";const old=t.innerHTML;t.textContent="Click again to confirm";t.classList.add("armed");
+    setTimeout(()=>{if(t.isConnected){t.dataset.armed="";t.innerHTML=old;t.classList.remove("armed")}},4000);return;
   }
-  const row=t.closest(".qrow");if(!row)return;
-  const id=+row.dataset.id,note=(row.querySelector(".qn")||{}).value||"";
-  if(t.classList.contains("ok"))await qAct([id],"approved","");
-  else if(t.classList.contains("no"))await qAct([id],"rejected",note);
-  else if(t.classList.contains("rv")){
-    if(t.dataset.armed!=="1"){t.dataset.armed="1";const old=t.textContent;t.textContent="Click again";setTimeout(()=>{if(t.isConnected){t.dataset.armed="";t.textContent=old}},4000);return}
-    const {error}=await sb.from("submissions").delete().eq("id",id);
-    if(error)return devMsg("Couldn’t delete: "+error.message);
-    qRows=qRows.filter(r=>r.id!==id);drawQueue();refresh();
-  }
+  const reason=((t.closest(".qp")||document).querySelector(".qreason")||{}).value||"";
+  t.disabled=true;
+  if(act==="ok"&&await qAct(ids,"approved",""))devMsg(`Approved ${ids.length}.`);
+  else if(act==="no"&&await qAct(ids,"rejected",reason.trim()))devMsg(`Rejected ${ids.length}.`);
+  else if(act==="rv"&&await qAct(ids,"rejected","Approval revoked"))devMsg("Approval revoked.");
+  else if(act==="del"&&await qDel(ids))devMsg("Deleted.");
 };
 /* ---------- Dev page: tier manager and data ---------- */
 let devTab="acc",tierList=0,tierSub=0,tmOpen=-1;
