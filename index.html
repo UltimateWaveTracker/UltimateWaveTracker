@@ -92,6 +92,7 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .pk ul{margin:8px 0 0;padding-left:20px;color:#ccc;line-height:1.6}
 .pk .ok{color:#6fd07f}
 .pk .ip{color:#f0a800}
+.pk .miss{color:#8a8a8a;font-style:italic}
 .pv .pvtitle{color:#6ab0ff;font-size:17px;margin-top:2px}
 .lbrow .ttl{font-style:normal;color:#6ab0ff;font-size:14px}
 #homeBtn{background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
@@ -2080,9 +2081,54 @@ let DATA=[
 /* ========= ACHIEVEMENT PACKS — add yours here =========
    Each pack: {name:"Pack name", levels:["levelID","levelID",...]}
    Levels use the same ID as on the tracker. A player earns the pack (and its
-   title) when every level in it is complete. Optional title:"..." sets a title
+   title) when every level in it is complete. A level that isn't on the tracker yet
+   is written as "?Level name": it shows in the pack, but the pack can't be earned
+   until it is swapped for the level's ID. Optional title:"..." sets a title
    different from the pack name. */
-const PACKS=[];
+const PACKS=[
+  /* --- original packs --- */
+  {name:"Wave Beginner", levels:["59648477", "46570823", "61839007"]}, /* NASTY · Funk God · Kadra */
+  {name:"Spammy Pack", levels:["32714994", "55276699", "40673153"]}, /* 8063 · Kristina Vogel · click consistency v3 */
+  {name:"Tiny Pack", levels:["32714994", "66702548", "59910938"]}, /* 8063 · Personal Challenge X · UBaSUNhW */
+  {name:"Wave Expert", levels:["64017356", "56279405", "65480542"]}, /* Coggers · Raw Sausage so tasty · Action */
+  {name:"DaG Pack", levels:["63329754", "64132218", "62413539"]}, /* S M I L E · Techno Love · Magic Touch */
+  {name:"Jcak Pcak", levels:["64754276", "65796935", "64048771"]}, /* wave TECHNIC · coughy bean · No Rider */
+  {name:"Wave Grandmaster", levels:["76663114", "81932491", "64919670"]}, /* Apotheosis · JENOVA · Sadism */
+  {name:"D Pack", levels:["65139499", "55637201", "65348932"]}, /* D minor · D · Delusion */
+  {name:"RGB Pack", levels:["67862379", "57696990", "65496433"]}, /* Craven Soul · Toxic Blades · Flutterwonder */
+  {name:"Masochism Pack", levels:["64319413", "64319423", "76213334"]}, /* Masochism · Masochism II · SADOMASOCHISM */
+  {name:"Still Woozy Pack", levels:["81023078", "87806161", "91790026"]}, /* cooks · lucy · habit */
+  {name:"Exen Pack", levels:["44813027", "55392313", "50542904"]}, /* Shock · Deorum · Falling Illusion */
+  {name:"Toxic Trilogy Pack", levels:["66663246", "57696990", "101993302"]}, /* Virulent Verge · Toxic Blades · Envenomed */
+  {name:"Fatters Pack", levels:["64017356", "68486597", "85042202"]}, /* Coggers · Flyers · Oblivers */
+  {name:"Sequel Pack", levels:["65951885", "66158978", "67201478"]}, /* Tuliva · Slightly buffed Math · NITROGEN REDUX */
+  {name:"Wave Historian", levels:["55637201", "46650270", "47354575"]}, /* D · The Acro Challenge · Superr Challenge */
+  {name:"DisRGB Pack", levels:["69032837", "67600557", "78512007"]}, /* Dissipate · Distorted · Dissonance */
+  {name:"Greyscale Pack", levels:["46650270", "62308493", "114160194"]}, /* The Acro Challenge · Carbon Commination · Vanuatu */
+  {name:"Pacific Pack", levels:["64537501", "63907905", "114160194"]}, /* Tuvalu · Nauru · Vanuatu */
+  {name:"Wave Master", levels:["63329754", "66663246", "66200701"]}, /* S M I L E · Virulent Verge · Radiation */
+  {name:"Noise Rock Pack", levels:["76750622", "87558350", "83240981"]}, /* Riff Wraiths · Nothing Special · Nine */
+  {name:"Consistency Pack", levels:["62000980", "40673153"]}, /* Lamp Level 1 · click consistency v3 */
+  {name:"Nine Circles Pack", levels:["62894149", "67564759"]}, /* bedrock dance · Subsuming Vortex 66p */
+  /* --- Beginner packs --- */
+  {name:"Chamber Pack I", levels:["56491894", "37079846", "124163985", "58527856"]}, /* Happy Chamber · Dont Breathe · gas Chamber · Deadly Chamber */
+  {name:"Rainbow Pack", levels:["66844306", "78948184", "79412768"]}, /* Wave Fun 11 · Nitelites · Pastel */
+  {name:"Caverns Pack", levels:["72867270", "75021174", "82117934"]}, /* Jade Caverns · Amethyst Caves · Emerald Caverns */
+  {name:"Aespha Pack", levels:["80878937", "78495624", "79898823"]}, /* Childlike · Positivity · Optimism */
+  /* --- Hard packs --- */
+  {name:"Ball Pack", levels:["61839007", "63821522"]}, /* Kadra · Kudos */
+  {name:"Food Pack", levels:["56279405", "67211434", "65796935"]}, /* Raw Sausage so tasty · Ravioli · coughy bean */
+  {name:"Small D Pack", levels:["59612157", "65139499", "55637201"]}, /* Rektumi · D minor · D */
+  /* --- Master packs --- */
+  {name:"Venomous Pack", levels:["67938608", "66663246", "57696990", "101993302"]}, /* Toxicity · Virulent Verge · Toxic Blades · Envenomed */
+  {name:"Facial Expression Pack", levels:["72899127", "63329754", "44813027"]}, /* Frown · S M I L E · Shock */
+  {name:"Confused Pack", levels:["68870869", "74226067", "65348932"]}, /* Illusion · Dazed · Delusion */
+  {name:"Chamber Pack II", levels:["50541459", "111779595", "92796557", "100242794"]}, /* Sorrow Chamber · Scorch Chamber · Viper · Sad Chamber */
+  /* --- Legend packs --- */
+  {name:"Sadism Pack", levels:["64919670", "76213334"]}, /* Sadism · SADOMASOCHISM */
+  {name:"Veri SuBBo Pack", levels:["62619237", "66200701", "47354575", "63006314"]}, /* Turska · Radiation · Superr Challenge · VSC */
+  {name:"Exen Pack 2", levels:["55392313", "50542904", "38230726"]} /* Deorum · Falling Illusion · Illusion of Hell */
+];
 /* ====================================================== */
 
 const BUILTIN=JSON.parse(JSON.stringify(DATA));
@@ -2102,7 +2148,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261102-214351";
+const SITE_BUILD="20261102-220806";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -2865,7 +2911,7 @@ function packStatus(pr){
   if(!PACKS.length)return[];
   const names=levelNames();
   return PACKS.map(p=>{
-    const lvls=p.levels.map(id=>{const k=String(id),v=pr.P[k]||0;return{n:names[k]||k,v}});
+    const lvls=p.levels.map(id=>{const k=String(id);if(k[0]==="?")return{n:k.slice(1),v:0,missing:true};const v=pr.P[k]||0;return{n:names[k]||k,v}});
     const done=lvls.filter(x=>x.v>=100).length,total=lvls.length;
     return{name:p.name,title:p.title||p.name,lvls,done,total,earned:total>0&&done===total};
   });
@@ -2882,7 +2928,7 @@ function renderAccount(){
   const pack=x=>{
     const pct=x.total?Math.round(100*x.done/x.total):0;
     return `<details class="pk${x.earned?" earned":""}"><summary><span class="nm">${esc(x.name)}</span><span class="bar"><i style="width:${pct}%"></i></span><span>${x.done}/${x.total}</span>${x.earned?'<span class="badge">Earned</span>':""}</summary>
-      <ul>${x.lvls.map(l=>`<li class="${l.v>=100?"ok":l.v>0?"ip":""}">${esc(l.n)} - ${l.v>=100?"complete":l.v>0?"in progress":"not started"}</li>`).join("")}</ul></details>`;
+      <ul>${x.lvls.map(l=>`<li class="${l.missing?"miss":l.v>=100?"ok":l.v>0?"ip":""}">${esc(l.n)} - ${l.missing?"not on the tracker yet":l.v>=100?"complete":l.v>0?"in progress":"not started"}</li>`).join("")}</ul></details>`;
   };
   el.innerHTML=`<h2>Edit profile</h2>
     <div class="panel"><h3>Name</h3>
