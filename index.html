@@ -1226,7 +1226,9 @@ let DATA=[
     {n:"Exodus",id:"92548699"},
     {n:"wave challenge",id:"63578770"},
     {n:"jaY challenge final",id:"148404202"}
-   ]},
+   ]}
+  ]},
+  {name:"Novice",tiers:[
    {name:"Hard",achieved:47,plus:86,color:"#fd7b01",dark:true,levels:[
     {n:"chaotic",id:"87108096"},
     {n:"SAmuel Koch Chal",id:"48812442"},
@@ -1364,7 +1366,9 @@ let DATA=[
     {n:"DIAMOND DANCE",id:"52648603"},
     {n:"Gandhi Chamber",id:"64061220"},
     {n:"Roddy",id:"122337621"}
-   ]},
+   ]}
+  ]},
+  {name:"Intermediate",tiers:[
    {name:"Challenging",achieved:22,plus:36,color:"#c10100",levels:[
     {n:"nightly gaze",id:"73928826"},
     {n:"Green Trust",id:"70557348"},
@@ -1484,7 +1488,9 @@ let DATA=[
     {n:"Disabled the FLAW",id:"140025395"},
     {n:"Snowman Street",id:"131204002"},
     {n:"no plan",id:"104054448"}
-   ]},
+   ]}
+  ]},
+  {name:"Advanced",tiers:[
    {name:"Insane",achieved:9,plus:20,color:"#d3af37",dark:true,levels:[
     {n:"U",id:"104132949"},
     {n:"grapumpkin",id:"95932464"},
@@ -1555,7 +1561,9 @@ let DATA=[
     {n:"Stercore",id:"69766474"},
     {n:"SADOMASOCHISM",id:"76213334"},
     {n:"mystic haze",id:"73332806"}
-   ]},
+   ]}
+  ]},
+  {name:"Pro",tiers:[
    {name:"Horrific",achieved:3,plus:8,color:"#9993ff",dark:true,levels:[
     {n:"Oblivers",id:"85042202"},
     {n:"Puff",id:"143164600"},
@@ -1573,7 +1581,9 @@ let DATA=[
     {n:"Lotus Chamber",id:"85832332"},
     {n:"racketeering v3",id:"114046969"},
     {n:"Zero Factorial",id:"71132224"}
-   ]},
+   ]}
+  ]},
+  {name:"God",tiers:[
    {name:"nil",achieved:1,plus:2,color:"#000000",levels:[
     {n:"Thunder",id:"114115238"},
     {n:"Hypnosis",id:"72829529"}
@@ -1581,12 +1591,7 @@ let DATA=[
    {name:"Cosmic",achieved:1,plus:1,color:"#4c1131",levels:[
     {n:"CorroZ",id:"86191664"}
    ]}
-  ]},
-  {name:"Novice",tiers:[]},
-  {name:"Intermediate",tiers:[]},
-  {name:"Advanced",tiers:[]},
-  {name:"Pro",tiers:[]},
-  {name:"God",tiers:[]}
+  ]}
  ]},
  {name:"WPPL",subs:[
   {name:"Tutorial",tiers:[]},
@@ -2097,7 +2102,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261102-195143";
+const SITE_BUILD="20261102-214351";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
