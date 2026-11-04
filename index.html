@@ -68,8 +68,13 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
   .right nav{display:flex;flex-direction:column}
   .right nav button{text-align:left;padding:12px 18px;font-size:17px;border-radius:0}
   .right nav button[aria-pressed=true]{background:#ffffff10;box-shadow:inset 3px 0 0 #6ab0ff}
-  #profile{border-top:1px solid #333;margin-top:6px;padding:10px 12px 0}
-  #profMenu{position:static;margin-top:6px;box-shadow:none;min-width:0}
+  #profile{order:-1;border-bottom:1px solid #333;margin-bottom:6px;padding:4px 12px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  #profBtn{pointer-events:none}
+  #profBtn .chev{display:none}
+  #profile:has(#profMenu:empty) #profBtn{pointer-events:auto}
+  #profMenu,#profMenu[hidden]{display:flex;gap:6px;position:static;margin:0 0 0 auto;padding:0;background:none;border:0;box-shadow:none;min-width:0;max-height:none;overflow:visible}
+  #profMenu:empty{display:none}
+  .right #profMenu button{width:auto;background:#ffffff12;padding:8px 12px;font-size:15px;white-space:nowrap}
 }
 #profile{position:relative}
 #profBtn{display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;padding:4px 8px 4px 4px;border-radius:8px}
@@ -329,7 +334,15 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 .pkl.pend{border-left-color:#2d6a8f}
 .pkt{font-weight:700;font-size:13px;border-radius:6px;padding:4px 8px;min-width:96px;text-align:center;line-height:1.15}
 .pkt small{display:block;font-size:10px;font-weight:600;opacity:.8}
-.pkn{flex:1;font-weight:700;font-size:16px;min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.pkn{flex:1;font-weight:700;font-size:16px;min-width:0;overflow-wrap:break-word}
+@media (max-width:600px){
+  .pkl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"tag name copy" "tag stat copy";column-gap:10px;row-gap:1px;align-items:center}
+  .pkt{grid-area:tag;min-width:74px;font-size:12px;padding:4px 6px}
+  .pkn{grid-area:name;font-size:15px}
+  .pkl .pkc{grid-area:copy}
+  .pkl .pks{grid-area:stat;text-align:left;min-width:0;font-size:12px}
+  .pkdone{margin-left:0;flex-basis:100%}
+}
 .pkl.miss{opacity:.6}
 .pkl .pkc{flex:none}
 .pkt{flex:none}
@@ -2626,7 +2639,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261104-115138";
+const SITE_BUILD="20261104-123645";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
