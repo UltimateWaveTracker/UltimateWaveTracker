@@ -455,6 +455,39 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 let DATA=[
  {name:"GDSR",subs:[
   {name:"Tutorial",tiers:[
+   {name:"Rock DLC 1",section:"DLC 1",color:"#7a6a58",levels:[
+    {n:"Transient",id:"69272418"},
+    {n:"Viridian",id:"67058715"},
+    {n:"GDSR Challenge",id:"68073068"},
+    {n:"Gelp",id:"68128541"}
+   ]},
+   {name:"Rock DLC 2",section:"DLC 2",color:"#7a6a58",levels:[
+    {n:"Happy Chamber",id:"56491894"},
+    {n:"Halloween Challenge",id:"75354898"},
+    {n:"aAa",id:"62067491"},
+    {n:"gas Chamber",id:"123693486"},
+    {n:"Silver Cascades",id:"72936013"},
+    {n:"toxicity",id:"67938608"},
+    {n:"homo haha 2",id:"45417766"},
+    {n:"Cragley Chamber",id:"62250556"},
+    {n:"Windpipe Blockage",id:"59510706"},
+    {n:"Ghostly Chamber",id:"61524563"},
+    {n:"Eternal Marigold",id:"67628887"},
+    {n:"wave challenge 5",id:"46016708"},
+    {n:"waveywaveywaveywavey",id:"72467954"},
+    {n:"betty crocker",id:"41560546"},
+    {n:"vVv",id:"62524548"},
+    {n:"Creeper challenge",id:"24426577"}
+   ]},
+   {name:"Rock DLC 3",section:"DLC 3",color:"#7a6a58",levels:[
+    {n:"VIP Challenge",id:"78528931"},
+    {n:"Observatory",id:"75873131"},
+    {n:"Something",id:"71835450"},
+    {n:"Sandy Chamber",id:"61514366"},
+    {n:"ise",id:"72794284"},
+    {n:"sno",id:"61460345"},
+    {n:"Merry X Challenge",id:"76878758"}
+   ]}
   ]},
   {name:"Novice",tiers:[
    {name:"Bronze",achieved:9,plus:15,color:"#e07f6c",levels:[
@@ -2640,7 +2673,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261104-124443";
+const SITE_BUILD="20261104-221436";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
