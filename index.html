@@ -113,6 +113,7 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .pk ul{margin:8px 0 0;padding-left:20px;color:#ccc;line-height:1.6}
 .pk .ok{color:#6fd07f}
 .pk .ip{color:#f0a800}
+.linkbtn{background:none!important;border:0;padding:0!important;margin:0!important;color:#6ab0ff!important;font:inherit!important;cursor:pointer;text-decoration:underline}
 .pk .miss{color:#8a8a8a;font-style:italic}
 .pv .pvtitle{color:#6ab0ff;font-size:17px;margin-top:2px}
 .lbrow .ttl{font-style:normal;color:#6ab0ff;font-size:14px}
@@ -336,8 +337,8 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 .pkt small{display:block;font-size:10px;font-weight:600;opacity:.8}
 .pkn{flex:1;font-weight:700;font-size:16px;min-width:0;overflow-wrap:break-word}
 @media (max-width:600px){
-  .pkl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"tag name copy" "tag stat copy";column-gap:10px;row-gap:1px;align-items:center}
-  .pkt{grid-area:tag;min-width:74px;font-size:12px;padding:4px 6px}
+  .pkl{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag name" "tag stat";column-gap:10px;row-gap:1px;align-items:center}
+  .pkt{grid-area:tag;min-width:68px;font-size:12px;padding:4px 6px}
   .pkn{grid-area:name;font-size:15px}
   .pkl .pkc{grid-area:copy}
   .pkl .pks{grid-area:stat;text-align:left;min-width:0;font-size:12px}
@@ -2639,7 +2640,7 @@ try{
   staleEdits=!!localStorage.getItem("lvl-tracker-data-old");
 }catch(e){}
 /* Each published version carries its own stamp. The page compares it with the copy on the server. */
-const SITE_BUILD="20261104-123645";
+const SITE_BUILD="20261104-124443";
 async function serverBuild(){
   try{
     const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"});
@@ -3152,7 +3153,6 @@ function renderPacks(){
     ${x.lv.map(l=>{const [cls,txt]=status(l.k);return `<div class="pkl ${cls}">
       <span class="pkt" style="background:${l.color};color:${l.dark?"#1f1f1f":"#fff"}">${esc(l.tier)}${l.list?`<small>${esc(l.list)}</small>`:""}</span>
       <span class="pkn">${esc(l.n)}</span>
-      ${l.id?`<button type="button" class="pkc" data-copy="${esc(l.id)}" title="Copy ID ${esc(l.id)}" aria-label="Copy level ID">${ICON_COPY}</button>`:""}
       <span class="pks">${a?txt:""}</span></div>`}).join("")}
     <h3>Victors (${victors.length})</h3>
     ${victors.length?`<div class="pkv">${victors.map(p=>`<button type="button" data-vic="${esc(p.id)}">${av(p)}<span>${esc(p.name)}</span></button>`).join("")}</div>`:'<p class="muted">Nobody has completed this pack yet. Only approved levels count.</p>'}`;
@@ -3519,8 +3519,8 @@ function renderAccount(){
     <div class="panel"><h3>Titles</h3>
       <p>Equipped title: <b>${eq?esc(eq):"None"}</b></p>
       ${earned.length?earned.map(x=>`<div class="arow"><span>${esc(x.title)}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">Complete achievement packs to earn titles.</p>'}</div>
-    <div class="panel"><h3>Achievements</h3>
-      ${S.length?`<p>${earned.length} of ${S.length} packs earned</p>`+S.map(pack).join(""):'<p class="muted">No achievements yet. Packs will appear here once they are added.</p>'}</div>`;
+    <div class="panel"><h3>Completed packs</h3>
+      ${earned.length?`<p>${earned.length} of ${S.length} packs completed</p>`+earned.map(pack).join(""):`<p class="muted">You haven’t completed any packs yet. See all ${S.length} packs and your progress on the <button type="button" class="linkbtn" data-go="packs">Packs page</button>.</p>`}</div>`;
 }
 async function saveName(){
   const a=active();if(!a)return;
@@ -3533,6 +3533,7 @@ async function saveName(){
 }
 $("account").onclick=async e=>{
   if(e.target.id==="acSave")return saveName();
+  const g=e.target.closest("[data-go]");if(g)return setView(g.dataset.go);
   const q=e.target.closest("[data-eq]");
   if(q){
     const a=active();if(!a)return;
