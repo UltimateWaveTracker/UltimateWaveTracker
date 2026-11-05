@@ -113,6 +113,8 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .pk ul{margin:8px 0 0;padding-left:20px;color:#ccc;line-height:1.6}
 .pk .ok{color:#6fd07f}
 .pk .ip{color:#f0a800}
+.sbar{height:8px;background:#333;border-radius:99px;overflow:hidden;margin:6px 0 10px}
+.sbar i{display:block;height:100%;background:#6fd07f}
 .linkbtn{background:none!important;border:0;padding:0!important;margin:0!important;color:#6ab0ff!important;font:inherit!important;cursor:pointer;text-decoration:underline}
 .pk .miss{color:#8a8a8a;font-style:italic}
 .pv .pvtitle{color:#6ab0ff;font-size:17px;margin-top:2px}
@@ -369,7 +371,6 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
       <button data-p="leaderboard" aria-pressed="false">Stats Viewer</button>
       <button data-p="packpage" aria-pressed="false">Packs</button>
       <button data-p="subpage" aria-pressed="false">Submissions<span id="subCount"></span></button>
-      <button data-p="stats" aria-pressed="false">Stats</button>
       <button data-p="settings" aria-pressed="false">Settings</button>
       <button data-p="devpage" aria-pressed="false" hidden>Dev</button>
     </nav>
@@ -397,7 +398,6 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 <div id="storeWarn" role="alert" hidden>This browser is blocking storage, so you may be logged out when you refresh the page. Open the site in a normal browser window (not a preview or private window).</div>
 <div id="newVer" role="status" hidden><span>A new version of the site is available.</span> <button type="button" id="newVerGo">Refresh now</button></div>
 <div id="netWarn" role="alert" hidden></div>
-<section id="stats" class="panel" hidden></section>
 <section id="subpage" class="panel wide" hidden></section>
 <section id="packpage" class="panel" hidden>
   <div class="pkleft"><h2>Packs</h2><input id="pkq" class="pksearch" type="search" placeholder="Search packs or levels" aria-label="Search packs or levels" autocomplete="off"><div id="pklist"></div></div>
@@ -1711,7 +1711,7 @@ let DATA=[
  {name:"WPPL",subs:[
   {name:"Tutorial",tiers:[]},
   {name:"Novice",tiers:[
-   {name:"★Common☆",achieved:8,plus:10,color:"#b8b8b8",levels:[
+   {name:"Common",achieved:8,plus:10,color:"#b8b8b8",levels:[
     {n:"The Basics",id:"137689371"},
     {n:"A Genetic Start",id:"137689575"},
     {n:"3x Speed Control",id:"137684940"},
@@ -1723,7 +1723,7 @@ let DATA=[
     {n:"Easy Portals",id:"137850887"},
     {n:"Do u want control",id:"137885854"}
    ]},
-   {name:"★Uncommon★",achieved:11,plus:16,color:"#5fbf5f",levels:[
+   {name:"Uncommon",achieved:11,plus:16,color:"#5fbf5f",levels:[
     {n:"Ascend",id:"138003116"},
     {n:"Floran Challenge 2",id:"65128401"},
     {n:"Dreamway",id:"91654675"},
@@ -1741,7 +1741,7 @@ let DATA=[
     {n:"quite fast wave",id:"137835953"},
     {n:"Michael Wade",id:"62310848"}
    ]},
-   {name:"★★Rare★☆",achieved:7,plus:15,color:"#4a90e2",levels:[
+   {name:"Rare",achieved:7,plus:15,color:"#4a90e2",levels:[
     {n:"battment",id:"107982372"},
     {n:"Galaxy Collapse Wave",id:"67149625"},
     {n:"Emaen Challenge",id:"75254719"},
@@ -1757,10 +1757,42 @@ let DATA=[
     {n:"Simple 2",id:"136641148"},
     {n:"C R A Z Y",id:"117027279"},
     {n:"Gandhi Chamber",id:"64061220"}
+   ]},
+   {name:"Uncommon",section:"B-Side",color:"#5fbf5f",levels:[
+    {n:"a t a r i",id:"137085377"},
+    {n:"Random Wave Easy",id:"117220823"},
+    {n:"wave challenge",id:"77863491"},
+    {n:"i was never book sma",id:"96896530"},
+    {n:"wave challenge 88",id:"92332069"},
+    {n:"lachauwzz challenge",id:"127879014"},
+    {n:"wave hacker",id:"136347631"},
+    {n:"4upn8down Mechanism",id:"76239365"},
+    {n:"Stairway",id:"107331752"},
+    {n:"Michael Wade",id:"62310848"},
+    {n:"wc azii 29",id:"134925844"},
+    {n:"dcd motto buffed",id:"119899809"},
+    {n:"Scrambled Eggs",id:"110520414"},
+    {n:"Aqua Challenge",id:"111579694"},
+    {n:"Rainbow Control",id:"143151836"}
+   ]},
+   {name:"Rare",section:"B-Side",color:"#4a90e2",levels:[
+    {n:"nigel genepacalypse",id:"137711782"},
+    {n:"brick by brick",id:"135340706"},
+    {n:"Wave Master J",id:"135462930"},
+    {n:"WMWM",id:"133283636"},
+    {n:"armadillo",id:"89919062"},
+    {n:"Ncat chall 1",id:"78651387"},
+    {n:"HorribleStep",id:"134916732"},
+    {n:"Wave Master G",id:"130212593"},
+    {n:"wc azii 27",id:"134748932"},
+    {n:"wc azii 28",id:"134800716"},
+    {n:"obvious for lily",id:"137525075"},
+    {n:"Temper",id:"117696362"},
+    {n:"Horuszed Challenge",id:"143770265"}
    ]}
   ]},
   {name:"Intermediate",tiers:[
-   {name:"★★Super Rare★★",achieved:10,plus:19,color:"#8e5fd6",levels:[
+   {name:"Super Rare",achieved:10,plus:19,color:"#8e5fd6",levels:[
     {n:"wave pro",id:"134424468"},
     {n:"Wave Master F",id:"127842566"},
     {n:"triple land",id:"136413017"},
@@ -1781,7 +1813,7 @@ let DATA=[
     {n:"wave boom",id:"137036830"},
     {n:"Malicious Wave",id:"134992553"}
    ]},
-   {name:"★★★Uber Rare★★☆",achieved:7,plus:13,color:"#e056c0",levels:[
+   {name:"Uber Rare",achieved:7,plus:13,color:"#e056c0",levels:[
     {n:"Vague Chall",id:"131443573"},
     {n:"Malicious Wave II",id:"135263169"},
     {n:"double helix",id:"107332033"},
@@ -1796,7 +1828,7 @@ let DATA=[
     {n:"Easy For Vantasia",id:"138011698"},
     {n:"wave stamina",id:"136842364"}
    ]},
-   {name:"✶Epic!✶",achieved:6,plus:11,color:"#e8a030",levels:[
+   {name:"Epic",achieved:6,plus:11,color:"#e8a030",levels:[
     {n:"The Descended 50p",id:"74215005"},
     {n:"Night of Nights wave",id:"132098139"},
     {n:"snail pancake",id:"131046189"},
@@ -1808,10 +1840,21 @@ let DATA=[
     {n:"Christmas2025 IX",id:"129854547"},
     {n:"Cnidrion",id:"117739103"},
     {n:"Rainbow Stamina",id:"139642788"}
+   ]},
+   {name:"Super Rare",section:"B-Side",color:"#8e5fd6",levels:[
+    {n:"Juggernaut 3x Speed",id:"125981933"},
+    {n:"anix challenge",id:"86178031"},
+    {n:"dark corridor",id:"136083943"},
+    {n:"hexagon challenge",id:"136096489"},
+    {n:"Wave Master B",id:"126616537"},
+    {n:"lood patterns",id:"91802220"},
+    {n:"devils consistency",id:"135658138"},
+    {n:"DoubleDouble",id:"138405172"},
+    {n:"cyanide",id:"144831116"}
    ]}
   ]},
   {name:"Advanced",tiers:[
-   {name:"✷Legendary!!✷",achieved:4,plus:8,color:"#f2c230",levels:[
+   {name:"Legendary",achieved:4,plus:8,color:"#f2c230",levels:[
     {n:"Juggernaut",id:"69353895"},
     {n:"MiniControl 02",id:"138286116"},
     {n:"NOOB TOWN",id:"137556566"},
@@ -1821,7 +1864,7 @@ let DATA=[
     {n:"Sweating Bullets",id:"139252604"},
     {n:"GLORY",id:"140534917"}
    ]},
-   {name:"✹Mythic!?✹",achieved:2,plus:10,color:"#e04040",levels:[
+   {name:"Mythic",achieved:2,plus:10,color:"#e04040",levels:[
     {n:"Control Grandmaster",id:"136362863"},
     {n:"GRINDSET",id:"141244806"},
     {n:"Big Kahuna",id:"108108560"},
@@ -1835,7 +1878,7 @@ let DATA=[
    ]}
   ]},
   {name:"Pro",tiers:[
-   {name:"⛧JACKPOT⛧",achieved:1,plus:7,color:"#1a1a1a",levels:[
+   {name:"JACKPOT",achieved:1,plus:7,color:"#1a1a1a",levels:[
     {n:"LEVIATHAN",id:"136911702"},
     {n:"LULLABY",id:"135935674"},
     {n:"0000",id:"137913860"},
@@ -2808,20 +2851,38 @@ function render(){
   renderProfile();
   if(view==="account")renderAccount();
   renderLB();
-  renderStats(c);
+  if(view==="account")renderAccStats();
   if(view==="packs"&&document.activeElement!==$("pkq"))renderPacks();
   const dn=Object.keys(DRAFT).length;$("subCount").textContent=dn?"("+dn+")":"";
   if(view==="subs"&&!(document.activeElement&&$("subpage").contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))renderSubs();
   save();
 }
 
-function renderStats(c){
-  let B=0,N=0;
-  const rows=c.subs.flatMap(s=>s.tiers.map(t=>{
-    const {b,n}=counts(c,s,t);B+=b;N+=n;
-    return `<tr><td>${esc(s.name)}</td><td>${esc(t.name)}</td><td>${b}/${goal(t,b,n)}</td><td>${esc(rank(t,b,n))||"–"}</td></tr>`})).join("");
-  $("stats").innerHTML=`<p><strong>${B}</strong> of ${N} levels beaten in ${esc(c.title||c.name)}</p>
-    <table><tr><th>Sub-category</th><th>Tier</th><th>Beaten</th><th>Rank</th></tr>${rows}</table>`;
+/* Profile > Stats: the player's own progress (drafts and pending count, like the tracker) for one list, or for the whole site */
+let accList="all";
+function renderAccStats(){
+  const el=$("acStats");if(!el)return;
+  const beaten=k=>pct(k)>=100||!!DRAFT[k]||(PEND[k]&&PEND[k].status==="pending");
+  const listKeys=c=>{const m=new Set();c.subs.forEach(sb=>sb.tiers.forEach(t=>t.levels.forEach(l=>m.add(lk(lv(l))))));return m};
+  const tally=ks=>{let b=0,ap=0;ks.forEach(k=>{if(beaten(k))b++;if(pct(k)>=100)ap++});return{b,ap,n:ks.size}};
+  const bar=(b,n)=>`<div class="sbar" aria-hidden="true"><i style="width:${n?Math.round(100*b/n):0}%"></i></div>`;
+  const sel=`<select id="acPick" aria-label="Choose a list">${["all",...DATA.map((c,i)=>String(i))].map(v=>`<option value="${v}"${v===accList?" selected":""}>${v==="all"?"All lists":esc(DATA[+v].title||DATA[+v].name)}</option>`).join("")}</select>`;
+  let body;
+  if(accList==="all"||!DATA[+accList]){
+    const all=new Set();DATA.forEach(c=>listKeys(c).forEach(k=>all.add(k)));
+    const T=tally(all);
+    const rows=DATA.map(c=>{const t=tally(listKeys(c));return `<tr><td>${esc(c.title||c.name)}</td><td>${t.b}/${t.n}</td><td>${t.n?Math.round(100*t.b/t.n):0}%</td></tr>`}).join("");
+    body=`<p><strong>${T.b}</strong> of ${T.n} levels beaten on the whole site</p>${bar(T.b,T.n)}
+      <p class="muted">${T.ap} of these are approved and count towards the Stats Viewer. A level that is in several lists is only counted once.</p>
+      <table><tr><th>List</th><th>Beaten</th><th>Done</th></tr>${rows}</table>`;
+  }else{
+    const c=DATA[+accList],T=tally(listKeys(c));
+    const rows=c.subs.flatMap(sb=>sb.tiers.map(t=>{const {b,n}=counts(c,sb,t);
+      return `<tr><td>${esc(sb.name)}</td><td>${esc(t.name)}</td><td>${b}/${goal(t,b,n)}</td><td>${esc(rank(t,b,n))||"–"}</td></tr>`})).join("");
+    body=`<p><strong>${T.b}</strong> of ${T.n} levels beaten in ${esc(c.title||c.name)}</p>${bar(T.b,T.n)}
+      <table><tr><th>Sub-category</th><th>Tier</th><th>Beaten</th><th>Rank</th></tr>${rows}</table>`;
+  }
+  el.innerHTML=`<div class="arow"><label for="acPick">Show stats for</label>${sel}</div>${body}`;
 }
 
 function copyText(t){
@@ -2865,9 +2926,9 @@ let view="home";
 function showPanel(id){
   document.querySelectorAll("nav button[data-p]").forEach(x=>{const on=x.dataset.p===id;x.setAttribute("aria-pressed",String(on));$(x.dataset.p).hidden=!on});
 }
-/* Stats Viewer, Stats, Settings and Dev each open as their own page, replacing the tier lists. */
-const VIEWPANEL={packs:"packpage",subs:"subpage",stats:"leaderboard",lstats:"stats",settings:"settings",devview:"devpage"};
-const PANELVIEW={packpage:"packs",subpage:"subs",leaderboard:"stats",stats:"lstats",settings:"settings",devpage:"devview"};
+/* Stats Viewer, Settings and Dev each open as their own page, replacing the tier lists. */
+const VIEWPANEL={packs:"packpage",subs:"subpage",stats:"leaderboard",settings:"settings",devview:"devpage"};
+const PANELVIEW={packpage:"packs",subpage:"subs",leaderboard:"stats",settings:"settings",devpage:"devview"};
 function setView(v){
   document.body.classList.remove("menu-open");$("menuBtn").setAttribute("aria-expanded","false");
   view=v;document.body.dataset.view=v;
@@ -2889,7 +2950,7 @@ function pushNav(){
   try{history.pushState(st,"")}catch(e){}
 }
 window.addEventListener("popstate",e=>{
-  const st=e.state;if(!st||typeof st.v!=="string")return;
+  const st=e.state;if(!st||typeof st.v!=="string")return;if(st.v==="lstats")st.v=me?"account":"tracker";
   restoring=true;
   try{cur.c=st.c;cur.s=st.s;render();setView(st.v)}finally{restoring=false}
 });
@@ -3546,6 +3607,7 @@ function renderAccount(){
       <ul>${x.lvls.map(l=>`<li class="${l.missing?"miss":l.v>=100?"ok":l.v>0?"ip":""}">${esc(l.n)} - ${l.missing?"not on the tracker yet":l.v>=100?"complete":l.v>0?"in progress":"not started"}</li>`).join("")}</ul></details>`;
   };
   el.innerHTML=`<h2>Edit profile</h2>
+    <div class="panel"><h3>Stats</h3><div id="acStats"></div></div>
     <div class="panel"><h3>Name</h3>
       <div class="arow"><input id="acName" value="${esc(a.name)}" maxlength="24" aria-label="Profile name"><button id="acSave">Save name</button></div>
       <p id="acMsg" class="msg" role="status"></p></div>
@@ -3554,6 +3616,7 @@ function renderAccount(){
       ${earned.length?earned.map(x=>`<div class="arow"><span>${esc(x.title)}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">Complete achievement packs to earn titles.</p>'}</div>
     <div class="panel"><h3>Completed packs</h3>
       ${earned.length?`<p>${earned.length} of ${S.length} packs completed</p>`+earned.map(pack).join(""):`<p class="muted">You haven’t completed any packs yet. See all ${S.length} packs and your progress on the <button type="button" class="linkbtn" data-go="packs">Packs page</button>.</p>`}</div>`;
+  renderAccStats();
 }
 async function saveName(){
   const a=active();if(!a)return;
@@ -3576,6 +3639,7 @@ $("account").onclick=async e=>{
     a.title=t;render();renderAccount();
   }
 };
+$("account").onchange=e=>{if(e.target.id==="acPick"){accList=e.target.value;renderAccStats();const n=$("acPick");if(n)n.focus()}};
 $("account").onkeydown=e=>{if(e.key==="Enter"&&e.target.id==="acName"){e.preventDefault();saveName()}};
 
 /* ---------- Leaderboard and profile view ---------- */
