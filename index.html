@@ -109,6 +109,7 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .pk .bar{flex:1 1 100px;height:8px;background:#222;border-radius:4px;overflow:hidden}
 .pk .bar i{display:block;height:100%;background:#f0a800}
 .pk.earned .bar i{background:#23883a}
+.when{color:var(--mut);font-size:12px;font-weight:400;white-space:nowrap}
 .pk .badge{background:#23883a;color:#fff;font-size:12px;border-radius:10px;padding:2px 8px}
 .pk ul{margin:8px 0 0;padding-left:20px;color:#ccc;line-height:1.6}
 .pk .ok{color:#6fd07f}
@@ -353,9 +354,6 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 .panel .pkc svg{width:18px;height:18px;fill:currentColor}
 .pks{font-size:13px;color:var(--mut);min-width:118px;text-align:right}
 .pkl.won .pks{color:#6fd07f;font-weight:700}
-.pkv{display:flex;flex-wrap:wrap;gap:8px}
-.panel .pkv button{display:flex;align-items:center;gap:8px;background:#333;color:var(--text);border-radius:999px;padding:4px 12px 4px 4px;margin:0;font-weight:600}
-.pkv .av{width:28px;height:28px}
 @media (max-width:860px){#packpage{grid-template-columns:minmax(0,1fr)}#pkdetail{position:static}.pks{min-width:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
@@ -1851,6 +1849,38 @@ let DATA=[
     {n:"devils consistency",id:"135658138"},
     {n:"DoubleDouble",id:"138405172"},
     {n:"cyanide",id:"144831116"}
+   ]},
+   {name:"Uber Rare",section:"B-Side",color:"#e056c0",levels:[
+    {n:"vr69 chall superbuff",id:"137623891"},
+    {n:"Wave Master L",id:"136182154"},
+    {n:"quanteuse waving",id:"137893762"},
+    {n:"spammy summer",id:"135882668"},
+    {n:"Grandmaster of All",id:"75327620"},
+    {n:"Naylore Challenge 2",id:"130081280"},
+    {n:"Pattern God",id:"136372096"},
+    {n:"10 Minute Wave",id:"137838144"},
+    {n:"lood patterns 2",id:"105132856"},
+    {n:"nogenedynamix",id:"138379622"},
+    {n:"spampocalypse",id:"142231363"},
+    {n:"Andrew Challenge 2",id:"143187366"},
+    {n:"ur just weird bro",id:"144755913"}
+   ]},
+   {name:"Epic",section:"B-Side",color:"#e8a030",levels:[
+    {n:"stamina check iv",id:"130020256"},
+    {n:"Random Wave",id:"116760828"},
+    {n:"nybia challenge",id:"86214037"},
+    {n:"lunatic wave",id:"131186166"},
+    {n:"wc azii 6",id:"125701095"},
+    {n:"stamina check vi",id:"130864804"},
+    {n:"Wave Master C",id:"126636910"},
+    {n:"Control GM 3x Speed",id:"137095852"},
+    {n:"notsohard chall",id:"123667680"},
+    {n:"Skill Check 1",id:"106763980"},
+    {n:"sideflip",id:"67757571"},
+    {n:"8 Reps of Patterns",id:"140625513"},
+    {n:"quadruple nation",id:"140443386"},
+    {n:"Pushettika",id:"142863523"},
+    {n:"Yaldabaoth",id:"143360563"}
    ]}
   ]},
   {name:"Advanced",tiers:[
@@ -2672,7 +2702,7 @@ const PACKS=[
   {name:"Consistency Pack", levels:["62000980", "40673153"]}, /* Lamp Level 1 · click consistency v3 */
   {name:"Nine Circles Pack", levels:["62894149", "67564759"]}, /* bedrock dance · Subsuming Vortex 66p */
   /* --- Beginner packs --- */
-  {name:"Chamber Pack I", levels:["56491894", "37079846", "124163985", "58527856"]}, /* Happy Chamber · Dont Breathe · gas Chamber · Deadly Chamber */
+  {name:"Chamber Pack I", title:"Survivor", levels:["56491894", "37079846", "124163985", "58527856"]}, /* Happy Chamber · Dont Breathe · gas Chamber · Deadly Chamber */
   {name:"Rainbow Pack", levels:["66844306", "78948184", "79412768"]}, /* Wave Fun 11 · Nitelites · Pastel */
   {name:"Caverns Pack", levels:["72867270", "75021174", "82117934"]}, /* Jade Caverns · Amethyst Caves · Emerald Caverns */
   {name:"Aespha Pack", levels:["80878937", "78495624", "79898823"]}, /* Childlike · Positivity · Optimism */
@@ -2747,7 +2777,7 @@ const LS2="lvl-tracker-v2"; /* old local accounts: only read, for the one-time i
 const SB_URL="https://rprczsfeafymltriawuk.supabase.co",SB_KEY="sb_publishable_-odlXG_gaExe2ffo4bws3Q_eXFw-SG8";
 let sb=null;
 try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}})}catch(e){}
-let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},DRAFT={},draftsOk=true,me=null,isAdmin=false,oldProfiles=[],lastLoad=0;
+let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},DRAFT={},draftsOk=true,me=null,isAdmin=false,oldProfiles=[],lastLoad=0,ACH={},ACHOK=false,APPR={};
 try{const c=JSON.parse(localStorage.getItem("lvl-cur")||"null");if(c&&typeof c.c==="number")cur=c}catch(e){}
 function active(){return profiles.find(p=>p.id===activeId)||null}
 function loadOld(){
@@ -3066,18 +3096,23 @@ async function loadAll(){
   if(!sb)return;
   const seq=++loadSeq;
   try{
-    const [pr,ap,wp,drs,mine]=await Promise.all([
+    const awd=me?Promise.resolve(sb.rpc("award_achievements")).then(()=>0,()=>0):Promise.resolve(0);
+    const [pr,ap,wp,drs,mine,ach,apm]=await Promise.all([
       fetchAll((a,b)=>sb.from("profiles").select("id,name,avatar_url,title").order("id").range(a,b)),
       fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key").eq("status","approved").order("id").range(a,b)),
       fetchAll((a,b)=>sb.from("progress_wip").select("user_id,level_key").order("user_id").order("level_key").range(a,b)),
       me?fetchAll((a,b)=>sb.from("submission_drafts").select("level_key,evidence").eq("user_id",me.id).order("level_key").range(a,b)).catch(()=>{draftsOk=false;return null}):Promise.resolve([]),
-      me?fetchAll((a,b)=>sb.from("submissions").select("id,level_key,status,note,evidence").eq("user_id",me.id).in("status",["pending","rejected"]).order("id").range(a,b)):Promise.resolve([])
+      me?fetchAll((a,b)=>sb.from("submissions").select("id,level_key,status,note,evidence").eq("user_id",me.id).in("status",["pending","rejected"]).order("id").range(a,b)):Promise.resolve([]),
+      awd.then(()=>fetchAll((a,b)=>sb.from("achievements").select("user_id,key,earned_at").order("user_id").order("key").range(a,b))).catch(()=>null),
+      me?fetchAll((a,b)=>sb.from("submissions").select("level_key,created_at,reviewed_at").eq("user_id",me.id).eq("status","approved").order("id").range(a,b)).catch(()=>[]):Promise.resolve([])
     ]);
     if(seq!==loadSeq)return;
     const byId=new Map(pr.map(r=>[r.id,{id:r.id,name:r.name,pfp:r.avatar_url||"",title:r.title||"",P:{}}]));
     wp.forEach(r=>{const p=byId.get(r.user_id);if(p)p.P[r.level_key]=50});
     ap.forEach(r=>{const p=byId.get(r.user_id);if(p)p.P[r.level_key]=100});
     DRAFT={};if(drs){draftsOk=true;drs.forEach(r=>{DRAFT[r.level_key]={evidence:r.evidence||""}})}
+    ACHOK=!!ach;ACH={};(ach||[]).forEach(r=>{(ACH[r.user_id]=ACH[r.user_id]||{})[r.key]=r.earned_at});
+    APPR={};(apm||[]).forEach(r=>{APPR[r.level_key]=r.reviewed_at||r.created_at});
     PEND={};mine.forEach(r=>{PEND[r.level_key]={status:r.status,note:r.note,evidence:r.evidence}});
     profiles=[...byId.values()];
     P=active()?active().P:{};
@@ -3238,7 +3273,6 @@ function renderPacks(){
   }).join("")||'<p class="muted">No packs match your search.</p>';
   const x=info[pkSel],d=mine(x),n=x.lv.length,col=packTierColor(x.tier),dark=["Silver","Gold"].includes(x.tier);
   const status=k=>k[0]==="?"?["miss","Not on the tracker yet"]:Pm[k]>=100?["won","✓ Beaten"]:PEND[k]&&PEND[k].status==="pending"&&a?["pend","Awaiting approval"]:DRAFT[k]&&a?["pend","In your Submissions"]:Pm[k]>0?["prog","In progress"]:["","Not beaten"];
-  const victors=x.lv.some(l=>l.missing)?[]:profiles.filter(p=>x.lv.every(l=>p.P[l.k]>=100));
   D.innerHTML=`<h2>${esc(x.name)}</h2>
     <div class="pkmeta"><span class="pkbadge" style="background:${col};color:${dark?"#1f1f1f":"#fff"}">${x.tier} Tier</span>${x.title!==x.name?`<span class="muted">Title: ${esc(x.title)}</span>`:""}
       <span class="pkdone">${a?`${d}/${n} levels completed`:"Log in to track this pack"}</span></div>
@@ -3247,15 +3281,12 @@ function renderPacks(){
     ${x.lv.map(l=>{const [cls,txt]=status(l.k);return `<div class="pkl ${cls}">
       <span class="pkt" style="background:${l.color};color:${l.dark?"#1f1f1f":"#fff"}">${esc(l.tier)}${l.list?`<small>${esc(l.list)}</small>`:""}</span>
       <span class="pkn">${esc(l.n)}</span>
-      <span class="pks">${a?txt:""}</span></div>`}).join("")}
-    <h3>Victors (${victors.length})</h3>
-    ${victors.length?`<div class="pkv">${victors.map(p=>`<button type="button" data-vic="${esc(p.id)}">${av(p)}<span>${esc(p.name)}</span></button>`).join("")}</div>`:'<p class="muted">Nobody has completed this pack yet. Only approved levels count.</p>'}`;
+      <span class="pks">${a?txt:""}</span></div>`}).join("")}`;
 }
 $("pklist").onclick=e=>{const b=e.target.closest("[data-pk]");if(!b)return;pkSel=+b.dataset.pk;renderPacks();if(window.innerWidth<=860)$("pkdetail").scrollIntoView({block:"start",behavior:"smooth"})};
 $("pkdetail").onclick=e=>{
   const c=e.target.closest("[data-copy]");
   if(c){copyText(c.dataset.copy).then(ok=>ok?toast("Copied "+c.dataset.copy):window.prompt("Copy the level ID:",c.dataset.copy));return}
-  const v=e.target.closest("[data-vic]");if(v){viewId=v.dataset.vic;setView("stats");render()}
 };
 $("pkq").oninput=e=>{pkQ=e.target.value;renderPacks()};
 
@@ -3587,23 +3618,46 @@ function packStatus(pr){
   if(!PACKS.length)return[];
   const names=levelNames();
   return PACKS.map(p=>{
-    const lvls=p.levels.map(id=>{const k=String(id);if(k[0]==="?")return{n:k.slice(1),v:0,missing:true};const v=pr.P[k]||0;return{n:names[k]||k,v}});
-    const done=lvls.filter(x=>x.v>=100).length,total=lvls.length;
-    return{name:p.name,title:p.title||p.name,lvls,done,total,earned:total>0&&done===total};
+    const lvls=p.levels.map(id=>{const k=String(id);if(k[0]==="?")return{n:k.slice(1),v:0,missing:true};const v=pr.P[k]||0;return{n:names[k]||k,v,k}});
+    const done=lvls.filter(x=>x.v>=100).length,total=lvls.length,earned=total>0&&done===total;
+    /* the day the last level of the pack was approved (only known for the logged-in player) */
+    const ds=earned&&pr.id===activeId?lvls.map(x=>APPR[x.k]).filter(Boolean).sort():[];
+    return{name:p.name,title:p.title||p.name,lvls,done,total,earned,date:ds.length?ds[ds.length-1]:""};
   });
 }
+/* Achievements that aren't packs. Each has a title and a test for whether a player has it. */
+let topC={ref:null,id:""};
+function topId(){   /* the player ranked #1 on the Stats Viewer with "All" selected (same order as the board) */
+  if(topC.ref!==profiles){
+    topC={ref:profiles,id:""};let best=null;
+    profiles.forEach(p=>{const pts=stats(p,null).points;
+      if(pts>0&&(!best||pts>best.pts||(pts===best.pts&&p.name.localeCompare(best.name)<0)))best={id:p.id,name:p.name,pts}});
+    topC.id=best?best.id:"";
+  }
+  return topC.id;
+}
+const SPECIAL=[
+  /* Kept for good once awarded (the database remembers it). Until the database has the achievements table, it falls back to the live #1 spot. */
+  {key:"godz",name:"Rank 1 on the Stats Viewer",title:"Godz",how:"Be ranked #1 on the Stats Viewer with “All” selected. Once you have it, you keep it.",
+   test:pr=>!!(ACH[pr.id]&&ACH[pr.id].godz)||(!ACHOK&&topId()===pr.id)}
+];
+const specialStatus=pr=>SPECIAL.map(x=>({...x,earned:x.test(pr),date:(ACH[pr.id]&&ACH[pr.id][x.key])||""}));
+const fmtDate=d=>{if(!d)return"";const x=new Date(d);return isNaN(x)?"":x.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})};
 function equippedTitle(pr){
   if(!pr.title)return"";
   const s=packStatus(pr).find(x=>x.earned&&x.title===pr.title);
-  return s?s.title:"";
+  if(s)return s.title;
+  const sp=SPECIAL.find(x=>x.title===pr.title&&x.test(pr));
+  return sp?sp.title:"";
 }
 function renderAccount(){
   const el=$("account"),a=active();
   if(!a){el.innerHTML='<h2>Edit profile</h2><p class="muted">Log in to edit your profile.</p>';return}
   const S=packStatus(a),eq=equippedTitle(a),earned=S.filter(x=>x.earned);
+  const spec=specialStatus(a),titles=[...earned,...spec.filter(x=>x.earned)];
   const pack=x=>{
     const pct=x.total?Math.round(100*x.done/x.total):0;
-    return `<details class="pk${x.earned?" earned":""}"><summary><span class="nm">${esc(x.name)}</span><span class="bar"><i style="width:${pct}%"></i></span><span>${x.done}/${x.total}</span>${x.earned?'<span class="badge">Earned</span>':""}</summary>
+    return `<details class="pk${x.earned?" earned":""}"><summary><span class="nm">${esc(x.name)}</span><span class="bar"><i style="width:${pct}%"></i></span><span>${x.done}/${x.total}</span>${x.earned?'<span class="badge">Earned</span>':""}${x.earned&&x.date?`<span class="when">${esc(fmtDate(x.date))}</span>`:""}</summary>
       <ul>${x.lvls.map(l=>`<li class="${l.missing?"miss":l.v>=100?"ok":l.v>0?"ip":""}">${esc(l.n)} - ${l.missing?"not on the tracker yet":l.v>=100?"complete":l.v>0?"in progress":"not started"}</li>`).join("")}</ul></details>`;
   };
   el.innerHTML=`<h2>Edit profile</h2>
@@ -3613,7 +3667,8 @@ function renderAccount(){
       <p id="acMsg" class="msg" role="status"></p></div>
     <div class="panel"><h3>Titles</h3>
       <p>Equipped title: <b>${eq?esc(eq):"None"}</b></p>
-      ${earned.length?earned.map(x=>`<div class="arow"><span>${esc(x.title)}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">Complete achievement packs to earn titles.</p>'}</div>
+      ${titles.length?titles.map(x=>`<div class="arow"><span>${esc(x.title)}${x.how?` <span class="muted">(${esc(x.name)})</span>`:""}${x.date?` <span class="when">${esc(fmtDate(x.date))}</span>`:""}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">Complete achievement packs to earn titles.</p>'}
+      ${spec.filter(x=>!x.earned).map(x=>`<p class="muted">Locked: “${esc(x.title)}” - ${esc(x.how)}</p>`).join("")}</div>
     <div class="panel"><h3>Completed packs</h3>
       ${earned.length?`<p>${earned.length} of ${S.length} packs completed</p>`+earned.map(pack).join(""):`<p class="muted">You haven’t completed any packs yet. See all ${S.length} packs and your progress on the <button type="button" class="linkbtn" data-go="packs">Packs page</button>.</p>`}</div>`;
   renderAccStats();
@@ -3679,7 +3734,7 @@ function renderLB(){
   document.body.appendChild(m);f.style.width=Math.ceil(m.getBoundingClientRect().width)+26+"px";m.remove();
   const q=$("lbq").value.trim().toLowerCase(),all=ranked();
   const list=all.filter(p=>p.name.toLowerCase().includes(q));
-  $("lblist").innerHTML=list.length?list.map(p=>`<div class="lbrow">${av(p,"sm")}<b>#${p.rank}</b><button class="lbn" data-id="${p.id}">${esc(p.name)}</button>${p.title?`<em class="ttl">${esc(p.title)}</em>`:""}<i>${p.points.toFixed(2)}</i></div>`).join(""):`<p class="empty">${all.length?"No matches.":"No players yet."}</p>`;
+  $("lblist").innerHTML=list.length?list.map(p=>`<div class="lbrow">${av(p,"sm")}<b>#${p.rank}</b><button class="lbn" data-id="${p.id}">${esc(p.name)}</button><i>${p.points.toFixed(2)}</i></div>`).join(""):`<p class="empty">${all.length?"No matches.":"No players yet."}</p>`;
   renderPV(all);
 }
 function renderPV(all){
@@ -3696,8 +3751,7 @@ function renderPV(all){
     ${pl.title?`<p class="pvtitle">${esc(pl.title)}</p>`:""}
     <div class="pvtwo"><div><h3>${lbOnly()==null?"Tracker":esc(DATA[lbOnly()].name)} rank</h3><p>${pl.rank}</p></div><div><h3>${lbOnly()==null?"Tracker":esc(DATA[lbOnly()].name)} score</h3><p>${pl.points.toFixed(2)}</p></div></div>
     <h3>Tracker Stats</h3><p>${lists.map(L=>`${S.byList[DATA.findIndex(c=>c.name===L.name)]} ${esc(L.name)}`).join(", ")}</p>
-    ${lists.map(sect).join("")}
-    <h3>Progress on</h3><p>${S.prog.length?S.prog.map(esc).join(" - "):"None"}</p>`;
+    ${lists.map(sect).join("")}`;
 }
 $("lbq").oninput=renderLB;
 $("lbf").onchange=()=>{lbList=$("lbf").value;renderLB()};
