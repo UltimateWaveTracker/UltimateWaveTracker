@@ -109,6 +109,10 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .pk .bar{flex:1 1 100px;height:8px;background:#222;border-radius:4px;overflow:hidden}
 .pk .bar i{display:block;height:100%;background:#f0a800}
 .pk.earned .bar i{background:#23883a}
+.ach{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;background:#2c2c2c;border-radius:8px;padding:10px 12px;margin:8px 0;border-left:3px solid #555}
+.ach.earned{border-left-color:#23883a}
+.ach .nm{flex:1 1 220px;display:flex;flex-direction:column;gap:2px}
+.pfhead>span{flex:1}
 .when{color:var(--mut);font-size:12px;font-weight:400;white-space:nowrap}
 .pk .badge{background:#23883a;color:#fff;font-size:12px;border-radius:10px;padding:2px 8px}
 .pk ul{margin:8px 0 0;padding-left:20px;color:#ccc;line-height:1.6}
@@ -3003,7 +3007,7 @@ const av=(p,cls)=>`<span class="av${cls?" "+cls:""}">${p.pfp?`<img src="${esc(p.
 function renderProfile(){
   const a=active();
   $("profBtn").innerHTML=a?av(a)+`<span class="pn">${esc(a.name)}</span>`+ICON_CHEV:me?`<span class="av">${ICON_USER}</span><span class="pn">${profileFailed?"Profile unavailable":"Loading…"}</span>${ICON_CHEV}`:`<span class="av">${ICON_USER}</span><span class="pn">Log in with Discord</span>`;
-  $("profMenu").innerHTML=me?'<button role="menuitem" data-act="edit">Edit profile</button><button role="menuitem" data-act="out">Log out</button>':"";
+  $("profMenu").innerHTML=me?'<button role="menuitem" data-act="profile">View profile</button><button role="menuitem" data-act="out">Log out</button>':"";
   document.querySelector("nav [data-p=devpage]").hidden=!isAdmin;
   showImport();
 }
@@ -3062,7 +3066,7 @@ $("profBtn").onclick=e=>{
 $("profMenu").onclick=async e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
   closeMenu();
-  if(b.dataset.act==="edit"){setView("account");renderAccount();return}
+  if(b.dataset.act==="profile"){accMode="view";setView("account");renderAccount();return}
   if(b.dataset.act==="out"){try{await sb.auth.signOut()}catch(x){}await applySession(null)}
 };
 document.addEventListener("click",e=>{if(!e.target.closest("#profile"))closeMenu()});
@@ -3636,12 +3640,35 @@ function topId(){   /* the player ranked #1 on the Stats Viewer with "All" selec
   }
   return topC.id;
 }
+/* Tiers a player has reached at least the rank of (approved levels only), with the day each rank was reached (only known for the logged-in player). */
+const tierCache=new WeakMap();
+function tiersDone(pr){
+  const hit=tierCache.get(pr);if(hit&&hit.P===pr.P)return hit.list;
+  const list=[];
+  DATA.forEach(c=>c.subs.forEach(sb=>sb.tiers.forEach(t=>{
+    const ks=t.levels.map(l=>lk(lv(l))),done=ks.filter(k=>pr.P[k]>=100);
+    if(!rank(t,done.length,ks.length))return;
+    const need=t.achieved&&!t.allOnly?t.achieved:ks.length;
+    const ds=pr.id===activeId?done.map(k=>APPR[k]).filter(Boolean).sort():[];
+    list.push({date:ds[need-1]||ds[ds.length-1]||""});
+  })));
+  tierCache.set(pr,{P:pr.P,list});return list;
+}
+const nthTierDate=(pr,n)=>{const ds=tiersDone(pr).map(x=>x.date).filter(Boolean).sort();return ds[n-1]||""};
+const tierAch=(key,name,title,n)=>({key,name,title,cond:"Beat any "+(n===1?"tier":n+" tiers")+" on the site (reach at least its rank).",
+  test:pr=>tiersDone(pr).length>=n,date:pr=>nthTierDate(pr,n),prog:pr=>({have:Math.min(n,tiersDone(pr).length),need:n})});
+const GEASS_ID="126279500";   /* the level "Re" */
 const SPECIAL=[
   /* Kept for good once awarded (the database remembers it). Until the database has the achievements table, it falls back to the live #1 spot. */
-  {key:"godz",name:"Rank 1 on the Stats Viewer",title:"Godz",how:"Be ranked #1 on the Stats Viewer with “All” selected. Once you have it, you keep it.",
-   test:pr=>!!(ACH[pr.id]&&ACH[pr.id].godz)||(!ACHOK&&topId()===pr.id)}
+  {key:"godz",name:"Rank 1",title:"Godz",cond:"Be ranked #1 on the Stats Viewer with “All” selected. Once you have it, you keep it.",
+   test:pr=>!!(ACH[pr.id]&&ACH[pr.id].godz)||(!ACHOK&&topId()===pr.id),date:pr=>(ACH[pr.id]&&ACH[pr.id].godz)||""},
+  tierAch("tier1","New Beginnings","Wave Beginner",1),
+  tierAch("tier5","Baseline","Aspiring",5),
+  tierAch("tier10","Moving Forward","Intermediate",10),
+  {key:"geass",name:"Geass",title:"Grass",cond:"Beat the level “Re”.",
+   test:pr=>pr.P[GEASS_ID]>=100,date:pr=>pr.id===activeId?(APPR[GEASS_ID]||""):""}
 ];
-const specialStatus=pr=>SPECIAL.map(x=>({...x,earned:x.test(pr),date:(ACH[pr.id]&&ACH[pr.id][x.key])||""}));
+const specialStatus=pr=>SPECIAL.map(x=>{const earned=x.test(pr);return{...x,earned,date:earned?x.date(pr):"",prog:x.prog&&!earned?x.prog(pr):null}});
 const fmtDate=d=>{if(!d)return"";const x=new Date(d);return isNaN(x)?"":x.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})};
 function equippedTitle(pr){
   if(!pr.title)return"";
@@ -3650,25 +3677,36 @@ function equippedTitle(pr){
   const sp=SPECIAL.find(x=>x.title===pr.title&&x.test(pr));
   return sp?sp.title:"";
 }
+let accMode="view";   /* "view" = the profile, "edit" = change name and title */
 function renderAccount(){
   const el=$("account"),a=active();
-  if(!a){el.innerHTML='<h2>Edit profile</h2><p class="muted">Log in to edit your profile.</p>';return}
+  if(!a){el.innerHTML='<h2>Profile</h2><p class="muted">Log in to see your profile.</p>';return}
   const S=packStatus(a),eq=equippedTitle(a),earned=S.filter(x=>x.earned);
   const spec=specialStatus(a),titles=[...earned,...spec.filter(x=>x.earned)];
+  if(accMode==="edit"){
+    el.innerHTML=`<h2>Edit profile</h2>
+    <p><button type="button" class="linkbtn" data-accmode="view">&larr; Back to profile</button></p>
+    <div class="panel"><h3>Name</h3>
+      <div class="arow"><input id="acName" value="${esc(a.name)}" maxlength="24" aria-label="Profile name"><button id="acSave">Save name</button></div>
+      <p id="acMsg" class="msg" role="status"></p></div>
+    <div class="panel"><h3>Title</h3>
+      <p>Equipped title: <b>${eq?esc(eq):"None"}</b></p>
+      ${titles.length?titles.map(x=>`<div class="arow"><span>${esc(x.title)}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">You haven’t earned any titles yet. Complete packs and achievements to unlock them.</p>'}</div>`;
+    return;
+  }
   const pack=x=>{
     const pct=x.total?Math.round(100*x.done/x.total):0;
     return `<details class="pk${x.earned?" earned":""}"><summary><span class="nm">${esc(x.name)}</span><span class="bar"><i style="width:${pct}%"></i></span><span>${x.done}/${x.total}</span>${x.earned?'<span class="badge">Earned</span>':""}${x.earned&&x.date?`<span class="when">${esc(fmtDate(x.date))}</span>`:""}</summary>
       <ul>${x.lvls.map(l=>`<li class="${l.missing?"miss":l.v>=100?"ok":l.v>0?"ip":""}">${esc(l.n)} - ${l.missing?"not on the tracker yet":l.v>=100?"complete":l.v>0?"in progress":"not started"}</li>`).join("")}</ul></details>`;
   };
-  el.innerHTML=`<h2>Edit profile</h2>
+  const ach=x=>`<div class="ach${x.earned?" earned":""}"><div class="nm"><b>${esc(x.name)}</b><span class="muted">${esc(x.cond)}</span></div>
+      <div class="rw">Title: <b>${esc(x.title)}</b></div>
+      <div class="st">${x.earned?`<span class="badge">Earned</span>${x.date?` <span class="when">${esc(fmtDate(x.date))}</span>`:""}`:x.prog?`<span class="muted">${x.prog.have}/${x.prog.need}</span>`:'<span class="muted">Locked</span>'}</div></div>`;
+  el.innerHTML=`<h2>Profile</h2>
+    <div class="panel"><div class="arow pfhead">${av(a)}<span><b>${esc(a.name)}</b>${eq?`<br><span class="muted">${esc(eq)}</span>`:""}</span><button type="button" data-accmode="edit">Edit profile</button></div></div>
     <div class="panel"><h3>Stats</h3><div id="acStats"></div></div>
-    <div class="panel"><h3>Name</h3>
-      <div class="arow"><input id="acName" value="${esc(a.name)}" maxlength="24" aria-label="Profile name"><button id="acSave">Save name</button></div>
-      <p id="acMsg" class="msg" role="status"></p></div>
-    <div class="panel"><h3>Titles</h3>
-      <p>Equipped title: <b>${eq?esc(eq):"None"}</b></p>
-      ${titles.length?titles.map(x=>`<div class="arow"><span>${esc(x.title)}${x.how?` <span class="muted">(${esc(x.name)})</span>`:""}${x.date?` <span class="when">${esc(fmtDate(x.date))}</span>`:""}</span><button data-eq="${esc(x.title)}">${x.title===eq?"Unequip":"Equip"}</button></div>`).join(""):'<p class="muted">Complete achievement packs to earn titles.</p>'}
-      ${spec.filter(x=>!x.earned).map(x=>`<p class="muted">Locked: “${esc(x.title)}” - ${esc(x.how)}</p>`).join("")}</div>
+    <div class="panel"><h3>Achievements</h3>
+      <p class="muted">${spec.filter(x=>x.earned).length} of ${spec.length} earned</p>${spec.map(ach).join("")}</div>
     <div class="panel"><h3>Completed packs</h3>
       ${earned.length?`<p>${earned.length} of ${S.length} packs completed</p>`+earned.map(pack).join(""):`<p class="muted">You haven’t completed any packs yet. See all ${S.length} packs and your progress on the <button type="button" class="linkbtn" data-go="packs">Packs page</button>.</p>`}</div>`;
   renderAccStats();
@@ -3684,6 +3722,7 @@ async function saveName(){
 }
 $("account").onclick=async e=>{
   if(e.target.id==="acSave")return saveName();
+  const m=e.target.closest("[data-accmode]");if(m){accMode=m.dataset.accmode;renderAccount();window.scrollTo(0,0);return}
   const g=e.target.closest("[data-go]");if(g)return setView(g.dataset.go);
   const q=e.target.closest("[data-eq]");
   if(q){
