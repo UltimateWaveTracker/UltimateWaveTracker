@@ -112,8 +112,57 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .ach{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;background:#2c2c2c;border-radius:8px;padding:10px 12px;margin:8px 0;border-left:3px solid #555}
 .ach.earned{border-left-color:#23883a}
 .ach .nm{flex:1 1 220px;display:flex;flex-direction:column;gap:2px}
+.egg{margin-top:max(60vh,480px);padding-bottom:40px}
 .pfhead>span:not(.av){flex:1}
 .pfhead .av{flex:none}
+#infpage{max-width:960px}
+#infpage[hidden]{display:none}
+#infpage h2{margin:0 0 4px}
+.infform{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-items:end;margin:10px 0}
+.infform label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+.infform .wide{grid-column:1/-1}
+.panel .infform input:not([type=file]),.panel .infform select{width:100%;box-sizing:border-box}
+.infform .btns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.panel .infform .btns button{margin:0}
+.infcard{background:#303030;border-radius:10px;padding:14px 16px;margin:14px 0}
+.infcard h3{margin:0 0 8px}
+.infpb{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:8px 0;border-top:1px solid #444}
+.infpb:first-of-type{border-top:0}
+.infpb .cfg{flex:1 1 180px;font-weight:600}
+.infpb .best{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.infpb .muted{flex-basis:100%;font-size:13px}
+@media (max-width:600px){#infpage{padding:14px}.infcard{padding:12px;margin:12px -4px}}
+.infday h4{margin:18px 0 6px}
+.infrow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;background:#2c2c2c;border-radius:8px;padding:8px 12px;margin:6px 0}
+.infrow .cfg{font-weight:600;min-width:170px}
+.infrow .runs{flex:1 1 160px;display:flex;flex-wrap:wrap;gap:6px}
+.infrow .runs span{background:#3d3d3d;border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
+.infrow .runs .top{background:#23883a;color:#fff;font-weight:700}
+.infrow .pb,.infcur .pb{font-size:12px;color:#ffd84a;font-weight:700}
+.infcur{border:1px solid #23883a}
+.infopt{grid-column:1/-1;border:1px solid #474747;border-radius:8px;padding:0 12px;background:#2b2b2b}
+.infopt summary{cursor:pointer;padding:10px 0;font-weight:600;color:var(--text)}
+.infopt[open] summary{border-bottom:1px solid #444;margin-bottom:4px}
+.infopt .optrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 0;border:0;margin:0}
+.infopt fieldset.optrow legend{color:var(--text);padding:0 0 4px;font-size:15px;width:100%}
+.infform .infopt label.ck{flex-direction:row;align-items:center;gap:8px;color:var(--text);font-size:15px}
+.panel .infform .infopt input[type=checkbox]{width:18px;height:18px;padding:0;margin:0;accent-color:#2c9f3a;flex:none}
+.panel .infform .infopt input[type=text],.panel .infform .infopt select{width:auto;flex:0 1 170px;min-width:0}
+.panel .infform .infopt select:disabled,.panel .infform .infopt input:disabled{opacity:.45}
+.panel #infFilter{max-width:100%;min-width:0;flex:1 1 auto;text-overflow:ellipsis}
+.infcard .arow{flex-wrap:wrap}
+.optsum{display:block;font-weight:400;font-size:13px;color:var(--mut);margin-top:2px}
+.infcur .pb{font-size:15px}
+.infcur #infAdd input{width:9em;font-size:18px}
+.panel .infcur .chip{background:#3d3d3d;color:var(--text);border-radius:6px;padding:2px 9px;margin:0;font-weight:400;font-variant-numeric:tabular-nums}
+.panel .infcur .chip.top{background:#23883a;color:#fff;font-weight:700}
+.panel .infcur .chip.rm{background:#c0392b;color:#fff}
+.infcur .btns{margin-top:6px}
+.infrow.on{outline:1px solid #23883a}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.panel .infrow .acts button{padding:4px 10px;font-size:13px;margin:0 0 0 6px}
+.inftools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.panel .inftools button,.panel .inftools label.b{margin:0}
 #achpage{max-width:760px}
 #achpage[hidden]{display:none}
 #achpage h2{margin:0 0 6px}
@@ -378,6 +427,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
       <button data-p="leaderboard" aria-pressed="false">Stats Viewer</button>
       <button data-p="packpage" aria-pressed="false">Packs</button>
       <button data-p="achpage" aria-pressed="false">Achievements</button>
+      <button data-p="infpage" aria-pressed="false">JFP Tracker</button>
       <button data-p="subpage" aria-pressed="false">Submissions<span id="subCount"></span></button>
       <button data-p="settings" aria-pressed="false">Settings</button>
       <button data-p="devpage" aria-pressed="false" hidden>Dev</button>
@@ -407,6 +457,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 <div id="newVer" role="status" hidden><span>A new version of the site is available.</span> <button type="button" id="newVerGo">Refresh now</button></div>
 <div id="netWarn" role="alert" hidden></div>
 <section id="subpage" class="panel wide" hidden></section>
+<section id="infpage" class="panel" hidden><h2>JFP Tracker</h2><p class="muted">Track your JFP runs: start a session with its settings, then add each score as you go. Saved in this browser only: it isn’t uploaded or shown on your profile. Use Export to keep a backup or move it to another device.</p><div id="infbody"></div></section>
 <section id="achpage" class="panel" hidden><h2>Achievements</h2><div id="achbody"></div></section>
 <section id="packpage" class="panel" hidden>
   <div class="pkleft"><h2>Packs</h2><input id="pkq" class="pksearch" type="search" placeholder="Search packs or levels" aria-label="Search packs or levels" autocomplete="off"><div id="pklist"></div></div>
@@ -1714,6 +1765,12 @@ let DATA=[
    ]},
    {name:"Cosmic",achieved:1,plus:1,color:"#4c1131",levels:[
     {n:"CorroZ",id:"86191664"}
+   ]},
+   {name:"Secret Challenges",secret:true,color:"#555555",levels:[
+    {n:"wave challeng 1",id:"142491452"},
+    {n:"Lol U Died",id:"141399388"},
+    {n:"sadrisE",id:"115365608"},
+    {n:"glaz diavola",id:"77593145"}
    ]}
   ]}
  ]},
@@ -2869,24 +2926,27 @@ function render(){
         <button class="st" role="checkbox" aria-checked="${v>=100||dr?"true":pe||v>0?"mixed":"false"}" title="${v>=100?"Complete (approved)":dr?"Added to your Submissions tab. Click to remove":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100||dr?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
     const gl=r&&n>0&&b>=n?" g2":r?" g1":"";
     const pl=pulseKeys.size&&t.levels.some(l=>pulseKeys.has(key(c,s,t,l)))?" pulse":"";
-    return `<div class="tier${gl}${pl}" data-ti="${TI.push(t)-1}" style="--tc:${t.color}"><h2 title="Press and hold to tick every level in this tier" style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${b}/${goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
+    return `<div class="tier${gl}${pl}" data-ti="${TI.push(t)-1}" style="--tc:${t.color}"><h2 title="Press and hold to tick every level in this tier" style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${t.secret?b:b+"/"+goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
   };
   const sec=t=>t.section||(t.bonus?"Bonus":"Main");
   const keep=s.condensed?[]:s.sections||[];
   const names=["Main",...(s.sections||["Sub tier","Bonus"])];
   if(!names.includes("Bonus"))names.push("Bonus");
-  const extra=[];s.tiers.forEach(t=>{if(!names.includes(sec(t))&&!extra.includes(sec(t)))extra.push(sec(t))});
+  /* secret tiers are an easter egg: only shown in condensed mode, far below everything else */
+  const plain=s.tiers.filter(t=>!t.secret),eggs=s.condensed?s.tiers.filter(t=>t.secret):[];
+  const extra=[];plain.forEach(t=>{if(!names.includes(sec(t))&&!extra.includes(sec(t)))extra.push(sec(t))});
   /* condensed mode mixes every difficulty: keep extra sections (DLCs, Consistency…) in the order the fullest difficulty page uses */
   if(s.condensed){const ref=c.subs.map(x=>[...new Set(x.tiers.map(sec))]).sort((a,b)=>b.length-a.length)[0]||[];extra.sort((a,b)=>(ref.indexOf(a)+1||999)-(ref.indexOf(b)+1||999))}
   names.push(...extra);
-  const groups=names.map(n=>[n,s.tiers.filter(t=>sec(t)===n)]).filter(g=>g[1].length||keep.includes(g[0]));
+  const groups=names.map(n=>[n,plain.filter(t=>sec(t)===n)]).filter(g=>g[1].length||keep.includes(g[0]));
   render.tiers=TI;
   /* remember how far each scrollable tier was scrolled, so ticking a level doesn't throw it back to the top */
   const gridKey=cur.c+":"+(condOn?"c":cur.s);
   const keepScroll=gridKey===render.lastKey?[...document.querySelectorAll("#grid .tier .list")].map(x=>x.scrollTop):[];
   render.lastKey=gridKey;
-  $("grid").innerHTML=s.tiers.length?
+  $("grid").innerHTML=plain.length?
     groups.map(([n,ts],i)=>`<div class="divider${i?"":" first"}"><span>${esc(n)}</span></div><div class="tiers">${ts.map(tierHtml).join("")}</div>`).join("")
+      +(eggs.length?`<div class="tiers egg">${eggs.map(tierHtml).join("")}</div>`:"")
     :'<p class="empty">No tiers here yet. Add some from the Dev page’s Tier manager.</p>';
   if(keepScroll.length)document.querySelectorAll("#grid .tier .list").forEach((x,i)=>{if(keepScroll[i])x.scrollTop=keepScroll[i]});
   renderProfile();
@@ -2905,13 +2965,15 @@ let accList="all";
 function renderAccStats(){
   const el=$("acStats");if(!el)return;
   const beaten=k=>pct(k)>=100||!!DRAFT[k]||(PEND[k]&&PEND[k].status==="pending");
-  const listKeys=c=>{const m=new Set();c.subs.forEach(sb=>sb.tiers.forEach(t=>t.levels.forEach(l=>m.add(lk(lv(l))))));return m};
-  const tally=ks=>{let b=0,ap=0;ks.forEach(k=>{if(beaten(k))b++;if(pct(k)>=100)ap++});return{b,ap,n:ks.size}};
-  const bar=(b,n)=>`<div class="sbar" aria-hidden="true"><i style="width:${n?Math.round(100*b/n):0}%"></i></div>`;
+  /* Levels in a secret tier count when beaten, but never add to the totals shown (so a full list can read 525/521). */
+  const keysOf=(c,secret)=>{const m=new Set();c.subs.forEach(sb=>sb.tiers.forEach(t=>{if(!!t.secret===secret)t.levels.forEach(l=>m.add(lk(lv(l))))}));return m};
+  const listKeys=c=>{const pub=keysOf(c,false),m=new Set(pub);keysOf(c,true).forEach(k=>m.add(k));m.pub=pub;return m};
+  const tally=ks=>{let b=0,ap=0;ks.forEach(k=>{if(beaten(k))b++;if(pct(k)>=100)ap++});return{b,ap,n:(ks.pub||ks).size}};
+  const bar=(b,n)=>`<div class="sbar" aria-hidden="true"><i style="width:${n?Math.min(100,Math.round(100*b/n)):0}%"></i></div>`;
   const sel=`<select id="acPick" aria-label="Choose a list">${["all",...DATA.map((c,i)=>String(i))].map(v=>`<option value="${v}"${v===accList?" selected":""}>${v==="all"?"All lists":esc(DATA[+v].title||DATA[+v].name)}</option>`).join("")}</select>`;
   let body;
   if(accList==="all"||!DATA[+accList]){
-    const all=new Set();DATA.forEach(c=>listKeys(c).forEach(k=>all.add(k)));
+    const all=new Set();all.pub=new Set();DATA.forEach(c=>{const ks=listKeys(c);ks.forEach(k=>all.add(k));ks.pub.forEach(k=>all.pub.add(k))});
     const T=tally(all);
     const rows=DATA.map(c=>{const t=tally(listKeys(c));return `<tr><td>${esc(c.title||c.name)}</td><td>${t.b}/${t.n}</td><td>${t.n?Math.round(100*t.b/t.n):0}%</td></tr>`}).join("");
     body=`<p><strong>${T.b}</strong> of ${T.n} levels beaten on the whole site</p>${bar(T.b,T.n)}
@@ -2920,7 +2982,8 @@ function renderAccStats(){
   }else{
     const c=DATA[+accList],T=tally(listKeys(c));
     const rows=c.subs.flatMap(sb=>sb.tiers.map(t=>{const {b,n}=counts(c,sb,t);
-      return `<tr><td>${esc(sb.name)}</td><td>${esc(t.name)}</td><td>${b}/${goal(t,b,n)}</td><td>${esc(rank(t,b,n))||"–"}</td></tr>`})).join("");
+      if(t.secret&&!b)return"";   /* a secret tier stays out of the table until the player has beaten something in it */
+      return `<tr><td>${esc(sb.name)}</td><td>${esc(t.name)}</td><td>${t.secret?b:b+"/"+goal(t,b,n)}</td><td>${esc(rank(t,b,n))||"–"}</td></tr>`})).join("");
     body=`<p><strong>${T.b}</strong> of ${T.n} levels beaten in ${esc(c.title||c.name)}</p>${bar(T.b,T.n)}
       <table><tr><th>Sub-category</th><th>Tier</th><th>Beaten</th><th>Rank</th></tr>${rows}</table>`;
   }
@@ -2969,8 +3032,8 @@ function showPanel(id){
   document.querySelectorAll("nav button[data-p]").forEach(x=>{const on=x.dataset.p===id;x.setAttribute("aria-pressed",String(on));$(x.dataset.p).hidden=!on});
 }
 /* Stats Viewer, Settings and Dev each open as their own page, replacing the tier lists. */
-const VIEWPANEL={achievements:"achpage",packs:"packpage",subs:"subpage",stats:"leaderboard",settings:"settings",devview:"devpage"};
-const PANELVIEW={achpage:"achievements",packpage:"packs",subpage:"subs",leaderboard:"stats",settings:"settings",devpage:"devview"};
+const VIEWPANEL={infinite:"infpage",achievements:"achpage",packs:"packpage",subs:"subpage",stats:"leaderboard",settings:"settings",devview:"devpage"};
+const PANELVIEW={infpage:"infinite",achpage:"achievements",packpage:"packs",subpage:"subs",leaderboard:"stats",settings:"settings",devpage:"devview"};
 function setView(v){
   document.body.classList.remove("menu-open");$("menuBtn").setAttribute("aria-expanded","false");
   view=v;document.body.dataset.view=v;
@@ -2980,6 +3043,7 @@ function setView(v){
   if(v==="stats"&&sb&&Date.now()-lastLoad>5000)refresh();
   if(v==="packs")renderPacks();
   if(v==="achievements")renderAchPage();
+  if(v==="infinite")renderInf();
   if(v==="subs"){renderSubs();if(sb&&me&&Date.now()-lastLoad>5000)refresh()}
   window.scrollTo(0,0);
   pushNav();
@@ -3686,6 +3750,211 @@ function equippedTitle(pr){
   const sp=SPECIAL.find(x=>x.title===pr.title&&x.test(pr));
   return sp?sp.title:"";
 }
+/* ---------- JFP Tracker: kept only in this browser, never sent anywhere ---------- */
+const INF_KEY="uwt-infinite";
+let INF=(()=>{try{const v=JSON.parse(localStorage.getItem(INF_KEY)||"null");if(v&&Array.isArray(v.entries))return v}catch(e){}return{entries:[],last:null,cur:""}})();
+let infEdit="",infFilter="all",infDel="",infMsg="",infRm=-1,infFlash="";
+const INF_SPEEDS=["0.5x","1x","2x","3x","4x"],INF_SIZES=["big","small"];
+const INF_RULES=["Random","NSNZ","NoSpam","Juggernaut","Unrestricted","LRD","Limp","Burst","ABitOfSpam"];
+const infRule=m=>{m=String(m||"").trim();const x=m.toLowerCase();return INF_RULES.find(r=>r.toLowerCase()===x)||(x==="linp"?"Limp":m)};
+/* the mod's extra settings, grouped like its menus. tick = on/off, tickval = on/off + a value, tickpick = on/off + a choice, pick = a choice, multi = several ticks */
+const INF_OPTS=[
+  {g:"Additional Corridor Options",items:[
+    {k:"widen",t:"tick",l:"Widen Playfield"},
+    {k:"seed",t:"tickval",l:"RNG Set Seed",ph:"Seed"},
+    {k:"len",t:"tickval",l:"Set Length",ph:"Length"}]},
+  {g:"Gravity Portal Options",items:[
+    {k:"grav",t:"tickpick",l:"Gravity Portals",o:["Balanced","Light","Aggressive"]},
+    {k:"fake",t:"tick",l:"Fake Portals"},
+    {k:"upside",t:"tick",l:"Start Upside Down"},
+    {k:"input",t:"pick",l:"Allowed Input Types",o:["Holds","Releases","Both"],def:"Both"},
+    {k:"spawnspam",t:"tick",l:"Spawn Within Spams"}]},
+  {g:"Hazard Options",items:[
+    {k:"spikes",t:"tickpick",l:"Corridor Spikes",o:["Both","Big","Mini"]},
+    {k:"fuzzy",t:"tick",l:"Fuzzy Spikes"}]},
+  {g:"Speed Options",items:[
+    {k:"speedch",t:"tickpick",l:"Speed Changes",o:["Balanced","Aggressive","Light"]},
+    {k:"speeds",t:"multi",l:"Selected Speeds",o:["0.5x","1x","2x","3x","4x"]}]},
+  {g:"Wave Size Options",items:[
+    {k:"sizep",t:"tickpick",l:"Spawn Size Portals",o:["Type A","Type B"]}]}
+];
+const INF_ITEMS=INF_OPTS.flatMap(g=>g.items);
+function infOpts(o){   /* keep only valid, non-default options, always in the same order (so equal settings compare equal) */
+  o=o&&typeof o==="object"?o:{};const r={};
+  INF_ITEMS.forEach(it=>{const v=o[it.k];
+    if(it.t==="tick"&&v===true)r[it.k]=true;
+    else if(it.t==="tickval"&&(v===true||(typeof v==="string"&&v.trim())))r[it.k]=v===true?true:v.trim().slice(0,40);
+    else if(it.t==="tickpick"&&it.o.includes(v))r[it.k]=v;
+    else if(it.t==="pick"&&it.o.includes(v)&&v!==it.def)r[it.k]=v;
+    else if(it.t==="multi"&&Array.isArray(v)){const a=it.o.filter(x=>v.includes(x));if(a.length)r[it.k]=a}
+  });
+  return r;
+}
+const infOn=(it,o)=>o[it.k]!==undefined;
+function infOptSum(o){
+  o=o||{};
+  return INF_ITEMS.filter(it=>infOn(it,o)).map(it=>{const v=o[it.k];
+    if(it.t==="tickval")return v===true?it.l:it.l.replace(/^Set |^RNG Set /,"")+" "+v;
+    if(it.t==="tickpick")return it.l+" ("+v+")";
+    if(it.t==="pick")return it.l+": "+v;
+    if(it.t==="multi")return it.l+": "+v.join(", ");
+    return it.l}).join(" · ");
+}
+const infSave=()=>{try{localStorage.setItem(INF_KEY,JSON.stringify(INF));return true}catch(e){return false}};
+const infId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const infToday=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const infDay=d=>{const x=new Date(d+"T12:00:00");return isNaN(x)?d:x.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})};
+const infCfg=e=>[e.speed,e.size?e.size[0].toUpperCase()+e.size.slice(1):"",e.gap!==""&&e.gap!=null?"Height "+e.gap:"",e.mode].filter(Boolean).join(" · ")||"Setting not recorded";
+const infKey=e=>[e.speed||"",e.size||"",e.gap??"",(e.mode||"").toLowerCase(),JSON.stringify(e.opts||{})].join("|");
+const infSub=e=>{const t=infOptSum(e.opts);return t?`<span class="optsum">${esc(t)}</span>`:""};
+const infCurE=()=>INF.entries.find(x=>x.id===INF.cur)||null;
+function infClean(e){   /* tidy one imported/saved session; null if unusable */
+  if(!e||typeof e!=="object"||!/^\d{4}-\d{2}-\d{2}$/.test(e.date||""))return null;
+  const runs=(Array.isArray(e.runs)?e.runs:String(e.runs||"").split(/[^0-9]+/)).map(Number).filter(n=>Number.isFinite(n)&&n>0&&n<1e7).map(Math.round);
+  const g=e.gap===""||e.gap==null?"":Number(e.gap);
+  return{id:String(e.id||infId()),date:e.date,speed:String(e.speed||""),size:String(e.size||"").toLowerCase(),gap:Number.isFinite(g)?g:"",mode:infRule(e.mode).slice(0,40),opts:infOpts(e.opts),runs,note:String(e.note||"").slice(0,200)};
+}
+function infGroups(){
+  const m=new Map();INF.entries.forEach(e=>{if(!e.runs.length)return;const k=infKey(e);if(!m.has(k))m.set(k,[]);m.get(k).push(e)});
+  const sp=v=>parseFloat(v)||0;
+  return [...m.entries()].map(([k,es])=>{
+    const all=es.flatMap(e=>e.runs.map(r=>({r,date:e.date})));
+    const top=all.reduce((a,b)=>b.r>a.r||(b.r===a.r&&b.date<a.date)?b:a);
+    return{k,e:es[0],cfg:infCfg(es[0]),best:top.r,date:top.date,runs:all.length,avg:Math.round(all.reduce((t,x)=>t+x.r,0)/all.length),days:new Set(es.map(e=>e.date)).size};
+  }).sort((a,b)=>sp(a.e.speed)-sp(b.e.speed)||(a.e.size||"").localeCompare(b.e.size||"")||sp(b.e.gap)-sp(a.e.gap)||(a.e.mode||"").localeCompare(b.e.mode||""));
+}
+function renderInf(){
+  const el=$("infbody");if(!el)return;
+  const ed=infEdit&&INF.entries.find(x=>x.id===infEdit);if(!ed)infEdit="";
+  const L=INF.last||{speed:"3x",size:"big",gap:60,mode:"nsnz"};
+  const f=ed||{date:infToday(),speed:L.speed,size:L.size,gap:L.gap,mode:L.mode,opts:L.opts||{},note:""};
+  const fo=f.opts||{},rules=INF_RULES.includes(f.mode)||!f.mode?INF_RULES:[...INF_RULES,f.mode];
+  const sel=(n,list,v,dis)=>`<select name="${n}"${dis?" disabled":""}>${list.map(x=>`<option${x===v?" selected":""}>${esc(x)}</option>`).join("")}</select>`;
+  const optItem=it=>{const on=infOn(it,fo),v=fo[it.k],ck=`<label class="ck"><input type="checkbox" name="o_${it.k}"${on?" checked":""}> ${esc(it.l)}</label>`;
+    if(it.t==="tick")return `<div class="optrow">${ck}</div>`;
+    if(it.t==="tickval")return `<div class="optrow">${ck}<input type="text" name="o_${it.k}_v" data-dep="o_${it.k}" placeholder="${esc(it.ph)} (optional)" maxlength="40" value="${on&&v!==true?esc(v):""}"${on?"":" disabled"} aria-label="${esc(it.l)} value"></div>`;
+    if(it.t==="tickpick")return `<div class="optrow">${ck}${sel("o_"+it.k+"_v",it.o,on?v:it.o[0],!on).replace("<select","<select data-dep=\"o_"+it.k+"\" aria-label=\""+esc(it.l)+" type\"")}</div>`;
+    if(it.t==="pick")return `<div class="optrow"><label class="ck">${esc(it.l)} ${sel("o_"+it.k,it.o,v||it.def)}</label></div>`;
+    return `<fieldset class="optrow"><legend>${esc(it.l)}</legend>${it.o.map(x=>`<label class="ck"><input type="checkbox" name="o_${it.k}" value="${esc(x)}"${(v||[]).includes(x)?" checked":""}> ${esc(x)}</label>`).join("")}</fieldset>`;
+  };
+  const optGroups=INF_OPTS.map(g=>{const n=g.items.filter(it=>infOn(it,fo)).length;
+    return `<details class="infopt"><summary>${esc(g.g)}<span class="muted">${n?` (${n} on)`:""}</span></summary>${g.items.map(optItem).join("")}</details>`}).join("");
+  const opt=(list,v)=>`<option value=""${v?"":" selected"}>–</option>`+list.map(x=>`<option value="${esc(x)}"${x===v?" selected":""}>${esc(x[0].toUpperCase()+x.slice(1))}</option>`).join("");
+  const G=infGroups(),bestOf=new Map(G.map(g=>[g.k,g.best]));
+  if(infFilter!=="all"&&!bestOf.has(infFilter))infFilter="all";
+  const form=`<form id="infForm" class="infform" autocomplete="off">
+    <label>Date<input type="date" name="date" value="${esc(f.date)}" required></label>
+    <label>Speed<select name="speed">${opt(INF_SPEEDS,f.speed)}</select></label>
+    <label>Size<select name="size">${opt(INF_SIZES,f.size)}</select></label>
+    <label>Corridor Height<input type="number" name="gap" min="0" step="1" value="${esc(f.gap)}"></label>
+    <label>Corridor Rules${sel("mode",rules,f.mode||"NSNZ")}</label>
+    ${optGroups}
+    <label class="wide">Note (optional)<input name="note" maxlength="200" value="${esc(f.note||"")}"></label>
+    <div class="btns"><button type="submit">${ed?"Save changes":"Start session"}</button>${ed?'<button type="button" data-inf="cancel">Cancel</button>':""}</div>
+  </form><p class="msg" role="status">${esc(infMsg)}</p>`;
+  /* the session scores are being added to */
+  const c=infCurE();
+  let cur="";
+  if(c){
+    const prev=INF.entries.filter(x=>infKey(x)===infKey(c)).flatMap(x=>x.runs),pb=prev.length?Math.max(...prev):0,top=c.runs.length?Math.max(...c.runs):0;
+    cur=`<div class="infcard infcur"><h3>Current session</h3>
+      <p><b>${esc(infCfg(c))}</b> <span class="muted">· ${esc(infDay(c.date))}${c.note?" · "+esc(c.note):""}</span>${infSub(c)}</p>
+      <form id="infAdd" class="arow" autocomplete="off"><label for="infScore" class="vh">Score</label><input id="infScore" type="number" inputmode="numeric" min="1" step="1" placeholder="Score" required><button type="submit">Add score</button></form>
+      <p class="msg" role="status">${infFlash?`<span class="pb">${esc(infFlash)}</span>`:""}</p>
+      ${c.runs.length?`<div class="infrow"><span class="runs">${c.runs.map((r,i)=>`<button type="button" class="chip${r===top&&c.runs.length>1?" top":""}${infRm===i?" rm":""}" data-inf="rm" data-i="${i}" title="${infRm===i?"Click again to remove":"Remove this score"}">${infRm===i?"Remove "+r+"?":r}</button>`).join("")}</span></div>
+        <p class="muted">${c.runs.length} run${c.runs.length===1?"":"s"} · best ${top} · average ${Math.round(c.runs.reduce((a,b)=>a+b,0)/c.runs.length)}${pb?` · PB for this setting: ${pb}`:""}. Tap a score to remove it.</p>`:'<p class="muted">No scores yet. Add your first run above.</p>'}
+      <div class="btns"><button type="button" data-inf="done">Finish session</button></div></div>`;
+  }
+  const bests=G.length?G.map(g=>`<div class="infpb"><span class="cfg">${esc(g.cfg)}${infSub(g.e)}</span><span class="best">${g.best}</span>
+      <span class="muted">Set ${esc(infDay(g.date))} · average ${g.avg} · ${g.runs} run${g.runs===1?"":"s"} over ${g.days} day${g.days===1?"":"s"}</span></div>`).join(""):'<p class="muted">No scores yet. Start a session above, then add your runs.</p>';
+  const shown=INF.entries.map((e,i)=>({e,i})).filter(x=>infFilter==="all"||infKey(x.e)===infFilter)
+    .sort((a,b)=>b.e.date.localeCompare(a.e.date)||b.i-a.i);
+  const days=[];shown.forEach(({e})=>{const d=days[days.length-1];if(d&&d.date===e.date)d.es.push(e);else days.push({date:e.date,es:[e]})});
+  const row=e=>{const top=e.runs.length?Math.max(...e.runs):0,pb=top&&top===bestOf.get(infKey(e));
+    return `<div class="infrow${e.id===INF.cur?" on":""}"><span class="cfg">${esc(infCfg(e))}${infSub(e)}</span>
+      <span class="runs">${e.runs.length?e.runs.map(r=>`<span${r===top&&e.runs.length>1?' class="top"':""}>${r}</span>`).join(""):'<em class="muted">No scores yet</em>'}${pb?'<span class="pb">PB</span>':""}</span>
+      ${e.note?`<span class="muted">${esc(e.note)}</span>`:""}
+      <span class="acts">${e.id===INF.cur?"":`<button type="button" data-inf="open" data-id="${esc(e.id)}">Add scores</button>`}<button type="button" data-inf="edit" data-id="${esc(e.id)}">Edit</button><button type="button" class="${infDel===e.id?"danger":""}" data-inf="del" data-id="${esc(e.id)}">${infDel===e.id?"Confirm delete":"Delete"}</button></span></div>`};
+  const hist=days.length?days.map(d=>`<div class="infday"><h4>${esc(infDay(d.date))}</h4>${d.es.map(row).join("")}</div>`).join(""):(INF.entries.length?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No sessions yet.</p>');
+  el.innerHTML=`<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
+    ${cur}
+    <div class="infcard"><h3>Personal bests</h3>${bests}</div>
+    <div class="infcard"><h3>History</h3>
+      ${G.length?`<div class="arow"><label for="infFilter">Show</label><select id="infFilter"><option value="all">All settings</option>${G.map(g=>`<option value="${esc(g.k)}"${g.k===infFilter?" selected":""}>${esc(g.cfg+(infOptSum(g.e.opts)?" + "+infOptSum(g.e.opts):""))}</option>`).join("")}</select></div>`:""}
+      ${hist}</div>
+    <div class="infcard"><h3>Backup</h3><p class="muted">Your log lives in this browser. Clearing site data or switching device loses it unless you export a copy.</p>
+      <div class="inftools"><button type="button" data-inf="export"${INF.entries.length?"":" disabled"}>Export</button><label class="b" tabindex="0">Import<input id="infFile" type="file" accept=".json,application/json" hidden></label>
+      <span class="muted">${INF.entries.length} session${INF.entries.length===1?"":"s"} saved</span></div></div>`;
+}
+INF.entries=INF.entries.map(infClean).filter(Boolean);
+if(INF.last){INF.last.mode=infRule(INF.last.mode);INF.last.opts=infOpts(INF.last.opts)}
+const infStore=(ok,bad)=>infSave()?ok:(bad||"Couldn’t save: this browser is blocking storage, so the log will be lost when you leave.");
+const infFocusScore=()=>{const x=$("infScore");if(x){x.focus();x.scrollIntoView({block:"center"})}};
+$("infpage").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(e.target.id==="infAdd"){
+    const c=infCurE(),inp=$("infScore"),v=Math.round(Number(inp&&inp.value));
+    if(!c||!(v>0&&v<1e7)){if(inp)inp.focus();return}
+    const prev=INF.entries.filter(x=>infKey(x)===infKey(c)).flatMap(x=>x.runs),pb=prev.length?Math.max(...prev):0;
+    c.runs.push(v);infRm=-1;
+    infFlash=prev.length&&v>pb?`New PB! ${v} beats ${pb}`:"";
+    infMsg="";const m=infStore("");if(m)infFlash=m;
+    renderInf();infFocusScore();return;
+  }
+  if(e.target.id!=="infForm")return;
+  const F=new FormData(e.target),was=infEdit;
+  const old=was?INF.entries.find(x=>x.id===was):null;
+  const opts={};INF_ITEMS.forEach(it=>{const on=F.get("o_"+it.k)==="on";
+    if(it.t==="tick")opts[it.k]=on;
+    else if(it.t==="tickval"){if(on)opts[it.k]=String(F.get("o_"+it.k+"_v")||"").trim()||true}
+    else if(it.t==="tickpick"){if(on)opts[it.k]=F.get("o_"+it.k+"_v")||it.o[0]}
+    else if(it.t==="pick")opts[it.k]=F.get("o_"+it.k);
+    else opts[it.k]=F.getAll("o_"+it.k)});
+  const rec=infClean({id:was||infId(),date:F.get("date"),speed:F.get("speed"),size:F.get("size"),gap:F.get("gap"),mode:String(F.get("mode")||"").trim(),opts,runs:old?old.runs:[],note:String(F.get("note")||"").trim()});
+  if(!rec){infMsg="Pick a date.";renderInf();return}
+  if(was){const i=INF.entries.findIndex(x=>x.id===was);if(i>=0)INF.entries[i]=rec}else{INF.entries.push(rec);INF.cur=rec.id}
+  INF.last={speed:rec.speed,size:rec.size,gap:rec.gap,mode:rec.mode,opts:rec.opts};
+  infEdit="";infDel="";infRm=-1;infFlash="";
+  infMsg=infStore(was?"Session updated.":"Session started. Add your scores below.");
+  renderInf();if(!was)infFocusScore();
+});
+$("infpage").addEventListener("click",e=>{
+  const b=e.target.closest("[data-inf]");if(!b)return;
+  const a=b.dataset.inf,id=b.dataset.id;
+  if(a==="edit"){infEdit=id;infDel="";infMsg="";renderInf();$("infpage").scrollIntoView({block:"start"});return}
+  if(a==="cancel"){infEdit="";infMsg="";renderInf();return}
+  if(a==="open"){INF.cur=id;infRm=-1;infFlash="";infDel="";infSave();renderInf();infFocusScore();return}
+  if(a==="done"){INF.cur="";infRm=-1;infFlash="";infSave();infMsg="Session finished.";renderInf();return}
+  if(a==="rm"){const i=+b.dataset.i,c=infCurE();if(!c)return;
+    if(infRm!==i){infRm=i;renderInf();const n=document.querySelector(`[data-inf=rm][data-i="${i}"]`);if(n)n.focus();return}
+    c.runs.splice(i,1);infRm=-1;infFlash=infStore("Score removed.");renderInf();return}
+  if(a==="del"){
+    if(infDel!==id){infDel=id;renderInf();return}
+    INF.entries=INF.entries.filter(x=>x.id!==id);infDel="";if(infEdit===id)infEdit="";if(INF.cur===id)INF.cur="";
+    infMsg=infStore("Session deleted.","Couldn’t save the change.");renderInf();return;
+  }
+  if(a==="export"){
+    const blob=new Blob([JSON.stringify({app:"Ultimate Wave Tracker",kind:"infinite-wave",exported:new Date().toISOString(),entries:INF.entries},null,1)],{type:"application/json"});
+    const u=URL.createObjectURL(blob),x=document.createElement("a");x.href=u;x.download="jfp-tracker-"+infToday()+".json";document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+  }
+});
+$("infpage").addEventListener("keydown",e=>{if(e.target.matches("label.b")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();$("infFile").click()}});
+$("infpage").addEventListener("change",async e=>{
+  if(e.target.closest("#infForm details")){
+    if(e.target.type==="checkbox"){const d=e.target.form.querySelector(`[data-dep="${e.target.name}"]`);if(d)d.disabled=!e.target.checked}
+    const det=e.target.closest("details"),sm=det&&det.querySelector("summary .muted");if(sm){const n=new Set([...det.querySelectorAll("input[type=checkbox]:checked")].map(x=>x.name)).size+[...det.querySelectorAll("select[name^=o_]:not([data-dep])")].filter(x=>x.value!=="Both").length;sm.textContent=n?` (${n} on)`:""}return}
+  if(e.target.id==="infFilter"){infFilter=e.target.value;infDel="";renderInf();const s=$("infFilter");if(s)s.focus();return}
+  if(e.target.id!=="infFile"||!e.target.files[0])return;
+  try{
+    const d=JSON.parse(await e.target.files[0].text()),list=Array.isArray(d)?d:d&&d.entries;
+    if(!Array.isArray(list))throw 0;
+    const have=new Set(INF.entries.map(x=>x.id));let add=0,skip=0;
+    list.forEach(x=>{const c=infClean(x);if(!c||have.has(c.id)){skip++;return}INF.entries.push(c);have.add(c.id);add++});
+    infMsg=infStore(`Imported ${add} session${add===1?"":"s"}${skip?` (${skip} skipped: already here or unreadable)`:""}.`,"Couldn’t save the imported sessions.");
+  }catch(err){infMsg="That file isn’t a JFP Tracker export."}
+  renderInf();
+});
+
 /* The Achievements page: every achievement, what it needs and what it gives */
 function renderAchPage(){
   const el=$("achbody");if(!el)return;
