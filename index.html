@@ -227,6 +227,17 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 #homeBtn{background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
 #homeBtn:hover{text-decoration:underline}
 body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:not([data-view=tracker]) #grid{display:none}
+.sitefoot{border-top:1px solid #333;margin-top:40px;padding:22px 16px 28px;text-align:center;color:var(--mut);font-size:14px}
+.sitefoot p{margin:4px 0}
+.sitefoot span{margin:0 10px;color:#555}
+.footlink{background:none;border:0;padding:0;color:var(--mut);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit}
+.footlink:hover{color:var(--text)}
+.footlink:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+.page.doc{text-align:left;max-width:760px}
+.page.doc h2{text-align:left}
+.page.doc h3{font-size:20px;margin:28px 0 8px}
+.page.doc p,.page.doc li{color:#ccc;line-height:1.65;font-size:16px;max-width:none;margin:0 0 10px}
+.page.doc ul,.page.doc ol{padding-left:22px;margin:0 0 10px}
 .page{max-width:820px;margin:0 auto;padding:48px 24px 64px;text-align:center}
 .page[hidden]{display:none}
 .page h2{font-size:34px;margin:0 0 14px}
@@ -538,8 +549,69 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 <section id="account" class="page" hidden></section>
 <section id="resources" class="page" hidden><h2>Resources</h2><p class="muted">Content coming soon.</p></section>
 <section id="contact" class="page" hidden><h2>Contact</h2><p class="muted">Content coming soon.</p></section>
+<section id="privacy" class="page doc" hidden>
+  <h2>Privacy notice</h2>
+  <p class="muted">Last updated 8 November 2026</p>
+  <h3>Who runs this site</h3>
+  <p>Ultimate Wave Tracker is a free, non-commercial fan project run by Jake, the site admin. If you have any question about your data, or want to use any of the rights below, message Jake on Discord.</p>
+  <h3>What we get when you log in</h3>
+  <p>You log in with Discord. We only ask Discord for its basic “identify” permission, which gives us your Discord user ID, your display name and a link to your avatar. We don’t ask Discord for your email address.</p>
+  <p>Accounts made before November 2026 used an older login that also received the email address on your Discord account, and that address may still be stored with your account. Ask us and we’ll remove it.</p>
+  <h3>What we store as you use the site</h3>
+  <ul>
+    <li>Your profile: your display name (you can change it), avatar link and the title you have equipped.</li>
+    <li>Your progress: levels you’ve marked as in progress, levels waiting in your Submissions tab, and the submissions you send. A submission holds the level, any footage links and notes you add, its status (pending, approved or rejected), the dates, and any note from the admin.</li>
+    <li>The achievements you’ve earned and when you earned them.</li>
+  </ul>
+  <h3>What other people can see</h3>
+  <p>Anyone visiting the site can see your display name, avatar, title, approved levels, score, rank, completed packs and achievements, for example on the Stats Viewer. Your footage links, your notes and anything still pending or rejected are only seen by you and the admin.</p>
+  <h3>Why we use it</h3>
+  <p>We use this information only to run the tracker and leaderboard you chose to join: to show your progress, check your submissions and rank players. Our legal basis is legitimate interests. There are no adverts or analytics, we don’t track you across other sites, and we never sell or share your data for marketing.</p>
+  <h3>Where it is kept</h3>
+  <ul>
+    <li><b>Supabase</b> stores the database and handles logins. Like most services, it keeps short-lived technical logs, which can include IP addresses, to keep the service secure.</li>
+    <li><b>GitHub Pages</b> hosts the website files. GitHub may log the IP address of visitors when it serves the site.</li>
+    <li><b>Discord</b> handles the login itself. Its own privacy policy covers what it does.</li>
+  </ul>
+  <h3>Stored in your browser</h3>
+  <p>The site saves a few things on your own device: your login session, your display settings, the list and page you last looked at, unsent notes, and your JFP Tracker log. These are needed for the features you use and never leave your device, except your login session, which is sent to Supabase to prove who you are. Because nothing is used for tracking, there is no cookie banner. Logging out or clearing this site’s data in your browser removes them.</p>
+  <h3>How long we keep it</h3>
+  <p>We keep your account and progress for as long as you have an account. If you ask us to delete your account, we’ll remove your profile, progress, submissions and achievements, normally within 30 days.</p>
+  <h3>Your rights</h3>
+  <p>You can ask to see the data we hold about you, have it corrected, have it deleted, receive a copy, or object to how we use it. Message Jake on Discord to do any of these. If you’re unhappy with how we handle your data, you can complain to the Information Commissioner’s Office at ico.org.uk.</p>
+  <h3>Changes</h3>
+  <p>If this notice changes, the date at the top will be updated.</p>
+</section>
+<section id="guidelines" class="page doc" hidden>
+  <h2>Submission guidelines</h2>
+  <p class="muted">Every completion is checked by hand before it counts. Following these makes approval quicker.</p>
+  <h3>How to submit</h3>
+  <ol>
+    <li>Tick a level green on the tracker. It goes into your Submissions tab rather than being sent straight away.</li>
+    <li>Open the Submissions tab, add a footage link for each level, and add a note if anything needs explaining.</li>
+    <li>Send the batch. The levels show as pending until the admin approves or rejects them.</li>
+  </ol>
+  <h3>Footage</h3>
+  <ul>
+    <li>Show the whole completion from start to finish, without cuts.</li>
+    <li>Make sure the level is clearly identifiable, for example by showing the level page or its name before you play.</li>
+    <li>Use a link that can be opened without logging in, such as YouTube (unlisted is fine), Medal or a Discord message link.</li>
+    <li>Keep the original recording until your submission is approved, in case the admin asks for more.</li>
+  </ul>
+  <h3>Not allowed</h3>
+  <ul>
+    <li>Any hack or mod that makes the level easier, including noclip, speedhack, macros, bots or practice-mode completions.</li>
+    <li>Someone else’s footage, or a completion that isn’t yours.</li>
+  </ul>
+  <h3>Decisions</h3>
+  <p>The admin decides whether a submission is accepted and may ask for more proof. A rejected submission comes with a reason where possible, and you can fix it and send it again. Approved completions can be removed later if they turn out to break these rules.</p>
+</section>
 <section id="devpage" class="panel wide" hidden><div id="dtabs" role="tablist"></div><div id="dev"></div><div id="tier"></div><div id="datatab"></div></section>
 <main id="grid"></main>
+<footer class="sitefoot">
+  <p>© 2026 Ultimate Wave Tracker · A fan-made site, not affiliated with RobTop Games AB</p>
+  <p><button type="button" class="footlink" data-go="privacy">Privacy notice</button><span aria-hidden="true">|</span><button type="button" class="footlink" data-go="guidelines">Submission guidelines</button></p>
+</footer>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -3083,7 +3155,7 @@ const PANELVIEW={infpage:"infinite",achpage:"achievements",packpage:"packs",subp
 function setView(v){
   document.body.classList.remove("menu-open");$("menuBtn").setAttribute("aria-expanded","false");
   view=v;document.body.dataset.view=v;
-  ["home","resources","contact","account"].forEach(k=>$(k).hidden=k!==v);
+  ["home","resources","contact","account","privacy","guidelines"].forEach(k=>$(k).hidden=k!==v);
   showPanel(VIEWPANEL[v]||"");
   $("navTracker").setAttribute("aria-pressed",String(v==="tracker"));
   if(v==="stats"&&sb&&Date.now()-lastLoad>5000)refresh();
@@ -3114,6 +3186,7 @@ document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
 });
 $("homeBtn").onclick=()=>setView("home");
 $("home").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
+document.querySelector(".sitefoot").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
 $("cond").onclick=()=>{condOn=!condOn;try{localStorage.setItem("lvl-condensed",condOn?"1":"0")}catch(e){}applyFx();render()};
 $("classic").onclick=()=>{gfxOn=!gfxOn;try{localStorage.setItem("lvl-classic",gfxOn?"0":"1")}catch(e){}applyFx()};
 $("fx").onclick=()=>{fxOn=!fxOn;try{localStorage.setItem("lvl-fx",fxOn?"1":"0")}catch(e){}applyFx()};
