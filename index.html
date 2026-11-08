@@ -4016,7 +4016,7 @@ function renderInf(){
       <span class="acts">${e.id===INF.cur?"":`<button type="button" data-inf="open" data-id="${esc(e.id)}">Add scores</button>`}<button type="button" data-inf="edit" data-id="${esc(e.id)}">Edit</button><button type="button" class="${infDel===e.id?"danger":""}" data-inf="del" data-id="${esc(e.id)}">${infDel===e.id?"Confirm delete":"Delete"}</button></span></div>`};
   const DO=INF.dayOpen||{};
   const hist=days.length?days.map(d=>{const best=Math.max(0,...d.es.flatMap(e=>e.runs));
-      return `<details class="infday" data-day="${esc(d.date)}"${DO[d.date]?" open":""}><summary><h4>${esc(infDay(d.date))}</h4><span class="muted">${d.es.length} session${d.es.length===1?"":"s"}${best?` · best ${best}m`:""}</span></summary>${d.es.map(row).join("")}</details>`}).join("")
+      return `<details class="infday" data-day="${esc(d.date)}"${DO[d.date]?" open":""}><summary><h4>${esc(infDay(d.date))}</h4><span class="muted">${d.es.length} config${d.es.length===1?"":"s"}${best?` · best ${best}m`:""}</span></summary>${d.es.map(row).join("")}</details>`}).join("")
     :(INF.entries.some(e=>e.date!==today)?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No earlier sessions yet.</p>');
   const todayBox=`<div class="infcard"><h3>Current session</h3><p class="muted">${esc(infDay(today))}</p>${todays.length?todays.map(row).join(""):'<p class="muted">No sessions today yet. Start one on the left.</p>'}</div>`;
   el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
