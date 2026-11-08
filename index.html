@@ -172,7 +172,14 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 #infpage .infrow .cfg{font-size:17px;min-width:220px}
 #infpage .infrow .runs span,#infpage .infcur .chip{font-size:17px;padding:3px 10px}
 #infpage .panel .infrow .acts button,#infpage .infrow .acts button{font-size:15px;padding:7px 14px}
-#infpage .infday h4{font-size:19px;margin:22px 0 8px}
+#infpage .infday h4{font-size:19px;margin:0}
+.infday{border-top:1px solid #444;padding:4px 0}
+.infday:first-of-type{border-top:0}
+.infday>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;cursor:pointer;list-style:none;padding:12px 0}
+.infday>summary::-webkit-details-marker{display:none}
+.infday>summary h4::before{content:"▸ ";color:var(--mut)}
+.infday[open]>summary h4::before{content:"▾ "}
+.infday[open]{padding-bottom:12px}
 #infpage .infpb{padding:8px 0}
 .infpbs>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;cursor:pointer;list-style:none}
 .infpbs>summary::-webkit-details-marker{display:none}
@@ -3982,7 +3989,7 @@ function renderInf(){
   let cur="";
   if(c){
     const prev=INF.entries.filter(x=>infKey(x)===infKey(c)).flatMap(x=>x.runs),pb=prev.length?Math.max(...prev):0,top=c.runs.length?Math.max(...c.runs):0;
-    cur=`<div class="infcard infcur"><h3>Current session</h3>
+    cur=`<div class="infcard infcur"><h3>Add scores</h3>
       <p><b>${esc(infCfg(c))}</b> <span class="muted">· ${esc(infDay(c.date))}${c.note?" · "+esc(c.note):""}</span>${infSub(c)}</p>
       <form id="infAdd" class="arow" autocomplete="off"><label for="infScore" class="vh">Score</label><input id="infScore" type="number" inputmode="numeric" min="1" step="1" placeholder="Score" required><button type="submit">Add score</button></form>
       <p class="msg" role="status">${infFlash?`<span class="pb">${esc(infFlash)}</span>`:""}</p>
@@ -3997,17 +4004,24 @@ function renderInf(){
   const bests=G.length?(Gv.length?Gv.map(g=>pbRow(g,false)).join(""):'<p class="muted">All your personal bests are hidden.</p>')
       +(Gh.length?`<details class="infhid"${INF.hidOpen?" open":""}><summary>Hidden (${Gh.length})</summary>${Gh.map(g=>pbRow(g,true)).join("")}</details>`:"")
     :'<p class="muted">No scores yet. Start a session above, then add your runs.</p>';
-  const shown=INF.entries.map((e,i)=>({e,i})).filter(x=>infFilter==="all"||infKey(x.e)===infFilter)
-    .sort((a,b)=>b.e.date.localeCompare(a.e.date)||b.i-a.i);
+  /* today's sessions get their own box; History holds earlier days, filtered by setting */
+  const today=infToday(),order=(a,b)=>b.e.date.localeCompare(a.e.date)||b.i-a.i,all=INF.entries.map((e,i)=>({e,i}));
+  const todays=all.filter(x=>x.e.date===today).sort(order).map(x=>x.e);
+  const shown=all.filter(x=>x.e.date!==today&&(infFilter==="all"||infKey(x.e)===infFilter)).sort(order);
   const days=[];shown.forEach(({e})=>{const d=days[days.length-1];if(d&&d.date===e.date)d.es.push(e);else days.push({date:e.date,es:[e]})});
   const row=e=>{const top=e.runs.length?Math.max(...e.runs):0,pb=top&&top===bestOf.get(infKey(e));
     return `<div class="infrow${e.id===INF.cur?" on":""}"><span class="cfg">${esc(infCfg(e))}${infSub(e)}</span>
       <span class="runs">${e.runs.length?e.runs.map(r=>`<span${r===top&&e.runs.length>1?' class="top"':""}>${r}</span>`).join(""):'<em class="muted">No scores yet</em>'}${pb?'<span class="pb">PB</span>':""}</span>
       ${e.note?`<span class="muted">${esc(e.note)}</span>`:""}
       <span class="acts">${e.id===INF.cur?"":`<button type="button" data-inf="open" data-id="${esc(e.id)}">Add scores</button>`}<button type="button" data-inf="edit" data-id="${esc(e.id)}">Edit</button><button type="button" class="${infDel===e.id?"danger":""}" data-inf="del" data-id="${esc(e.id)}">${infDel===e.id?"Confirm delete":"Delete"}</button></span></div>`};
-  const hist=days.length?days.map(d=>`<div class="infday"><h4>${esc(infDay(d.date))}</h4>${d.es.map(row).join("")}</div>`).join(""):(INF.entries.length?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No sessions yet.</p>');
+  const DO=INF.dayOpen||{};
+  const hist=days.length?days.map(d=>{const best=Math.max(0,...d.es.flatMap(e=>e.runs));
+      return `<details class="infday" data-day="${esc(d.date)}"${DO[d.date]?" open":""}><summary><h4>${esc(infDay(d.date))}</h4><span class="muted">${d.es.length} session${d.es.length===1?"":"s"}${best?` · best ${best}m`:""}</span></summary>${d.es.map(row).join("")}</details>`}).join("")
+    :(INF.entries.some(e=>e.date!==today)?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No earlier sessions yet.</p>');
+  const todayBox=`<div class="infcard"><h3>Current session</h3><p class="muted">${esc(infDay(today))}</p>${todays.length?todays.map(row).join(""):'<p class="muted">No sessions today yet. Start one on the left.</p>'}</div>`;
   el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
     <details class="infcard infpbs"${INF.pbOpen===false?"":" open"}><summary><h3>Personal bests</h3>${Gv.length?`<span class="muted">${Gv.length} setting${Gv.length===1?"":"s"}</span>`:""}</summary>${bests}</details></div><div class="infr">
+    ${todayBox}
     <div class="infcard"><h3>History</h3>
       ${G.length?`<div class="arow"><label for="infFilter">Show</label><select id="infFilter"><option value="all">All settings</option>${G.map(g=>`<option value="${esc(g.k)}"${g.k===infFilter?" selected":""}>${esc(g.cfg+(infOptSum(g.e.opts)?" + "+infOptSum(g.e.opts):""))}</option>`).join("")}</select></div>`:""}
       ${hist}</div>
@@ -4069,7 +4083,8 @@ $("infpage").addEventListener("click",e=>{
 });
 $("infpage").addEventListener("toggle",e=>{const c=e.target.classList;if(!c)return;
   if(c.contains("infpbs")){INF.pbOpen=e.target.open;infSave()}
-  if(c.contains("infhid")){INF.hidOpen=e.target.open;infSave()}},true);
+  if(c.contains("infhid")){INF.hidOpen=e.target.open;infSave()}
+  if(c.contains("infday")){const d=e.target.dataset.day,o=INF.dayOpen||(INF.dayOpen={});if(e.target.open)o[d]=true;else delete o[d];infSave()}},true);
 /* small right-click menu for personal bests */
 function infMenuClose(){const m=$("infMenu");if(m)m.remove()}
 $("infpage").addEventListener("contextmenu",e=>{
