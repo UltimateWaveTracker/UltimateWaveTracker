@@ -227,9 +227,9 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 #homeBtn{background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
 #homeBtn:hover{text-decoration:underline}
 body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:not([data-view=tracker]) #grid{display:none}
-.sitefoot{border-top:1px solid #333;margin-top:40px;padding:22px 16px 28px;text-align:center;color:var(--mut);font-size:14px}
-.sitefoot p{margin:4px 0}
-.sitefoot span{margin:0 10px;color:#555}
+.sitefoot{border-top:1px solid #333;margin-top:32px;padding:10px 16px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 18px;color:var(--mut);font-size:12.5px;line-height:1.4}
+.sitefoot .footlinks{display:inline-flex;align-items:center;gap:8px}
+.sitefoot .footlinks>span{color:#555}
 .footlink{background:none;border:0;padding:0;color:var(--mut);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit}
 .footlink:hover{color:var(--text)}
 .footlink:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
@@ -609,8 +609,8 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 <section id="devpage" class="panel wide" hidden><div id="dtabs" role="tablist"></div><div id="dev"></div><div id="tier"></div><div id="datatab"></div></section>
 <main id="grid"></main>
 <footer class="sitefoot">
-  <p>© 2026 Ultimate Wave Tracker · A fan-made site, not affiliated with RobTop Games AB</p>
-  <p><button type="button" class="footlink" data-go="privacy">Privacy notice</button><span aria-hidden="true">|</span><button type="button" class="footlink" data-go="guidelines">Submission guidelines</button></p>
+  <span>© 2026 Ultimate Wave Tracker · A fan-made site, not affiliated with RobTop Games AB</span>
+  <span class="footlinks"><button type="button" class="footlink" data-go="privacy">Privacy notice</button><span aria-hidden="true">|</span><button type="button" class="footlink" data-go="guidelines">Submission guidelines</button></span>
 </footer>
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -3186,6 +3186,12 @@ document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
 });
 $("homeBtn").onclick=()=>setView("home");
 $("home").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
+/* keep the footer at the bottom of the window on short pages instead of floating halfway up */
+function placeFoot(){const f=document.querySelector(".sitefoot");if(!f)return;
+  f.style.marginTop="32px";const gap=innerHeight-(f.getBoundingClientRect().bottom+scrollY);
+  if(gap>0)f.style.marginTop=(32+gap)+"px"}
+addEventListener("resize",placeFoot);addEventListener("load",placeFoot);
+try{new ResizeObserver(()=>requestAnimationFrame(placeFoot)).observe(document.body)}catch(e){}
 document.querySelector(".sitefoot").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
 $("cond").onclick=()=>{condOn=!condOn;try{localStorage.setItem("lvl-condensed",condOn?"1":"0")}catch(e){}applyFx();render()};
 $("classic").onclick=()=>{gfxOn=!gfxOn;try{localStorage.setItem("lvl-classic",gfxOn?"0":"1")}catch(e){}applyFx()};
