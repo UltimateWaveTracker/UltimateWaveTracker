@@ -151,6 +151,12 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .panel .infform .infopt select:disabled,.panel .infform .infopt input:disabled{opacity:.45}
 /* JFP Tracker: bigger, roomier layout */
 #infpage{max-width:1200px;font-size:17px;padding:24px 28px}
+/* wide screens: session creator on the left, bests and history on the right */
+@media (min-width:1100px){
+  #infpage{max-width:none;margin-right:24px}
+  .infcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+  .infcols .infcard:first-child{margin-top:0}
+}
 #infpage h2{font-size:30px;margin-bottom:8px}
 #infpage .infcard{padding:20px 24px;margin:18px 0}
 #infpage .infcard h3{font-size:22px;margin-bottom:12px}
@@ -3902,15 +3908,14 @@ function renderInf(){
       ${e.note?`<span class="muted">${esc(e.note)}</span>`:""}
       <span class="acts">${e.id===INF.cur?"":`<button type="button" data-inf="open" data-id="${esc(e.id)}">Add scores</button>`}<button type="button" data-inf="edit" data-id="${esc(e.id)}">Edit</button><button type="button" class="${infDel===e.id?"danger":""}" data-inf="del" data-id="${esc(e.id)}">${infDel===e.id?"Confirm delete":"Delete"}</button></span></div>`};
   const hist=days.length?days.map(d=>`<div class="infday"><h4>${esc(infDay(d.date))}</h4>${d.es.map(row).join("")}</div>`).join(""):(INF.entries.length?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No sessions yet.</p>');
-  el.innerHTML=`<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
-    ${cur}
+  el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div></div><div class="infr">
     <div class="infcard"><h3>Personal bests</h3>${bests}</div>
     <div class="infcard"><h3>History</h3>
       ${G.length?`<div class="arow"><label for="infFilter">Show</label><select id="infFilter"><option value="all">All settings</option>${G.map(g=>`<option value="${esc(g.k)}"${g.k===infFilter?" selected":""}>${esc(g.cfg+(infOptSum(g.e.opts)?" + "+infOptSum(g.e.opts):""))}</option>`).join("")}</select></div>`:""}
       ${hist}</div>
     <div class="infcard"><h3>Backup</h3><p class="muted">Your log lives in this browser. Clearing site data or switching device loses it unless you export a copy.</p>
       <div class="inftools"><button type="button" data-inf="export"${INF.entries.length?"":" disabled"}>Export</button><label class="b" tabindex="0">Import<input id="infFile" type="file" accept=".json,application/json" hidden></label>
-      <span class="muted">${INF.entries.length} session${INF.entries.length===1?"":"s"} saved</span></div></div>`;
+      <span class="muted">${INF.entries.length} session${INF.entries.length===1?"":"s"} saved</span></div></div></div></div>`;
 }
 INF.entries=INF.entries.map(infClean).filter(Boolean);
 if(INF.last){INF.last.mode=infRule(INF.last.mode);INF.last.opts=infOpts(INF.last.opts)}
