@@ -149,6 +149,32 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .panel .infform .infopt input[type=checkbox]{width:18px;height:18px;padding:0;margin:0;accent-color:#2c9f3a;flex:none}
 .panel .infform .infopt input[type=text],.panel .infform .infopt select{width:auto;flex:0 1 170px;min-width:0}
 .panel .infform .infopt select:disabled,.panel .infform .infopt input:disabled{opacity:.45}
+/* JFP Tracker: bigger, roomier layout */
+#infpage{max-width:1200px;font-size:17px;padding:24px 28px}
+#infpage h2{font-size:30px;margin-bottom:8px}
+#infpage .infcard{padding:20px 24px;margin:18px 0}
+#infpage .infcard h3{font-size:22px;margin-bottom:12px}
+#infpage .infform{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+#infpage .infform label{font-size:15px}
+#infpage .panel .infform input:not([type=file]),.panel #infpage .infform input:not([type=file]),#infpage .infform input:not([type=file]),#infpage .infform select,#infpage #infFilter{font-size:17px;padding:10px 12px}
+#infpage .infopt summary{font-size:18px;padding:14px 0}
+#infpage .infform .infopt label.ck,#infpage .infopt fieldset.optrow legend{font-size:17px}
+#infpage .infform .infopt input[type=checkbox]{width:22px;height:22px}
+#infpage .optrow{padding:8px 0}
+#infpage button,#infpage label.b{font-size:16px;padding:10px 18px}
+#infpage .infrow{padding:12px 16px;gap:8px 16px}
+#infpage .infrow .cfg{font-size:17px;min-width:220px}
+#infpage .infrow .runs span,#infpage .infcur .chip{font-size:17px;padding:3px 10px}
+#infpage .panel .infrow .acts button,#infpage .infrow .acts button{font-size:15px;padding:7px 14px}
+#infpage .infday h4{font-size:19px;margin:22px 0 8px}
+#infpage .infpb{padding:12px 0}
+#infpage .infpb .cfg{font-size:18px}
+#infpage .infpb .best{font-size:28px}
+#infpage .infpb .muted,#infpage .optsum{font-size:15px}
+#infpage .infcur #infAdd input{width:11em;font-size:22px}
+#infpage .infcur .pb{font-size:18px}
+#infpage .msg{font-size:16px}
+@media (max-width:600px){#infpage{font-size:16px;padding:16px}#infpage h2{font-size:26px}#infpage .infcard{padding:14px;margin:14px -4px}#infpage .infrow .cfg{min-width:0}}
 .panel #infFilter{max-width:100%;min-width:0;flex:1 1 auto;text-overflow:ellipsis}
 .infcard .arow{flex-wrap:wrap}
 .optsum{display:block;font-weight:400;font-size:13px;color:var(--mut);margin-top:2px}
