@@ -173,9 +173,17 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 #infpage .infrow .runs span,#infpage .infcur .chip{font-size:17px;padding:3px 10px}
 #infpage .panel .infrow .acts button,#infpage .infrow .acts button{font-size:15px;padding:7px 14px}
 #infpage .infday h4{font-size:19px;margin:22px 0 8px}
-#infpage .infpb{padding:12px 0}
+#infpage .infpb{padding:8px 0}
+.infpbs>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;cursor:pointer;list-style:none}
+.infpbs>summary::-webkit-details-marker{display:none}
+.infpbs>summary h3::before{content:"▸ ";color:var(--mut)}
+.infpbs[open]>summary h3::before{content:"▾ "}
+.infpbs>summary h3{margin:0!important}
+.infpbs[open]>summary{margin-bottom:8px}
+.infpbs .when-shut,.infpbs[open] .when-open{display:inline}
+.infpbs .when-open,.infpbs[open] .when-shut{display:none}
 #infpage .infpb .cfg{font-size:18px}
-#infpage .infpb .best{font-size:28px}
+#infpage .infpb .best{font-size:22px}
 #infpage .infpb .muted,#infpage .optsum{font-size:15px}
 #infpage .infcur #infAdd input{width:11em;font-size:22px}
 #infpage .infcur .pb{font-size:18px}
@@ -3897,8 +3905,8 @@ function renderInf(){
         <p class="muted">${c.runs.length} run${c.runs.length===1?"":"s"} · best ${top} · average ${Math.round(c.runs.reduce((a,b)=>a+b,0)/c.runs.length)}${pb?` · PB for this setting: ${pb}`:""}. Tap a score to remove it.</p>`:'<p class="muted">No scores yet. Add your first run above.</p>'}
       <div class="btns"><button type="button" data-inf="done">Finish session</button></div></div>`;
   }
-  const bests=G.length?G.map(g=>`<div class="infpb"><span class="cfg">${esc(g.cfg)}${infSub(g.e)}</span><span class="best">${g.best}</span>
-      <span class="muted">Set ${esc(infDay(g.date))} · average ${g.avg} · ${g.runs} run${g.runs===1?"":"s"} over ${g.days} day${g.days===1?"":"s"}</span></div>`).join(""):'<p class="muted">No scores yet. Start a session above, then add your runs.</p>';
+  const bests=G.length?G.map(g=>`<div class="infpb"><span class="cfg">${esc(g.cfg)}${infSub(g.e)}</span><span class="best">${g.best}m</span>
+      <span class="muted">Set ${esc(infDay(g.date))}</span></div>`).join(""):'<p class="muted">No scores yet. Start a session above, then add your runs.</p>';
   const shown=INF.entries.map((e,i)=>({e,i})).filter(x=>infFilter==="all"||infKey(x.e)===infFilter)
     .sort((a,b)=>b.e.date.localeCompare(a.e.date)||b.i-a.i);
   const days=[];shown.forEach(({e})=>{const d=days[days.length-1];if(d&&d.date===e.date)d.es.push(e);else days.push({date:e.date,es:[e]})});
@@ -3908,8 +3916,8 @@ function renderInf(){
       ${e.note?`<span class="muted">${esc(e.note)}</span>`:""}
       <span class="acts">${e.id===INF.cur?"":`<button type="button" data-inf="open" data-id="${esc(e.id)}">Add scores</button>`}<button type="button" data-inf="edit" data-id="${esc(e.id)}">Edit</button><button type="button" class="${infDel===e.id?"danger":""}" data-inf="del" data-id="${esc(e.id)}">${infDel===e.id?"Confirm delete":"Delete"}</button></span></div>`};
   const hist=days.length?days.map(d=>`<div class="infday"><h4>${esc(infDay(d.date))}</h4>${d.es.map(row).join("")}</div>`).join(""):(INF.entries.length?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No sessions yet.</p>');
-  el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div></div><div class="infr">
-    <div class="infcard"><h3>Personal bests</h3>${bests}</div>
+  el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
+    <details class="infcard infpbs"${INF.pbOpen===false?"":" open"}><summary><h3>Personal bests</h3><span class="muted">${G.length?`${G.length} setting${G.length===1?"":"s"} · `:""}<span class="when-open">click to hide</span><span class="when-shut">click to show</span></span></summary>${bests}</details></div><div class="infr">
     <div class="infcard"><h3>History</h3>
       ${G.length?`<div class="arow"><label for="infFilter">Show</label><select id="infFilter"><option value="all">All settings</option>${G.map(g=>`<option value="${esc(g.k)}"${g.k===infFilter?" selected":""}>${esc(g.cfg+(infOptSum(g.e.opts)?" + "+infOptSum(g.e.opts):""))}</option>`).join("")}</select></div>`:""}
       ${hist}</div>
@@ -3969,6 +3977,7 @@ $("infpage").addEventListener("click",e=>{
     const u=URL.createObjectURL(blob),x=document.createElement("a");x.href=u;x.download="jfp-tracker-"+infToday()+".json";document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
   }
 });
+$("infpage").addEventListener("toggle",e=>{if(e.target.classList&&e.target.classList.contains("infpbs")){INF.pbOpen=e.target.open;infSave()}},true);
 $("infpage").addEventListener("keydown",e=>{if(e.target.matches("label.b")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();$("infFile").click()}});
 $("infpage").addEventListener("change",async e=>{
   if(e.target.closest("#infForm details")){
