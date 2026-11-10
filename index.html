@@ -25,6 +25,13 @@ nav button:hover,nav button[aria-pressed=true]{color:var(--text)}
 .divider.first{margin-top:12px}
 .divider::before,.divider::after{content:"";flex:1;height:2px;background:#555}
 .tier{background:var(--panel);flex:0 0 360px;max-width:100%}
+/* wide tiers (WPPL Bonus): full width, levels in columns, no scroll box, with a search field */
+.tier.wide{flex:1 1 100%;max-width:1480px}
+.tier.wide .list,body.cond .tier.wide .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px 14px;max-height:none;overflow:visible;padding:6px 8px 10px}
+.tier.wide .list .lv[hidden]{display:none}
+.tier.wide .tsearch{padding:10px 12px 4px}
+.tier.wide .tsearch input{width:100%;max-width:420px;box-sizing:border-box;padding:8px 12px;font:inherit;font-size:15px;background:#1c1c1c;color:var(--text);border:1px solid #555;border-radius:6px}
+.tier.wide .tnone{padding:4px 14px 12px;margin:0}
 .tier h2{margin:0;padding:10px 12px;text-align:center;font-size:26px;color:#fff;text-shadow:0 1px 2px #0006}
 body.fx .tier h2{position:relative;z-index:1;transition:box-shadow .5s}
 body.fx .tier.g1 h2{box-shadow:0 0 12px 1px color-mix(in srgb,var(--tc) 45%,transparent)}
@@ -233,7 +240,13 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .lbrow .ttl{font-style:normal;color:#6ab0ff;font-size:14px}
 #homeBtn{background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
 #homeBtn:hover{text-decoration:underline}
-body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:not([data-view=tracker]) #grid{display:none}
+body:not([data-view=tracker]) #lists,body:not([data-view=tracker]) #subs,body:not([data-view=tracker]):not([data-view=bonus]) #grid{display:none}
+body:not([data-view=bonus]) #bonushead{display:none}
+body[data-view=bonus] #grid .divider{display:none}
+#bonushead{text-align:center;padding:18px 16px 4px}
+#bonushead .back{margin:0 0 4px;text-align:left;max-width:1480px;margin-inline:auto}
+#bonushead h2{margin:0 0 6px;font-size:28px}
+#bonushead p{margin:0 auto;max-width:640px}
 .sitefoot{border-top:1px solid #333;margin-top:32px;padding:10px 16px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 18px;color:var(--mut);font-size:12.5px;line-height:1.4}
 .sitefoot .footlinks{display:inline-flex;align-items:center;gap:8px}
 .sitefoot .footlinks>span{color:#555}
@@ -488,6 +501,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
   <div class="right" id="hdrRight">
     <nav>
       <button id="navTracker" data-go="tracker" aria-pressed="false">Tracker</button>
+      <button id="navBonus" data-go="extras" aria-pressed="false">Extras</button>
       <button data-p="leaderboard" aria-pressed="false">Stats Viewer</button>
       <button data-p="packpage" aria-pressed="false">Packs</button>
       <button data-p="achpage" aria-pressed="false">Achievements</button>
@@ -503,6 +517,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
   </div>
 </header>
 <div id="lists" role="tablist" aria-label="Lists"></div>
+<div id="bonushead"><p class="back"><button type="button" class="linkbtn" data-go="extras">&larr; Extras</button></p><h2>Genetastic</h2><p class="muted">Wave challenges and demons from the Genetastic list that aren’t sorted into a difficulty. Ticks save to your account straight away: no approval needed, and only you can see them. They don’t count on the Stats Viewer.</p></div>
 <section id="leaderboard" class="panel wide" hidden>
  <div class="lbleft">
   <h2 class="lbt">Stats Viewer - <select id="lbf" aria-label="Filter leaderboard by list"></select></h2>
@@ -555,6 +570,13 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
 </section>
 <section id="account" class="page" hidden></section>
 <section id="resources" class="page" hidden><h2>Resources</h2><p class="muted">Content coming soon.</p></section>
+<section id="extras" class="page" hidden>
+  <h2>Extras</h2>
+  <p>Extra level lists to play and track. Progress here saves to your account without needing approval, is only visible to you, and doesn’t count on the Stats Viewer.</p>
+  <div class="tiles">
+    <button type="button" class="tile" data-go="bonus">Genetastic</button>
+  </div>
+</section>
 <section id="contact" class="page" hidden><h2>Contact</h2><p class="muted">Content coming soon.</p></section>
 <section id="privacy" class="page doc" hidden>
   <h2>Privacy notice</h2>
@@ -569,6 +591,7 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
     <li>Your profile: your display name (you can change it), avatar link and the title you have equipped.</li>
     <li>Your progress: levels you’ve marked as in progress, levels waiting in your Submissions tab, and the submissions you send. A submission holds the level, any footage links and notes you add, its status (pending, approved or rejected), the dates, and any note from the admin.</li>
     <li>The achievements you’ve earned and when you earned them.</li>
+    <li>Your ticks on Extras pages (such as Genetastic). These are private: only you can see them, and they never appear on your profile or the Stats Viewer.</li>
   </ul>
   <h3>What other people can see</h3>
   <p>Anyone visiting the site can see your display name, avatar, title, approved levels, score, rank, completed packs and achievements, for example on the Stats Viewer. Your footage links, your notes and anything still pending or rejected are only seen by you and the admin.</p>
@@ -2878,6 +2901,72 @@ let DATA=[
     {n:"FiveTwoOne",id:"92517815"}
    ]}
   ]}
+ ]},
+ {name:"Genetastic",standalone:true,subs:[
+  {name:"All",tiers:[
+   {name:"Bonus Challenges",wide:true,color:"#2f7d6d",levels:[
+    {n:"Simple fast wave II",id:"124927721"},
+    {n:"Spammy but free",id:"69882141"},
+    {n:"JFP 3720786207",id:"124973585"},
+    {n:"ZATOICHI",id:"137349466"},
+    {n:"Simple fast wave",id:"124927699"},
+    {n:"wc azii 5",id:"125699960"},
+    {n:"Wc azii 37",id:"137004377"},
+    {n:"4x speed cataclysm W",id:"131407060"},
+    {n:"SIGEON PEX",id:"128280653"},
+    {n:"Wave control",id:"117714173"},
+    {n:"Wave practice 2",id:"117714768"},
+    {n:"Agile nope",id:"118614323"},
+    {n:"Wave Challenge III",id:"62059736"},
+    {n:"Jacobs ladder",id:"74269696"},
+    {n:"RCPL Dream",id:"129780854"},
+    {n:"Kill the world",id:"128018191"},
+    {n:"Maybe not for azii",id:"130502901"},
+    {n:"Purel Challenge II",id:"118614323"},
+    {n:"Good riddance",id:"64923590"},
+    {n:"Wc azii 21",id:"128902969"},
+    {n:"Wave Challenge Katnb",id:"123750828"},
+    {n:"Techno Love",id:"64132218"},
+    {n:"Wc azii 24",id:"131077991"},
+    {n:"Wave JFP 4x Master",id:"126342561"},
+    {n:"Wave God",id:"105371785"},
+    {n:"Hanbaaga",id:"110470827"},
+    {n:"Lonk wave chall",id:"127331067"},
+    {n:"VagueSkyKat Chall",id:"119802095"},
+    {n:"Wave Master E",id:"127827244"},
+    {n:"Wave Master H",id:"130270850"},
+    {n:"Wave Master I",id:"130275766"},
+    {n:"Wave Master K",id:"135473634"},
+    {n:"Workout 1",id:"90082349"},
+    {n:"Workout 2",id:"90082413"},
+    {n:"Workout 3",id:"90082661"},
+    {n:"Chayne chall",id:"123860454"},
+    {n:"Zoink challenge",id:"118296055"},
+    {n:"EVW Challenge",id:"108496370"},
+    {n:"Stamina Check II",id:"126393744"},
+    {n:"Notcreative chal",id:"130112823"},
+    {n:"STAMINA GOD",id:"135733891"},
+    {n:"Naylore challenge",id:"127567333"},
+    {n:"Ship challenge",id:"127883797"},
+    {n:"JFP krutizna",id:"127530020"},
+    {n:"JFP BOMBA",id:"127416367"},
+    {n:"Simple 5",id:"136891573"},
+    {n:"Simple 4",id:"136784510"},
+    {n:"Simple 1",id:"136641146"},
+    {n:"Wave challenge 90",id:"108459167"},
+    {n:"Wave challenge 86",id:"91053052"},
+    {n:"Aqua affinity",id:"90703688"},
+    {n:"Wave maneuvering",id:"90117960"},
+    {n:"Stallion chalenge",id:"90024224"},
+    {n:"Yossarian challenge",id:"81612027"},
+    {n:"Taylor Swift Wave",id:"123800707"},
+    {n:"Wave",id:"63817517"}
+   ]},
+   {name:"Bonus Demons",wide:true,color:"#8b1e3f",levels:[
+    {n:"Kuiper Belt",id:"125025200"},
+    {n:"Reaver",id:"109147475"}
+   ]}
+  ]}
  ]}
 ];
 /* ================================================ */
@@ -2990,7 +3079,7 @@ const LS2="lvl-tracker-v2"; /* old local accounts: only read, for the one-time i
 const SB_URL="https://rprczsfeafymltriawuk.supabase.co",SB_KEY="sb_publishable_-odlXG_gaExe2ffo4bws3Q_eXFw-SG8";
 let sb=null;
 try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}})}catch(e){}
-let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},DRAFT={},draftsOk=true,me=null,isAdmin=false,oldProfiles=[],lastLoad=0,ACH={},ACHOK=false,APPR={};
+let cur={c:0,s:0},profiles=[],activeId="",P={},PEND={},DRAFT={},draftsOk=true,me=null,isAdmin=false,oldProfiles=[],lastLoad=0,ACH={},ACHOK=false,APPR={},XP={},XPOK=true;
 try{const c=JSON.parse(localStorage.getItem("lvl-cur")||"null");if(c&&typeof c.c==="number")cur=c}catch(e){}
 function active(){return profiles.find(p=>p.id===activeId)||null}
 function loadOld(){
@@ -3036,8 +3125,14 @@ const ICON_YT='<svg viewBox="0 0 24 24"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8
 
 /* Your own tracker counts every green tick, including ones waiting in Submissions or for approval.
    The Stats Viewer and profiles use approved levels only (see stats()). */
-function counts(c,s,t){const b=t.levels.filter(l=>{const k=key(c,s,t,l);return pct(k)>=100||DRAFT[k]||(PEND[k]&&PEND[k].status==="pending")}).length;return{b,n:t.levels.length}}
+function counts(c,s,t){if(c&&c.standalone)return{b:t.levels.filter(l=>XP[lk(lv(l))]===2).length,n:t.levels.length};const b=t.levels.filter(l=>{const k=key(c,s,t,l);return pct(k)>=100||DRAFT[k]||(PEND[k]&&PEND[k].status==="pending")}).length;return{b,n:t.levels.length}}
 /* What the counter shows as its total: the Achieved number first, then the Plus number once Achieved is earned. */
+/* search boxes on wide tiers (e.g. WPPL Bonus): filter rows without re-rendering */
+const wideQ={};
+function applyWideQ(root){root=root||document;(root.matches&&root.matches(".tier.wide")?[root]:root.querySelectorAll(".tier.wide")).forEach(tr=>{const inp=tr.querySelector("[data-tq]");if(!inp)return;const q=inp.value.trim().toLowerCase();let shown=0;
+  tr.querySelectorAll(".list .lv").forEach(r=>{const hit=!q||r.querySelector("span").textContent.toLowerCase().includes(q);r.hidden=!hit;if(hit)shown++});
+  let e=tr.querySelector(".tnone");if(!shown){if(!e){e=document.createElement("p");e.className="tnone muted";tr.querySelector(".list").after(e)}e.textContent="No levels match “"+inp.value.trim()+"”."}else if(e)e.remove()})}
+document.addEventListener("input",e=>{const t=e.target.closest&&e.target.closest("[data-tq]");if(!t)return;wideQ[t.dataset.tq]=t.value;applyWideQ(t.closest(".tier"))});
 function goal(t,b,n){return t.achieved&&t.plus?(b>=t.achieved?t.plus:t.achieved):n}
 function rank(t,b,n){
   if(t.allOnly)return n>0&&b>=n?t.name+" Achieved":"";
@@ -3056,22 +3151,22 @@ function render(){
   let s=c.subs[cur.s];
   /* Condensed mode: every difficulty's tiers are shown together on one page. */
   if(condOn)s={name:"All",condensed:true,tiers:c.subs.flatMap(x=>x.tiers),sections:[...new Set(c.subs.flatMap(x=>x.sections||["Sub tier","Bonus"]))]};
-  $("lists").innerHTML=DATA.map((d,i)=>`<button role="tab" data-c="${i}" aria-selected="${i===cur.c}">${esc(d.name)}</button>`).join("");
+  $("lists").innerHTML=DATA.map((d,i)=>d.standalone?"":`<button role="tab" data-c="${i}" aria-selected="${i===cur.c}">${esc(d.name)}</button>`).join("");
   $("subs").innerHTML=!condOn&&vis.length>1?vis.map(i=>`<button role="tab" data-s="${i}" aria-selected="${i===cur.s}">${esc(c.subs[i].name)}</button>`).join(""):"";
   const TI=[];
   const tierHtml=t=>{
     const {b,n}=counts(c,s,t),r=rank(t,b,n);
     const rows=t.levels.map((l,li)=>{
-      const o=lv(l),k=key(c,s,t,l),v=pct(k),pe=PEND[k],pen=pe&&pe.status==="pending",dr=!pe&&v<100&&DRAFT[k];
+      const o=lv(l),k=key(c,s,t,l),xs=c.standalone?(XP[lk(o)]||0):-1,v=xs>=0?[0,50,100][xs]:pct(k),pe=xs>=0?null:PEND[k],pen=pe&&pe.status==="pending",dr=xs<0&&!pe&&v<100&&DRAFT[k];
       const yt=o.yt||"https://www.youtube.com/results?search_query="+encodeURIComponent("Geometry Dash "+o.n+" wave");
       return `<div class="lv${v>=100?" done":pe?(pen?" pend":" rej"):dr?" draft":v>0?" prog":""}">
         <button data-copy="${esc(o.id||o.n)}" title="${o.id?"Copy ID "+esc(o.id):"Copy name"}" aria-label="${o.id?"Copy level ID":"Copy name"}">${ICON_COPY}</button>
         <button data-yt="${esc(yt)}" aria-label="Open video">${ICON_YT}</button>
         <span>${esc(o.n)}</span>
-        <button class="st" role="checkbox" aria-checked="${v>=100||dr?"true":pe||v>0?"mixed":"false"}" title="${v>=100?"Complete (approved)":dr?"Added to your Submissions tab. Click to remove":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100||dr?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
+        <button class="st" role="checkbox" aria-checked="${v>=100||dr?"true":pe||v>0?"mixed":"false"}" title="${xs>=0?["Not started","In progress","Complete"][xs]+" (click to change)":v>=100?"Complete (approved)":dr?"Added to your Submissions tab. Click to remove":pe?(pen?"Pending approval. Click to withdraw":"Rejected"+(pe.note?": "+esc(pe.note):"")+". Click to clear"):v>0?"In progress":"Not started"}" data-k="${esc(k)}" aria-label="${esc(o.n)} status">${v>=100||dr?ICON_TICK:pe?(pen?ICON_CLOCK:ICON_X):v>0?ICON_DASH:""}</button></div>`}).join("");
     const gl=r&&n>0&&b>=n?" g2":r?" g1":"";
     const pl=pulseKeys.size&&t.levels.some(l=>pulseKeys.has(key(c,s,t,l)))?" pulse":"";
-    return `<div class="tier${gl}${pl}" data-ti="${TI.push(t)-1}" style="--tc:${t.color}"><h2 title="Press and hold to tick every level in this tier" style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${t.secret?b:b+"/"+goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2><div class="list">${rows}</div></div>`;
+    return `<div class="tier${gl}${pl}${t.wide?" wide":""}" data-ti="${TI.push(t)-1}" style="--tc:${t.color}"><h2 title="Press and hold to tick every level in this tier" style="background:${t.color}${t.dark?";color:#1f1f1f;text-shadow:none":""}">${esc(t.name)} (${t.secret?b:b+"/"+goal(t,b,n)})${r?`<small>${esc(r)}</small>`:""}</h2>${t.wide&&t.levels.length>12?`<div class="tsearch"><input type="search" placeholder="Search ${esc(t.name)}…" aria-label="Search ${esc(t.name)}" data-tq="${esc(t.name)}" value="${esc(wideQ[t.name]||"")}"></div>`:""}<div class="list">${rows}</div></div>`;
   };
   const sec=t=>t.section||(t.bonus?"Bonus":"Main");
   const keep=s.condensed?[]:s.sections||[];
@@ -3093,6 +3188,7 @@ function render(){
     groups.map(([n,ts],i)=>`<div class="divider${i?"":" first"}"><span>${esc(n)}</span></div><div class="tiers">${ts.map(tierHtml).join("")}</div>`).join("")
       +(eggs.length?`<div class="tiers egg">${eggs.map(tierHtml).join("")}</div>`:"")
     :'<p class="empty">No tiers here yet. Add some from the Dev page’s Tier manager.</p>';
+  applyWideQ($("grid"));
   if(keepScroll.length)document.querySelectorAll("#grid .tier .list").forEach((x,i)=>{if(keepScroll[i])x.scrollTop=keepScroll[i]});
   renderProfile();
   if(view==="account")renderAccount();
@@ -3115,12 +3211,12 @@ function renderAccStats(){
   const listKeys=c=>{const pub=keysOf(c,false),m=new Set(pub);keysOf(c,true).forEach(k=>m.add(k));m.pub=pub;return m};
   const tally=ks=>{let b=0,ap=0;ks.forEach(k=>{if(beaten(k))b++;if(pct(k)>=100)ap++});return{b,ap,n:(ks.pub||ks).size}};
   const bar=(b,n)=>`<div class="sbar" aria-hidden="true"><i style="width:${n?Math.min(100,Math.round(100*b/n)):0}%"></i></div>`;
-  const sel=`<select id="acPick" aria-label="Choose a list">${["all",...DATA.map((c,i)=>String(i))].map(v=>`<option value="${v}"${v===accList?" selected":""}>${v==="all"?"All lists":esc(DATA[+v].title||DATA[+v].name)}</option>`).join("")}</select>`;
+  const sel=`<select id="acPick" aria-label="Choose a list">${["all",...DATA.map((c,i)=>c.standalone?null:String(i)).filter(Boolean)].map(v=>`<option value="${v}"${v===accList?" selected":""}>${v==="all"?"All lists":esc(DATA[+v].title||DATA[+v].name)}</option>`).join("")}</select>`;
   let body;
-  if(accList==="all"||!DATA[+accList]){
-    const all=new Set();all.pub=new Set();DATA.forEach(c=>{const ks=listKeys(c);ks.forEach(k=>all.add(k));ks.pub.forEach(k=>all.pub.add(k))});
+  if(accList==="all"||!DATA[+accList]||DATA[+accList].standalone){
+    const all=new Set();all.pub=new Set();DATA.forEach(c=>{if(c.standalone)return;const ks=listKeys(c);ks.forEach(k=>all.add(k));ks.pub.forEach(k=>all.pub.add(k))});
     const T=tally(all);
-    const rows=DATA.map(c=>{const t=tally(listKeys(c));return `<tr><td>${esc(c.title||c.name)}</td><td>${t.b}/${t.n}</td><td>${t.n?Math.round(100*t.b/t.n):0}%</td></tr>`}).join("");
+    const rows=DATA.filter(c=>!c.standalone).map(c=>{const t=tally(listKeys(c));return `<tr><td>${esc(c.title||c.name)}</td><td>${t.b}/${t.n}</td><td>${t.n?Math.round(100*t.b/t.n):0}%</td></tr>`}).join("");
     body=`<p><strong>${T.b}</strong> of ${T.n} levels beaten on the whole site</p>${bar(T.b,T.n)}
       <p class="muted">${T.ap} of these are approved and count towards the Stats Viewer. A level that is in several lists is only counted once.</p>
       <table><tr><th>List</th><th>Beaten</th><th>Done</th></tr>${rows}</table>`;
@@ -3158,7 +3254,7 @@ $("grid").onclick=e=>{
   const st=e.target.closest(".st");
   if(st){
     const k=st.dataset.k,y0=window.scrollY;
-    tickLevel(k).then(()=>{
+    (DATA[cur.c]&&DATA[cur.c].standalone?tickExtra(k):tickLevel(k)).then(()=>{
       window.scrollTo(0,y0);
       const nb=[...document.querySelectorAll(".st")].find(x=>x.dataset.k===k);
       if(nb)nb.focus({preventScroll:true});
@@ -3179,12 +3275,18 @@ function showPanel(id){
 /* Stats Viewer, Settings and Dev each open as their own page, replacing the tier lists. */
 const VIEWPANEL={infinite:"infpage",achievements:"achpage",packs:"packpage",subs:"subpage",stats:"leaderboard",settings:"settings",devview:"devpage"};
 const PANELVIEW={infpage:"infinite",achpage:"achievements",packpage:"packs",subpage:"subs",leaderboard:"stats",settings:"settings",devpage:"devview"};
+let trkC=DATA[cur.c]&&!DATA[cur.c].standalone?cur.c:0;
 function setView(v){
   document.body.classList.remove("menu-open");$("menuBtn").setAttribute("aria-expanded","false");
   view=v;document.body.dataset.view=v;
-  ["home","resources","contact","account","privacy","guidelines"].forEach(k=>$(k).hidden=k!==v);
+  ["home","resources","contact","account","privacy","guidelines","extras"].forEach(k=>$(k).hidden=k!==v);
   showPanel(VIEWPANEL[v]||"");
   $("navTracker").setAttribute("aria-pressed",String(v==="tracker"));
+  $("navBonus").setAttribute("aria-pressed",String(v==="bonus"||v==="extras"));
+  /* Bonus Levels is its own page: it shows the standalone list; the tracker never shows it */
+  const bi=DATA.findIndex(d=>d.standalone);
+  if(v==="bonus"&&bi>=0&&cur.c!==bi){if(!DATA[cur.c]||!DATA[cur.c].standalone)trkC=cur.c;cur.c=bi;cur.s=0;render()}
+  if(v==="tracker"&&DATA[cur.c]&&DATA[cur.c].standalone){cur.c=trkC;cur.s=0;render()}
   if(v==="stats"&&sb&&Date.now()-lastLoad>5000)refresh();
   if(v==="packs")renderPacks();
   if(v==="achievements")renderAchPage();
@@ -3207,6 +3309,9 @@ window.addEventListener("popstate",e=>{
   try{cur.c=st.c;cur.s=st.s;render();setView(st.v)}finally{restoring=false}
 });
 $("navTracker").onclick=()=>setView("tracker");
+$("navBonus").onclick=()=>setView("extras");
+$("extras").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
+$("bonushead").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
 document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
   const p=b.dataset.p,on=b.getAttribute("aria-pressed")!=="true";
   setView(on?PANELVIEW[p]:"tracker");
@@ -3326,6 +3431,7 @@ async function loadAll(){
   const seq=++loadSeq;
   try{
     const awd=me?Promise.resolve(sb.rpc("award_achievements")).then(()=>0,()=>0):Promise.resolve(0);
+    const xpq=me?fetchAll((a,b)=>sb.from("extras_progress").select("level_key,state").eq("user_id",me.id).order("level_key").range(a,b)).then(r=>r,()=>null):Promise.resolve([]);
     const [pr,ap,wp,drs,mine,ach,apm]=await Promise.all([
       fetchAll((a,b)=>sb.from("profiles").select("id,name,avatar_url,title").order("id").range(a,b)),
       fetchAll((a,b)=>sb.from("submissions").select("id,user_id,level_key").eq("status","approved").order("id").range(a,b)),
@@ -3342,6 +3448,7 @@ async function loadAll(){
     DRAFT={};if(drs){draftsOk=true;drs.forEach(r=>{DRAFT[r.level_key]={evidence:r.evidence||""}})}
     ACHOK=!!ach;ACH={};(ach||[]).forEach(r=>{(ACH[r.user_id]=ACH[r.user_id]||{})[r.key]=r.earned_at});
     APPR={};(apm||[]).forEach(r=>{APPR[r.level_key]=r.reviewed_at||r.created_at});
+    {const xr=await xpq;XPOK=!!xr;XP={};(xr||[]).forEach(r=>{XP[r.level_key]=r.state})}
     PEND={};mine.forEach(r=>{PEND[r.level_key]={status:r.status,note:r.note,evidence:r.evidence}});
     profiles=[...byId.values()];
     P=active()?active().P:{};
@@ -3414,7 +3521,36 @@ $("grid").addEventListener("pointermove",e=>{if(hold&&Math.hypot(e.clientX-hold.
 ["pointerup","pointercancel","blur"].forEach(ev=>window.addEventListener(ev,cancelHold));
 document.addEventListener("scroll",cancelHold,true);
 $("grid").addEventListener("contextmenu",e=>{if(e.target.closest(".tier h2"))e.preventDefault()});
+/* Extras: not started -> in progress -> complete -> not started. Saved straight to the player's private extras_progress rows; no approval. */
+async function tickExtra(k){
+  if(!me||!sb){openLogin();return}
+  if(!XPOK){toast("Extras can’t be saved yet: the extras_progress table is missing from the database.");return}
+  const was=XP[k]||0,nx=(was+1)%3;
+  if(nx)XP[k]=nx;else delete XP[k];render();
+  try{
+    const r=nx?await sb.from("extras_progress").upsert({user_id:me.id,level_key:k,state:nx,updated_at:new Date().toISOString()},{onConflict:"user_id,level_key"})
+              :await sb.from("extras_progress").delete().eq("user_id",me.id).eq("level_key",k);
+    if(r.error)throw r.error;
+  }catch(x){if(was)XP[k]=was;else delete XP[k];render();toast("Couldn’t save: "+(x.message||x))}
+}
+async function tickExtraTier(t){
+  if(!me||!sb)return openLogin();
+  if(!XPOK)return toast("Extras can’t be saved yet: the extras_progress table is missing from the database.");
+  const ks=[...new Set(t.levels.map(l=>lk(lv(l))))],open=ks.filter(k=>XP[k]!==2),old={...XP};
+  try{
+    if(open.length){
+      open.forEach(k=>{XP[k]=2;pulseKeys.add(k)});render();pulseKeys=new Set();
+      for(let i=0;i<open.length;i+=100){const r=await sb.from("extras_progress").upsert(open.slice(i,i+100).map(k=>({user_id:me.id,level_key:k,state:2,updated_at:new Date().toISOString()})),{onConflict:"user_id,level_key"});if(r.error)throw r.error}
+      toast(`Ticked ${open.length} level${open.length===1?"":"s"} in ${t.name}`);
+    }else{
+      ks.forEach(k=>delete XP[k]);render();
+      for(let i=0;i<ks.length;i+=100){const r=await sb.from("extras_progress").delete().eq("user_id",me.id).in("level_key",ks.slice(i,i+100));if(r.error)throw r.error}
+      toast(`Cleared ${ks.length} level${ks.length===1?"":"s"} in ${t.name}`);
+    }
+  }catch(x){XP=old;render();toast("Couldn’t save: "+(x.message||x))}
+}
 async function tickTier(t){
+  if(DATA[cur.c]&&DATA[cur.c].standalone)return tickExtraTier(t);
   const a=active();
   if(!me||!sb)return openLogin();
   if(!a)return toast("Your profile is still loading, try again in a moment");
@@ -3870,7 +4006,7 @@ const tierCache=new WeakMap();
 function tiersDone(pr){
   const hit=tierCache.get(pr);if(hit&&hit.P===pr.P)return hit.list;
   const list=[];
-  DATA.forEach(c=>c.subs.forEach(sb=>sb.tiers.forEach(t=>{
+  DATA.forEach(c=>c.standalone||c.subs.forEach(sb=>sb.tiers.forEach(t=>{
     const ks=t.levels.map(l=>lk(lv(l))),done=ks.filter(k=>pr.P[k]>=100);
     if(!rank(t,done.length,ks.length))return;
     const need=t.achieved&&!t.allOnly?t.achieved:ks.length;
@@ -4214,7 +4350,7 @@ const SECRANK={Main:0,Sub:1,Bonus:2,DLC:3};
 const secOf=t=>t.bonus?"Bonus":t.section?(/^DLC/.test(t.section)?"DLC":"Sub"):"Main";
 function stats(pr,only){
   const T=[],done=new Set(),prog=new Map(),byList=DATA.map(()=>new Set());
-  DATA.forEach((c,ci)=>c.subs.forEach((sb,si)=>sb.tiers.forEach((t,ti)=>{
+  DATA.forEach((c,ci)=>c.standalone||c.subs.forEach((sb,si)=>sb.tiers.forEach((t,ti)=>{   /* Extras (standalone lists) never count on the Stats Viewer */
     const beaten=[];
     t.levels.forEach(l=>{const o=lv(l),k=lk(o),v=pr.P[k]||0;
       if(v>=100){beaten.push(o.n);byList[ci].add(k);if(only==null||only===ci)done.add(k)}else if(v>0&&(only==null||only===ci))prog.set(k,o.n)});
@@ -4226,7 +4362,7 @@ function stats(pr,only){
 const tierName=x=>x.st===2?`<b>${esc(x.t.name)}+</b>`:x.st===1?`<b>${esc(x.t.name)}</b>`:esc(x.t.name);
 const tierItem=x=>`<span class="tp" tabindex="0">${tierName(x)}<span class="tip">${x.beaten.map(esc).join("<br>")}</span></span>`;
 let lbList="all";
-const lbOnly=()=>lbList==="all"||!DATA[+lbList]?null:+lbList;
+const lbOnly=()=>lbList==="all"||!DATA[+lbList]||DATA[+lbList].standalone?null:+lbList;
 function ranked(){
   const only=lbOnly();
   return profiles.map(p=>({id:p.id,name:p.name,pfp:p.pfp,title:equippedTitle(p),points:stats(p,only).points}))
@@ -4234,10 +4370,9 @@ function ranked(){
 }
 function renderLB(){
   const f=$("lbf");
-  if(f.options.length!==DATA.length+1||[...f.options].some((o,i)=>i&&o.textContent!==DATA[i-1].name)){
-    f.innerHTML='<option value="all">All</option>'+DATA.map((d,i)=>`<option value="${i}">${esc(d.name)}</option>`).join("");
-  }
-  if(!DATA[+lbList])lbList="all";
+  const opts='<option value="all">All</option>'+DATA.map((d,i)=>d.standalone?"":`<option value="${i}">${esc(d.name)}</option>`).join("");
+  if(f.dataset.o!==opts){f.innerHTML=opts;f.dataset.o=opts}
+  if(!DATA[+lbList]||DATA[+lbList].standalone)lbList="all";
   f.value=lbList;
   /* size the dropdown to the selected word so the arrow sits right next to it */
   const m=document.createElement("span"),cs=getComputedStyle(f);
@@ -4252,7 +4387,7 @@ function renderPV(all){
   const i=all.findIndex(p=>p.id===viewId),el=$("lbprofile");
   if(i<0){el.innerHTML=all.length?'<p class="nopick">Select a player to see their profile.</p>':"";return}
   const pl=all[i],S=stats(profiles.find(p=>p.id===pl.id),lbOnly());
-  const lists=DATA.map((c,ci)=>({name:c.name,T:S.T.filter(x=>x.ci===ci)})).filter((L,ci)=>lbOnly()==null||ci===lbOnly());
+  const lists=DATA.map((c,ci)=>({name:c.name,sa:c.standalone,T:S.T.filter(x=>x.ci===ci)})).filter((L,ci)=>!L.sa&&(lbOnly()==null||ci===lbOnly()));
   const sect=L=>{
     const pool=L.T.some(x=>x.sec==="Main")?L.T.filter(x=>x.sec==="Main"):L.T,hi=pool[0];
     return `<h3>${esc(L.name)}</h3>${hi?`<p class="pvhi">Highest Tier: ${tierName(hi)}</p>`:""}<p>${L.T.length?L.T.map(tierItem).join(" - "):"None"}</p>`;
