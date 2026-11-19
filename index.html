@@ -20,6 +20,29 @@ nav button:hover,nav button[aria-pressed=true]{color:var(--text)}
 #subs button{background:var(--panel);border:0;border-radius:4px;padding:6px 14px;cursor:pointer;color:var(--mut)}
 #subs button[aria-selected=true]{background:#e8e8e8;color:#222;font-weight:600}
 #grid{margin:0 24px;padding:8px 0 40px}
+/* level search: finds a level on any list and jumps to its tier */
+#lvfind{display:flex;justify-content:center;padding:14px 24px 0}
+body:not([data-view=tracker]) #lvfind{display:none}
+.lvf{position:relative;width:100%;max-width:460px}
+.lvf svg{position:absolute;left:12px;top:50%;width:18px;height:18px;transform:translateY(-50%);fill:none;stroke:var(--mut);stroke-width:2;pointer-events:none}
+#lvq{width:100%;box-sizing:border-box;padding:9px 12px 9px 38px;font:inherit;font-size:15px;background:#1c1c1c;color:var(--text);border:1px solid #555;border-radius:8px}
+#lvq:focus{outline:none;border-color:#6ab0ff}
+#lvres{position:absolute;z-index:40;left:0;right:0;top:calc(100% + 4px);max-height:min(420px,60vh);overflow-y:auto;background:var(--panel);border:1px solid #555;border-radius:8px;box-shadow:0 10px 28px #000a;text-align:left;overscroll-behavior:contain}
+#lvres[hidden]{display:none}
+#lvres .r{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;background:none;border:0;border-bottom:1px solid #383838;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+#lvres .r:last-child{border-bottom:0}
+#lvres .r:hover,#lvres .r.on{background:#404040}
+#lvres .r .nm{font-weight:700;font-size:15px;display:block}
+#lvres .r .wh{font-size:13px;color:var(--mut);display:block;margin-top:1px}
+#lvres .r .sw{flex:0 0 10px;height:28px;border-radius:3px}
+#lvres .r .st{margin-left:auto;flex:0 0 auto;font-size:12px;font-weight:700;padding:2px 7px;border-radius:10px;background:#2a2a2a;color:var(--mut)}
+#lvres .r .st.done{background:#23883a;color:#fff}
+#lvres .r .st.prog{background:#f0a800;color:#1a1200}
+#lvres .r .st.pend{background:#2d6a8f;color:#fff}
+#lvres .none,#lvres .more{padding:10px 12px;color:var(--mut);font-size:14px;margin:0}
+.lv.found{animation:lvfound 2.6s ease-out;outline:3px solid #6ab0ff;outline-offset:-3px}
+@keyframes lvfound{0%,55%{box-shadow:0 0 0 3px #6ab0ff,0 0 22px 4px #6ab0ff}100%{box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.lv.found{animation:none}}
 .tiers{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:48px 44px}
 .divider{display:flex;align-items:center;gap:16px;margin:44px 0 30px;color:var(--mut);font-size:18px;font-weight:600}
 .divider.first{margin-top:12px}
@@ -264,6 +287,13 @@ body[data-view=bonus] #grid .divider{display:none}
 .page p{color:#ccc;line-height:1.6;font-size:17px;margin:0 auto;max-width:620px}
 .page .muted{color:var(--mut)}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px}
+.tiles3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:560px){.tiles3{grid-template-columns:1fr}}
+.tile[aria-pressed=true]{border-color:#6ab0ff;background:#404040}
+#archive .back{margin:0 0 10px;text-align:left;max-width:none}
+#archBody{margin-top:28px;text-align:left}
+#archBody h3{font-size:22px;margin:0 0 6px}
+#archBody p{margin:0 0 22px;max-width:none}
 .tile{min-height:140px;background:var(--panel);border:1px solid #4a4a4a;border-radius:10px;color:var(--text);font-size:24px;font-weight:700;cursor:pointer}
 .tile:hover{border-color:#6ab0ff;background:#404040}
 #lists{display:flex;flex-wrap:wrap;gap:2px;padding:10px 24px 0;border-top:1px solid #333}
@@ -517,6 +547,11 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
   </div>
 </header>
 <div id="lists" role="tablist" aria-label="Lists"></div>
+<div id="lvfind"><div class="lvf">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6" stroke-linecap="round"/></svg>
+  <input id="lvq" type="search" placeholder="Search every level by name or ID" autocomplete="off" spellcheck="false" role="combobox" aria-label="Search every level" aria-controls="lvres" aria-expanded="false" aria-autocomplete="list">
+  <div id="lvres" role="listbox" aria-label="Matching levels" hidden></div>
+</div></div>
 <div id="bonushead"><p class="back"><button type="button" class="linkbtn" data-go="extras">&larr; Extras</button></p><h2>Genetastic</h2><p class="muted">Wave challenges and demons from the Genetastic list that aren’t sorted into a difficulty. Ticks save to your account straight away: no approval needed, and only you can see them. They don’t count on the Stats Viewer.</p></div>
 <section id="leaderboard" class="panel wide" hidden>
  <div class="lbleft">
@@ -575,7 +610,19 @@ body.gfx #toast,body.gfx #newVer{border-radius:8px;box-shadow:0 6px 20px #0008}
   <p>Extra level lists to play and track. Progress here saves to your account without needing approval, is only visible to you, and doesn’t count on the Stats Viewer.</p>
   <div class="tiles">
     <button type="button" class="tile" data-go="bonus">Genetastic</button>
+    <button type="button" class="tile" data-go="archive">Challenges Archive</button>
   </div>
+</section>
+<section id="archive" class="page" hidden>
+  <p class="back"><button type="button" class="linkbtn" data-go="extras">&larr; Extras</button></p>
+  <h2>Challenges Archive</h2>
+  <p class="muted">An archive of past Daily, Weekly and Monthly challenges.</p>
+  <div class="tiles tiles3" id="archBtns">
+    <button type="button" class="tile" data-arch="daily" aria-pressed="false">Daily</button>
+    <button type="button" class="tile" data-arch="weekly" aria-pressed="false">Weekly</button>
+    <button type="button" class="tile" data-arch="monthly" aria-pressed="false">Monthly</button>
+  </div>
+  <div id="archBody"></div>
 </section>
 <section id="contact" class="page" hidden><h2>Contact</h2><p class="muted">Content coming soon.</p></section>
 <section id="privacy" class="page doc" hidden>
@@ -3279,10 +3326,10 @@ let trkC=DATA[cur.c]&&!DATA[cur.c].standalone?cur.c:0;
 function setView(v){
   document.body.classList.remove("menu-open");$("menuBtn").setAttribute("aria-expanded","false");
   view=v;document.body.dataset.view=v;
-  ["home","resources","contact","account","privacy","guidelines","extras"].forEach(k=>$(k).hidden=k!==v);
+  ["home","resources","contact","account","privacy","guidelines","extras","archive"].forEach(k=>$(k).hidden=k!==v);
   showPanel(VIEWPANEL[v]||"");
   $("navTracker").setAttribute("aria-pressed",String(v==="tracker"));
-  $("navBonus").setAttribute("aria-pressed",String(v==="bonus"||v==="extras"));
+  $("navBonus").setAttribute("aria-pressed",String(v==="bonus"||v==="extras"||v==="archive"));
   /* Bonus Levels is its own page: it shows the standalone list; the tracker never shows it */
   const bi=DATA.findIndex(d=>d.standalone);
   if(v==="bonus"&&bi>=0&&cur.c!==bi){if(!DATA[cur.c]||!DATA[cur.c].standalone)trkC=cur.c;cur.c=bi;cur.s=0;render()}
@@ -3309,8 +3356,71 @@ window.addEventListener("popstate",e=>{
   try{cur.c=st.c;cur.s=st.s;render();setView(st.v)}finally{restoring=false}
 });
 $("navTracker").onclick=()=>setView("tracker");
+/* Level search: every level on every list (secret tiers left out so the easter egg stays hidden). */
+const lvNorm=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,"");
+function lvIndex(){const out=[];DATA.forEach((c,ci)=>c.subs.forEach((sb,si)=>sb.tiers.forEach(t=>{if(t.secret)return;t.levels.forEach((l,li)=>{const o=lv(l);out.push({ci,si,t,li,o,low:o.n.toLowerCase(),nrm:lvNorm(o.n)})})})));return out}
+let lvHits=[],lvSel=-1;
+function lvState(h){const k=lk(h.o);
+  if(DATA[h.ci].standalone){const x=XP[k]||0;return x===2?["done","Complete"]:x===1?["prog","In progress"]:["",""]}
+  if(pct(k)>=100)return["done","Complete"];if(DRAFT[k])return["done","In Submissions"];
+  if(PEND[k]&&PEND[k].status==="pending")return["pend","Pending"];if(pct(k)>0)return["prog","In progress"];return["",""]}
+function lvSearch(){
+  const raw=$("lvq").value.trim(),q=raw.toLowerCase(),n=lvNorm(raw),box=$("lvres");
+  if(!q){box.hidden=true;$("lvq").setAttribute("aria-expanded","false");lvHits=[];return}
+  const digits=/^\d+$/.test(raw);
+  const score=h=>h.low===q||h.nrm===n?0:h.low.startsWith(q)||(n&&h.nrm.startsWith(n))?1:h.low.includes(q)?2:(n&&h.nrm.includes(n))?3:digits&&h.o.id&&String(h.o.id).startsWith(raw)?(String(h.o.id)===raw?0:4):9;
+  const all=lvIndex().map((h,i)=>({h,i,sc:score(h)})).filter(x=>x.sc<9).sort((a,b)=>a.sc-b.sc||(a.h.ci!==cur.c)-(b.h.ci!==cur.c)||a.i-b.i);
+  lvHits=all.slice(0,40).map(x=>x.h);lvSel=lvHits.length?0:-1;
+  box.innerHTML=lvHits.length?lvHits.map((h,i)=>{const c=DATA[h.ci],sub=c.subs.length>1?c.subs[h.si].name+" › ":"",[cls,txt]=lvState(h);
+    return `<button type="button" class="r${i===lvSel?" on":""}" role="option" id="lvr${i}" aria-selected="${i===lvSel}" data-i="${i}"><span class="sw" style="background:${esc(h.t.color||"#555")}"></span><span><span class="nm">${esc(h.o.n)}</span><span class="wh">${c.standalone?"Extras › ":""}${esc(c.name)} › ${esc(sub)}${esc(h.t.name)}</span></span>${txt?`<span class="st ${cls}">${txt}</span>`:""}</button>`}).join("")
+    +(all.length>40?`<p class="more">${all.length-40} more. Keep typing to narrow it down.</p>`:"")
+    :`<p class="none">No levels match “${esc(raw)}”.</p>`;
+  box.hidden=false;$("lvq").setAttribute("aria-expanded","true");lvMark();
+}
+function lvMark(){document.querySelectorAll("#lvres .r").forEach((r,i)=>{r.classList.toggle("on",i===lvSel);r.setAttribute("aria-selected",String(i===lvSel))});
+  const on=$("lvr"+lvSel);if(on){$("lvq").setAttribute("aria-activedescendant",on.id);on.scrollIntoView({block:"nearest"})}else $("lvq").removeAttribute("aria-activedescendant")}
+function lvClose(){$("lvres").hidden=true;$("lvq").setAttribute("aria-expanded","false")}
+function lvJump(h){
+  lvClose();$("lvq").blur();
+  if(h.t.wide)delete wideQ[h.t.name];
+  if(DATA[h.ci].standalone){if(view!=="bonus")setView("bonus");render()}
+  else{cur.c=h.ci;cur.s=h.si;if(view!=="tracker")setView("tracker");render();pushNav()}
+  const ti=(render.tiers||[]).indexOf(h.t),tr=document.querySelector(`#grid .tier[data-ti="${ti}"]`);if(!tr)return;
+  const row=tr.querySelectorAll(".list .lv")[h.li];if(!row)return;
+  const smooth=!matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* scroll the tier's own list first, then the page, so the level ends up in the middle of the screen */
+  const list=row.closest(".list");if(list&&list.scrollHeight>list.clientHeight)list.scrollTop=row.offsetTop-list.offsetTop-list.clientHeight/2+row.offsetHeight/2;
+  const y=row.getBoundingClientRect().top+scrollY-innerHeight/2+row.offsetHeight/2;
+  window.scrollTo({top:Math.max(0,y),behavior:smooth?"smooth":"auto"});
+  row.classList.remove("found");void row.offsetWidth;row.classList.add("found");
+  setTimeout(()=>row.classList.remove("found"),2700);
+}
+$("lvq").addEventListener("input",lvSearch);
+$("lvq").addEventListener("focus",()=>{if($("lvq").value.trim())lvSearch()});
+$("lvq").addEventListener("keydown",e=>{
+  if(e.key==="ArrowDown"&&lvHits.length){e.preventDefault();lvSel=(lvSel+1)%lvHits.length;lvMark()}
+  else if(e.key==="ArrowUp"&&lvHits.length){e.preventDefault();lvSel=(lvSel-1+lvHits.length)%lvHits.length;lvMark()}
+  else if(e.key==="Enter"&&lvSel>=0&&lvHits[lvSel]&&!$("lvres").hidden){e.preventDefault();lvJump(lvHits[lvSel])}
+  else if(e.key==="Escape"){if(!$("lvres").hidden){e.stopPropagation();lvClose()}else{$("lvq").value="";$("lvq").blur()}}
+});
+$("lvres").addEventListener("mousedown",e=>e.preventDefault());
+$("lvres").addEventListener("click",e=>{const r=e.target.closest(".r");if(r)lvJump(lvHits[+r.dataset.i])});
+document.addEventListener("click",e=>{if(!e.target.closest(".lvf"))lvClose()});
+/* press / anywhere on the tracker to jump to the search box */
+document.addEventListener("keydown",e=>{if(e.key==="/"&&view==="tracker"&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")&&!(document.activeElement&&document.activeElement.isContentEditable)){e.preventDefault();$("lvq").focus();$("lvq").select()}});
 $("navBonus").onclick=()=>setView("extras");
 $("extras").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
+/* Challenges Archive: Daily / Weekly / Monthly buttons (several can be open at once). The lists themselves are added later. */
+const ARCH={daily:"Daily",weekly:"Weekly",monthly:"Monthly"};
+function renderArch(){
+  const on=[...document.querySelectorAll("#archBtns [data-arch]")].filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>b.dataset.arch);
+  $("archBody").innerHTML=on.map(k=>`<h3>${ARCH[k]}</h3><p class="muted">No ${ARCH[k].toLowerCase()} challenges have been added yet.</p>`).join("");
+}
+$("archive").onclick=e=>{
+  const g=e.target.closest("[data-go]");if(g){setView(g.dataset.go);return}
+  const b=e.target.closest("[data-arch]");if(!b)return;
+  b.setAttribute("aria-pressed",String(b.getAttribute("aria-pressed")!=="true"));renderArch();
+};
 $("bonushead").onclick=e=>{const t=e.target.closest("[data-go]");if(t)setView(t.dataset.go)};
 document.querySelectorAll("nav button[data-p]").forEach(b=>b.onclick=()=>{
   const p=b.dataset.p,on=b.getAttribute("aria-pressed")!=="true";
