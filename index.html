@@ -156,7 +156,33 @@ body.cond .tier .list{max-height:350px;overflow-y:auto;scrollbar-width:thin;scro
 .panel .infform .btns button{margin:0}
 .infcard{background:#303030;border-radius:10px;padding:14px 16px;margin:14px 0}
 .infcard h3{margin:0 0 8px}
-.infpb{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:8px 0;border-top:1px solid #444}
+.infpb{display:block;padding:8px 0;border-top:1px solid #444}
+.infpb>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;cursor:pointer;list-style:none;border-radius:4px}
+.infpb>summary::-webkit-details-marker{display:none}
+.infpb>summary .cfg::before{content:"▸ ";color:var(--mut);font-weight:400}
+.infpb[open]>summary .cfg::before{content:"▾ "}
+.infpb>summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#infpage .infstar{align-self:center;background:none;border:0;padding:2px 6px;margin:0;font-size:24px;line-height:1;color:#777;cursor:pointer;border-radius:6px}
+#infpage .infstar:hover{color:#f0c419;background:#ffffff10}
+#infpage .infstar.on{color:#f0c419}
+.infhx{margin:10px 0 4px 18px;border-left:2px solid #4a4a4a;padding-left:14px}
+.infhx .hd{display:grid;grid-template-columns:170px 1fr auto;align-items:center;gap:6px 12px;padding:7px 0;border-top:1px solid #3c3c3c}
+.infhx .hd>.muted{font-size:14px;white-space:nowrap;text-align:right}
+@media (max-width:600px){.infhx{margin-left:6px;padding-left:10px}.infhx .hd{grid-template-columns:1fr auto}.infhx .hd .sc{grid-column:1/-1;grid-row:2}}
+.infpb>summary .cfg{flex:1 1 0;min-width:0}
+.infhx .hd:first-child{border-top:0}
+.infhx .hd b{min-width:150px;font-size:15px}
+.infhx .hd .sc{display:flex;flex-wrap:wrap;gap:5px}
+.infhx .hd .sc span{background:#3d3d3d;border-radius:6px;padding:2px 9px;font-size:15px;font-variant-numeric:tabular-nums}
+.infhx .hd .sc span.top{background:#23883a;color:#fff;font-weight:700}
+.infhx .hd .sc span.pbm{box-shadow:inset 0 0 0 2px #f0c419}
+.infhx .sum{font-size:14px;margin:0 0 4px}
+.infsav>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;cursor:pointer;list-style:none}
+.infsav>summary::-webkit-details-marker{display:none}
+.infsav>summary h3::before{content:"▸ ";color:var(--mut)}
+.infsav[open]>summary h3::before{content:"▾ "}
+.infsav>summary h3{margin:0!important}
+.infsav[open]>summary{margin-bottom:8px}
 .infpb:first-of-type{border-top:0}
 .infpb .cfg{flex:1 1 180px;font-weight:600}
 .infpb .best{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -4265,10 +4291,20 @@ function renderInf(){
   }
   /* right-click a personal best to hide it; hidden ones live in the "Hidden" menu underneath */
   const HID=new Set(INF.hiddenPB||[]),Gv=G.filter(g=>!HID.has(g.k)),Gh=G.filter(g=>HID.has(g.k));
-  const pbRow=(g,h)=>`<div class="infpb" tabindex="0" data-pbk="${esc(g.k)}" data-hid="${h?1:0}" title="Right-click to ${h?"unhide":"hide"}"><span class="cfg">${esc(g.cfg)}${infSub(g.e)}</span><span class="best">${g.best}m</span>
-      <span class="muted">Set ${esc(infDay(g.date))}</span></div>`;
-  const bests=G.length?(Gv.length?Gv.map(g=>pbRow(g,false)).join(""):'<p class="muted">All your personal bests are hidden.</p>')
-      +(Gh.length?`<details class="infhid"${INF.hidOpen?" open":""}><summary>Hidden (${Gh.length})</summary>${Gh.map(g=>pbRow(g,true)).join("")}</details>`:"")
+  /* each config opens to show every day it was played and the scores set that day */
+  const SAV=INF.saved||[],SV=new Set(SAV),CO=INF.cfgOpen||{};
+  const cfgDays=g=>{const m=new Map();INF.entries.forEach(e=>{if(!e.runs.length||infKey(e)!==g.k)return;if(!m.has(e.date))m.set(e.date,[]);m.get(e.date).push(...e.runs)});
+    const ds=[...m.entries()].sort((a,b)=>b[0].localeCompare(a[0]));
+    return `<div class="infhx">${ds.map(([d,rs])=>{const t=Math.max(...rs);let pbDone=false;
+      return `<div class="hd"><b>${esc(infDay(d))}</b><span class="sc">${rs.map(r=>{const pbm=!pbDone&&d===g.date&&r===g.best;if(pbm)pbDone=true;return `<span class="${r===t&&rs.length>1?"top":""}${pbm?" pbm":""}"${pbm?' title="Personal best"':""}>${r}</span>`}).join("")}</span><span class="muted">best ${t}m</span></div>`}).join("")}</div>`};
+  const pbRow=(g,h,sec)=>{const ok=sec+":"+g.k,on=SV.has(g.k);
+    return `<details class="infpb" data-ok="${esc(ok)}"${sec==="p"?` data-pbk="${esc(g.k)}" data-hid="${h?1:0}"`:""}${CO[ok]?" open":""}><summary${sec==="p"?` title="Right-click to ${h?"unhide":"hide"}"`:""}><span class="cfg">${esc(g.cfg)}${infSub(g.e)}</span><span class="best">${g.best}m</span>
+      <button type="button" class="infstar${on?" on":""}" data-inf="star" data-k="${esc(g.k)}" aria-pressed="${on}" aria-label="${on?"Remove from":"Add to"} saved configs" title="${on?"Remove from":"Add to"} saved configs">${on?"★":"☆"}</button>
+      <span class="muted">PB set ${esc(infDay(g.date))}</span></summary>${cfgDays(g)}</details>`};
+  const byK=new Map(G.map(g=>[g.k,g])),Gs=SAV.map(k=>byK.get(k)).filter(Boolean);
+  const saved=Gs.length?Gs.map(g=>pbRow(g,false,"s")).join(""):'<p class="muted">Click the ☆ next to a personal best to save that config here.</p>';
+  const bests=G.length?(Gv.length?Gv.map(g=>pbRow(g,false,"p")).join(""):'<p class="muted">All your personal bests are hidden.</p>')
+      +(Gh.length?`<details class="infhid"${INF.hidOpen?" open":""}><summary>Hidden (${Gh.length})</summary>${Gh.map(g=>pbRow(g,true,"p")).join("")}</details>`:"")
     :'<p class="muted">No scores yet. Start a session above, then add your runs.</p>';
   /* today's sessions get their own box; History holds earlier days, filtered by setting */
   const today=infToday(),order=(a,b)=>b.e.date.localeCompare(a.e.date)||b.i-a.i,all=INF.entries.map((e,i)=>({e,i}));
@@ -4286,6 +4322,7 @@ function renderInf(){
     :(INF.entries.some(e=>e.date!==today)?'<p class="muted">Nothing logged with that setting.</p>':'<p class="muted">No earlier sessions yet.</p>');
   const todayBox=`<div class="infcard"><h3>Current session</h3><p class="muted">${esc(infDay(today))}</p>${todays.length?todays.map(row).join(""):'<p class="muted">No sessions today yet. Start one on the left.</p>'}</div>`;
   el.innerHTML=`<div class="infcols"><div class="infl">${cur}<div class="infcard"><h3>${ed?"Edit session":"New session"}</h3>${form}</div>
+    <details class="infcard infsav"${INF.savOpen===false?"":" open"}><summary><h3>Saved configs</h3>${Gs.length?`<span class="muted">${Gs.length} config${Gs.length===1?"":"s"}</span>`:""}</summary>${saved}</details>
     <details class="infcard infpbs"${INF.pbOpen===false?"":" open"}><summary><h3>Personal bests</h3>${Gv.length?`<span class="muted">${Gv.length} setting${Gv.length===1?"":"s"}</span>`:""}</summary>${bests}</details></div><div class="infr">
     ${todayBox}
     <div class="infcard"><h3>History</h3>
@@ -4296,6 +4333,7 @@ function renderInf(){
       <span class="muted">${INF.entries.length} session${INF.entries.length===1?"":"s"} saved</span></div></div></div></div>`;
 }
 INF.entries=INF.entries.map(infClean).filter(Boolean);
+if(!Array.isArray(INF.saved))INF.saved=[];INF.saved=INF.saved.filter(k=>typeof k==="string");if(!INF.cfgOpen||typeof INF.cfgOpen!=="object")INF.cfgOpen={};
 if(INF.last){INF.last.mode=infRule(INF.last.mode);INF.last.opts=infOpts(INF.last.opts)}
 const infStore=(ok,bad)=>infSave()?ok:(bad||"Couldn’t save: this browser is blocking storage, so the log will be lost when you leave.");
 const infFocusScore=()=>{const x=$("infScore");if(x){x.focus();x.scrollIntoView({block:"center"})}};
@@ -4330,6 +4368,9 @@ $("infpage").addEventListener("submit",e=>{
 $("infpage").addEventListener("click",e=>{
   const b=e.target.closest("[data-inf]");if(!b)return;
   const a=b.dataset.inf,id=b.dataset.id;
+  if(a==="star"){e.preventDefault();const k=b.dataset.k,L=INF.saved||(INF.saved=[]),i=L.indexOf(k);
+    if(i>=0)L.splice(i,1);else L.push(k);infSave();renderInf();
+    const back=document.querySelector(`.infpbs [data-inf=star][data-k="${CSS.escape(k)}"]`)||document.querySelector(`[data-inf=star][data-k="${CSS.escape(k)}"]`);if(back)back.focus({preventScroll:true});return}
   if(a==="edit"){infEdit=id;infDel="";infMsg="";renderInf();$("infpage").scrollIntoView({block:"start"});return}
   if(a==="cancel"){infEdit="";infMsg="";renderInf();return}
   if(a==="open"){INF.cur=id;infRm=-1;infFlash="";infDel="";infSave();renderInf();infFocusScore();return}
@@ -4343,13 +4384,15 @@ $("infpage").addEventListener("click",e=>{
     infMsg=infStore("Session deleted.","Couldn’t save the change.");renderInf();return;
   }
   if(a==="export"){
-    const blob=new Blob([JSON.stringify({app:"Ultimate Wave Tracker",kind:"infinite-wave",exported:new Date().toISOString(),entries:INF.entries},null,1)],{type:"application/json"});
+    const blob=new Blob([JSON.stringify({app:"Ultimate Wave Tracker",kind:"infinite-wave",exported:new Date().toISOString(),entries:INF.entries,saved:INF.saved||[]},null,1)],{type:"application/json"});
     const u=URL.createObjectURL(blob),x=document.createElement("a");x.href=u;x.download="jfp-tracker-"+infToday()+".json";document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
   }
 });
 $("infpage").addEventListener("toggle",e=>{const c=e.target.classList;if(!c)return;
   if(c.contains("infpbs")){INF.pbOpen=e.target.open;infSave()}
   if(c.contains("infhid")){INF.hidOpen=e.target.open;infSave()}
+  if(c.contains("infsav")){INF.savOpen=e.target.open;infSave()}
+  if(c.contains("infpb")&&e.target.dataset.ok){const o=INF.cfgOpen||(INF.cfgOpen={}),k=e.target.dataset.ok;if(e.target.open)o[k]=true;else delete o[k];infSave()}
   if(c.contains("infday")){const d=e.target.dataset.day,o=INF.dayOpen||(INF.dayOpen={});if(e.target.open)o[d]=true;else delete o[d];infSave()}},true);
 /* small right-click menu for personal bests */
 function infMenuClose(){const m=$("infMenu");if(m)m.remove()}
@@ -4363,12 +4406,12 @@ $("infpage").addEventListener("contextmenu",e=>{
   const r=row.getBoundingClientRect(),x=e.clientX||r.left+20,y=e.clientY||r.top+r.height/2;
   m.style.left=Math.max(8,Math.min(x,innerWidth-m.offsetWidth-8))+"px";
   m.style.top=Math.max(8,Math.min(y,innerHeight-m.offsetHeight-8))+"px";
-  const btn=m.querySelector("button");btn.focus({preventScroll:true});
+  const btn=m.querySelector("button");btn.focus({preventScroll:true});const sumOf=r=>r&&(r.querySelector("summary")||r);
   btn.onclick=()=>{const k=row.dataset.pbk,set=new Set(INF.hiddenPB||[]);
     if(h)set.delete(k);else set.add(k);
     INF.hiddenPB=[...set];infSave();infMenuClose();renderInf();
-    const back=document.querySelector(`.infpb[data-pbk="${CSS.escape(k)}"]`);if(back)back.focus({preventScroll:true})};
-  btn.onkeydown=ev=>{if(ev.key==="Escape"){infMenuClose();row.focus({preventScroll:true})}};
+    const back=sumOf(document.querySelector(`.infpb[data-pbk="${CSS.escape(k)}"]`));if(back)back.focus({preventScroll:true})};
+  btn.onkeydown=ev=>{if(ev.key==="Escape"){infMenuClose();sumOf(row).focus({preventScroll:true})}};
 });
 document.addEventListener("mousedown",e=>{if(!e.target.closest("#infMenu"))infMenuClose()});
 addEventListener("scroll",()=>{const m=$("infMenu");if(m&&Math.abs(scrollY-(+m.dataset.y||0))>30)infMenuClose()},true);addEventListener("resize",infMenuClose);
@@ -4384,6 +4427,7 @@ $("infpage").addEventListener("change",async e=>{
     if(!Array.isArray(list))throw 0;
     const have=new Set(INF.entries.map(x=>x.id));let add=0,skip=0;
     list.forEach(x=>{const c=infClean(x);if(!c||have.has(c.id)){skip++;return}INF.entries.push(c);have.add(c.id);add++});
+    if(d&&Array.isArray(d.saved)){const L=INF.saved||(INF.saved=[]);d.saved.forEach(k=>{if(typeof k==="string"&&k.length<2000&&!L.includes(k))L.push(k)})}
     infMsg=infStore(`Imported ${add} session${add===1?"":"s"}${skip?` (${skip} skipped: already here or unreadable)`:""}.`,"Couldn’t save the imported sessions.");
   }catch(err){infMsg="That file isn’t a JFP Tracker export."}
   renderInf();
